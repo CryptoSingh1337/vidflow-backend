@@ -11,9 +11,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public interface UserService extends UserDetailsService {
 
     User findUserByUsername(String username);
+    UserResponseModel getUser(String username);
     String getChannelNameOfAUser(String username);
     UserResponseModel insert(UserRequestModel userRequestModel);
     UserResponseModel update(String username, UserRequestModel userRequestModel);
     void updatePassword(String username, String changedPassword);
+    void updateChannelName(String username, String channelName);
     void delete(String username);
 }
