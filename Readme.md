@@ -81,6 +81,6 @@ Run Spring Boot application (default port: 8080 or mentioned in `application.pro
     - Spring Cloud Resilience4j
     - Spring Cloud Zipkin
     - Spring Cloud Sleuth
-    - Microsoft Azure Storage service
+    - Amazon S3
   - **Deployment**:
-    - Microsoft Azure
+    - Amazon AWS
