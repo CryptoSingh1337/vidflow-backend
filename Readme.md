@@ -2,9 +2,7 @@
 
 # VidFlow
 
-An open source content sharing platform (YouTube clone). This application will be highly
-scalable because I am following the micro-service architecture in backend and the [frontend](https://github.com/CryptoSingh1337/vidflow-client) is created
-using [nuxt](https://github.com/nuxt/nuxt.js).
+An open source content sharing platform (YouTube clone).
 
 [![Issues Closed](https://img.shields.io/github/issues-closed/CryptoSingh1337/vidflow-backend?color=red)](https://github.com/CryptoSingh1337/vidflow-backend/issues?q=is%3Aissue+is%3Aclosed)
 [![Issues Open](https://img.shields.io/github/issues/CryptoSingh1337/vidflow-backend?color=green)](https://github.com/CryptoSingh1337/vidflow-backend/issues)
@@ -19,11 +17,8 @@ using [nuxt](https://github.com/nuxt/nuxt.js).
 ## Features
 
 - JWT token based user authentication and authorization with refresh token.
-- Centralized Configuration for each service.
-- Api Gateway for single entry point and for authentication.
-- Message broker (RabbitMQ) for Notification service.
 - Used pagination and sorting from server side.
-- Stores videos on Microsoft Azure Storage service.
+- Stores videos on AWS S3.
 - User can watch/explore videos without authentication and can upload, delete, update thumbnail, title, description of a video.
 - User can subscribe to a channel and will receive notifications for videos.
 - User can like/dislike, share a video.
@@ -72,15 +67,8 @@ Run Spring Boot application (default port: 8080 or mentioned in `application.pro
 - **Server**:
   - Java
   - Spring Boot
-  - **Cloud**:
-    - Spring Cloud Netflix Eureka Server and Client
-    - Spring Cloud Gateway
-    - Spring Cloud Bus
-    - Spring Cloud Config Server
-    - Spring Cloud Open Feign
-    - Spring Cloud Resilience4j
-    - Spring Cloud Zipkin
-    - Spring Cloud Sleuth
-    - Amazon S3
+  - Spring Data Mongo
+  - Spring Data Redis
+  - Spring Security
   - **Deployment**:
     - Amazon AWS
