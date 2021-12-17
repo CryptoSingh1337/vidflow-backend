@@ -13,12 +13,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collation = "users")
+@Document(collection = "users")
 public class User {
 
     @Id
     private String id;
-    @Indexed(unique = true)
+    @Indexed(name = "username_idx", unique = true)
     private String username;
     private String firstName;
     private String lastName;
