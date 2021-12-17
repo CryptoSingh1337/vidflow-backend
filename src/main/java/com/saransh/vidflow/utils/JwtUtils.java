@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saransh.vidflow.model.response.RefreshTokenResponseModel;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.User;
@@ -20,12 +19,10 @@ import java.util.Objects;
 public class JwtUtils {
 
     private final Environment env;
-    private final ObjectMapper objectMapper;
     private final String ISSUER;
 
-    public JwtUtils(Environment env, ObjectMapper objectMapper) {
+    public JwtUtils(Environment env) {
         this.env = env;
-        this.objectMapper = objectMapper;
         this.ISSUER = env.getProperty("jwt.issuer");
     }
 
@@ -72,7 +69,11 @@ public class JwtUtils {
         return null;
     }
 
-    public JWTVerifier getVerifier() {
+    public JWTVerifier getTokenVerifier() {
+        return JWT.require(getTokenAlgorithm()).build();
+    }
+
+    public JWTVerifier getRefreshTokenVerifier() {
         return JWT.require(getRefreshTokenAlgorithm()).build();
     }
 
