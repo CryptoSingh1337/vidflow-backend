@@ -50,7 +50,7 @@ public class UserController {
         String authToken = req.getHeader(AUTHORIZATION);
         String token = jwtUtils.extractAuthorizationToken(authToken);
         if (token != null) {
-            JWTVerifier jwtVerifier = jwtUtils.getVerifier();
+            JWTVerifier jwtVerifier = jwtUtils.getRefreshTokenVerifier();
             DecodedJWT decodedJWT = jwtVerifier.verify(token);
             String username = decodedJWT.getSubject();
             User user = (User) userService.loadUserByUsername(username);
