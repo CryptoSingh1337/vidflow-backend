@@ -2,6 +2,7 @@ package com.saransh.vidflow.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saransh.vidflow.config.security.filters.CustomAuthenticationFilter;
+import com.saransh.vidflow.config.security.filters.CustomAuthorizationFilter;
 import com.saransh.vidflow.services.user.UserService;
 import com.saransh.vidflow.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -38,7 +40,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().and()
                 .sessionManagement().sessionCreationPolicy(STATELESS).and()
                 .authorizeRequests().antMatchers("/**").permitAll().and()
-                .addFilter(authenticationFilter());
+                .addFilter(authenticationFilter())
+                .addFilterBefore(new CustomAuthorizationFilter(mapper, jwtUtils, env),
+                        UsernamePasswordAuthenticationFilter.class);
     }
 
     private CustomAuthenticationFilter authenticationFilter() throws Exception {
