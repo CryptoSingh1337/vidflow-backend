@@ -2,6 +2,8 @@ package com.saransh.vidflow.controller.user;
 
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saransh.vidflow.model.request.UserRequestModel;
 import com.saransh.vidflow.model.response.ErrorResponseModel;
 import com.saransh.vidflow.model.response.UserResponseModel;
@@ -10,11 +12,14 @@ import com.saransh.vidflow.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -29,10 +34,19 @@ public class UserController {
 
     private final UserService userService;
     private final JwtUtils jwtUtils;
+    private final ObjectMapper mapper;
 
-    @GetMapping(value = "/{username}", produces = {"application/json"})
-    public ResponseEntity<UserResponseModel> getUser(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getUser(username));
+    @GetMapping(produces = {"application/json"})
+    public ResponseEntity<?> getUser() {
+        Object principal = SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+        Map<String, String> res = new HashMap<>(1);
+        res.put("user", principal.toString());
+        String response = "";
+        try {
+            response = mapper.writeValueAsString(res);
+        } catch (JsonProcessingException ignored) {}
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping(value = "/{username}/channel", produces = {"application/json"})
