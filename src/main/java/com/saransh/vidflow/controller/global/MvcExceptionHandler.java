@@ -1,6 +1,7 @@
 package com.saransh.vidflow.controller.global;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.mongodb.MongoWriteException;
 import com.saransh.vidflow.model.response.ErrorResponseModel;
 import org.springframework.http.HttpHeaders;
@@ -41,6 +42,11 @@ public class MvcExceptionHandler {
     @ExceptionHandler(JWTVerificationException.class)
     public ResponseEntity<?> handleJwtVerificationException(JWTVerificationException e) {
         return new ResponseEntity<>(new ErrorResponseModel(e.getMessage()), FORBIDDEN);
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<?> handleTokenExpiredException(TokenExpiredException e) {
+        return new ResponseEntity<>(new ErrorResponseModel(e.getMessage()), UNAUTHORIZED);
     }
 
     @ExceptionHandler(MongoWriteException.class)
