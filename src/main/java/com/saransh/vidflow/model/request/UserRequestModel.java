@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 public class UserRequestModel {
 
     @NotBlank
-    @Size(min = 8, max = 12)
+    @Size(min = 3, max = 20)
     private String username;
 
     @NotBlank
