@@ -51,6 +51,9 @@ public class MvcExceptionHandler {
 
     @ExceptionHandler(MongoWriteException.class)
     public ResponseEntity<?> handleDuplicateKeyException(MongoWriteException e) {
-        return new ResponseEntity<>(new ErrorResponseModel(e.getError().getMessage()), BAD_REQUEST);
+        String errorMessage = e.getError().getMessage();
+        if (e.getError().getMessage().startsWith("E11000 duplicate key error"))
+            errorMessage = "Username already exists";
+        return new ResponseEntity<>(new ErrorResponseModel(errorMessage), BAD_REQUEST);
     }
 }
