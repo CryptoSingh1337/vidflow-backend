@@ -40,8 +40,8 @@ public class UserController {
     public ResponseEntity<?> getUser() {
         Object principal = SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
-        Map<String, String> res = new HashMap<>(1);
-        res.put("user", principal.toString());
+        Map<String, UserResponseModel> res = new HashMap<>(1);
+        res.put("user", userService.getUser(principal.toString()));
         String response = "";
         try {
             response = mapper.writeValueAsString(res);
