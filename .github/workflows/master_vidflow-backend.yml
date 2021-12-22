@@ -23,6 +23,10 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean install
+        env:
+          JWT_ACCESS_TOKEN_SECRET: ${{ secrets.JWT_ACCESS_TOKEN_SECRET }}
+          JWT_REFRESH_TOKEN_SECRET: ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
+          MONGO_URL: ${{ secrets.MONGO_URL }}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
