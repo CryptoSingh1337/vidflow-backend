@@ -59,6 +59,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseModel insert(UserRequestModel userRequestModel) {
         User user = userMapper.userRequestModelToUser(userRequestModel);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setProfileImage(String.format("https://avatars.dicebear.com/api/bottts/%s.svg", user.getUsername()));
         return userMapper.userToUserResponseModel(userRepository.save(user));
     }
 
