@@ -3,7 +3,7 @@ package com.saransh.vidflow.services.user.impl;
 import com.saransh.vidflow.domain.User;
 import com.saransh.vidflow.mapper.UserMapper;
 import com.saransh.vidflow.model.request.UserRequestModel;
-import com.saransh.vidflow.model.response.UserResponseModel;
+import com.saransh.vidflow.model.response.user.UserResponseModel;
 import com.saransh.vidflow.repositories.UserRepository;
 import com.saransh.vidflow.services.user.UserService;
 import lombok.RequiredArgsConstructor;

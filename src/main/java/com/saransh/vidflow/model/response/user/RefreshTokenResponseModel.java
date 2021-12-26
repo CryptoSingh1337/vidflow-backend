@@ -1,4 +1,4 @@
-package com.saransh.vidflow.model.response;
+package com.saransh.vidflow.model.response.user;
 
 /**
  * author: CryptoSingh1337

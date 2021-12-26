@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.saransh.vidflow.model.response.RefreshTokenResponseModel;
+import com.saransh.vidflow.model.response.user.RefreshTokenResponseModel;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.saransh.vidflow.model.response;
+package com.saransh.vidflow.model.response.user;
 
 import lombok.Getter;
 import lombok.Setter;

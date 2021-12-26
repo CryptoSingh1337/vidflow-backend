@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saransh.vidflow.model.request.UserRequestModel;
 import com.saransh.vidflow.model.response.ErrorResponseModel;
-import com.saransh.vidflow.model.response.UserResponseModel;
+import com.saransh.vidflow.model.response.user.UserResponseModel;
 import com.saransh.vidflow.services.user.UserService;
 import com.saransh.vidflow.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;

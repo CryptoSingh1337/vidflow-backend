@@ -2,7 +2,7 @@ package com.saransh.vidflow.config.security.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saransh.vidflow.model.request.LoginRequestModel;
-import com.saransh.vidflow.model.response.SuccessfulLoginResponseModel;
+import com.saransh.vidflow.model.response.user.SuccessfulLoginResponseModel;
 import com.saransh.vidflow.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
