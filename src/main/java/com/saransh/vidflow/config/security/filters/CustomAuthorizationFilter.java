@@ -18,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Set;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -31,6 +32,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private final ObjectMapper mapper;
     private final JwtUtils jwtUtils;
     private final Environment env;
+    private final Set<String> urls;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req,
@@ -58,5 +60,11 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 mapper.writeValue(res.getWriter(), new ErrorResponseModel("Missing Authorization Header"));
             }
         }
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest req) throws ServletException {
+        String requestPath = req.getServletPath();
+        return urls.contains(requestPath);
     }
 }

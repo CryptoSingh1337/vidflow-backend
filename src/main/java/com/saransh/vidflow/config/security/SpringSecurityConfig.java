@@ -14,6 +14,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Objects;
+import java.util.Set;
+
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 /**
@@ -41,7 +44,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(STATELESS).and()
                 .authorizeRequests().antMatchers("/**").permitAll().and()
                 .addFilter(authenticationFilter())
-                .addFilterBefore(new CustomAuthorizationFilter(mapper, jwtUtils, env),
+                .addFilterBefore(new CustomAuthorizationFilter(mapper, jwtUtils, env, urlsToSkip()),
                         UsernamePasswordAuthenticationFilter.class);
     }
 
@@ -50,5 +53,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 new CustomAuthenticationFilter(authenticationManagerBean(), mapper, jwtUtils);
         authenticationFilter.setFilterProcessesUrl(env.getProperty("auth.login.path"));
         return authenticationFilter;
+    }
+
+    public Set<String> urlsToSkip() {
+        return Set.of(Objects.requireNonNull(env.getProperty("skipUrls")).split(","));
     }
 }
