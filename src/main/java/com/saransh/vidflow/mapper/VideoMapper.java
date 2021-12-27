@@ -2,6 +2,7 @@ package com.saransh.vidflow.mapper;
 
 import com.saransh.vidflow.domain.Video;
 import com.saransh.vidflow.model.response.video.VideoCardResponseModel;
+import com.saransh.vidflow.model.response.video.WatchVideoResponseModel;
 import org.mapstruct.Mapper;
 
 /**
@@ -10,5 +11,6 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface VideoMapper {
 
+    WatchVideoResponseModel videoToWatchVideo(Video video);
     VideoCardResponseModel videoToVideoCard(Video video);
 }

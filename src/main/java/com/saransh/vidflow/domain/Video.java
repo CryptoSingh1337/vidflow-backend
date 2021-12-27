@@ -31,6 +31,7 @@ public class Video {
     private Integer likes;
     private Integer dislikes;
     private String thumbnail;
+    private String videoSrc;
     private String description;
     private VideoStatus videoStatus;
     private Set<Comment> comments;

@@ -1,7 +1,10 @@
 package com.saransh.vidflow.services.video.impl;
 
+import com.saransh.vidflow.domain.Video;
+import com.saransh.vidflow.exceptions.ResourceNotFoundException;
 import com.saransh.vidflow.mapper.VideoMapper;
 import com.saransh.vidflow.model.response.video.VideoCardResponseModel;
+import com.saransh.vidflow.model.response.video.WatchVideoResponseModel;
 import com.saransh.vidflow.repositories.VideoRepository;
 import com.saransh.vidflow.services.video.VideoService;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +44,14 @@ public class VideoServiceImpl implements VideoService {
         return videoRepository.findAll(getAllTrendingVideosPageRequest(page)).stream()
                 .map(videoMapper::videoToVideoCard)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public WatchVideoResponseModel getVideoById(String id) {
+        log.debug("Retrieving video with ID: {}", id);
+        Video video = videoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
+        return videoMapper.videoToWatchVideo(video);
     }
 
     private Pageable getAllVideosPageRequest(int page) {
