@@ -14,8 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -55,7 +55,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         return authenticationFilter;
     }
 
-    public Set<String> urlsToSkip() {
-        return Set.of(Objects.requireNonNull(env.getProperty("skipUrls")).split(","));
+    public List<String> urlsToSkip() {
+        return List.of(Objects.requireNonNull(env.getProperty("skipUrls")).split(","));
     }
 }

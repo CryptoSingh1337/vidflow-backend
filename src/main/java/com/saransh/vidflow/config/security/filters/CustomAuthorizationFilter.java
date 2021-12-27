@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -18,7 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -32,7 +33,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private final ObjectMapper mapper;
     private final JwtUtils jwtUtils;
     private final Environment env;
-    private final Set<String> urls;
+    private final List<String> urls;
+    private AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected void doFilterInternal(HttpServletRequest req,
@@ -65,6 +67,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest req) throws ServletException {
         String requestPath = req.getServletPath();
-        return urls.contains(requestPath);
+        return urls.stream()
+                .anyMatch(p -> pathMatcher.match(p, requestPath) && req.getMethod().equals("GET"));
     }
 }
