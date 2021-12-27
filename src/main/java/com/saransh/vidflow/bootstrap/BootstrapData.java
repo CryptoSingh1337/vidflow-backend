@@ -117,6 +117,7 @@ public class BootstrapData implements CommandLineRunner {
                 .title("Lorem Ipsum is simply dummy text of the printing and typesetting.")
                 .channelName("CryptoSingh")
                 .thumbnail("https://source.unsplash.com/1280x720/?technology")
+                .videoSrc("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
                         "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
                         "printer took a galley of type and scrambled it to make a type specimen book. It has " +
@@ -135,6 +136,7 @@ public class BootstrapData implements CommandLineRunner {
                 .title("It is a long established fact that a reader will be distracted.")
                 .channelName("Dave2D")
                 .thumbnail("https://source.unsplash.com/1280x720/?news")
+                .videoSrc("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
                         "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
                         "printer took a galley of type and scrambled it to make a type specimen book. It has " +
@@ -153,6 +155,7 @@ public class BootstrapData implements CommandLineRunner {
                 .title("Contrary to popular belief, Lorem Ipsum is not simply random text.")
                 .channelName("Fireship")
                 .thumbnail("https://source.unsplash.com/1280x720/?gaming")
+                .videoSrc("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
                         "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
                         "printer took a galley of type and scrambled it to make a type specimen book. It has " +
@@ -171,6 +174,7 @@ public class BootstrapData implements CommandLineRunner {
                 .title("Contrary to popular belief, Lorem Ipsum is not simply random text.")
                 .channelName("SomeOrdinaryGamer")
                 .thumbnail("https://source.unsplash.com/1280x720/?fashion")
+                .videoSrc("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
                         "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
                         "printer took a galley of type and scrambled it to make a type specimen book. It has " +
@@ -189,6 +193,7 @@ public class BootstrapData implements CommandLineRunner {
                 .title("There are many variations of passages of Lorem Ipsum available.")
                 .channelName("ElectroBOOM")
                 .thumbnail("https://source.unsplash.com/1280x720/?personal")
+                .videoSrc("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
                         "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
                         "printer took a galley of type and scrambled it to make a type specimen book. It has " +
