@@ -1,4 +1,4 @@
-package com.saransh.vidflow.model.request;
+package com.saransh.vidflow.model.request.user;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +17,10 @@ public class UserRequestModel {
     @NotBlank
     @Size(min = 3, max = 20)
     private String username;
+
+    @NotBlank
+    @Size(min = 3, max = 20)
+    private String channelName;
 
     @NotBlank
     @Size(min = 3, max = 30)

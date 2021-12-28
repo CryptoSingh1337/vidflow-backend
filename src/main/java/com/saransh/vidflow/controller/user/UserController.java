@@ -4,7 +4,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.saransh.vidflow.model.request.UserRequestModel;
+import com.saransh.vidflow.model.request.user.UserRequestModel;
 import com.saransh.vidflow.model.response.ErrorResponseModel;
 import com.saransh.vidflow.model.response.user.UserResponseModel;
 import com.saransh.vidflow.services.user.UserService;

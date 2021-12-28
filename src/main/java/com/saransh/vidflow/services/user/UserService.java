@@ -1,7 +1,7 @@
 package com.saransh.vidflow.services.user;
 
 import com.saransh.vidflow.domain.User;
-import com.saransh.vidflow.model.request.UserRequestModel;
+import com.saransh.vidflow.model.request.user.UserRequestModel;
 import com.saransh.vidflow.model.response.user.UserResponseModel;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
