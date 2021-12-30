@@ -87,6 +87,7 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
+    @Transactional
     public void incrementViews(String videoId) {
         log.debug("Incrementing views...");
         Video video = videoRepository.findById(videoId)
