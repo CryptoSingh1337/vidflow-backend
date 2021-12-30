@@ -34,14 +34,15 @@ public class BootstrapData implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        List<User> users = new ArrayList<>();
         if (userRepository.count() == 0) {
             log.debug("Creating sample users...");
-            userRepository.saveAll(createUsers());
+            userRepository.saveAll(createUsers()).forEach(users::add);
         }
         log.debug("Total users: {}", userRepository.count());
         if (videoRepository.count() == 0) {
             log.debug("Saving videos...");
-            videoRepository.saveAll(createVideos());
+            videoRepository.saveAll(createVideos(users));
         }
         log.debug("Total videos: {}", videoRepository.count());
     }
@@ -112,9 +113,11 @@ public class BootstrapData implements CommandLineRunner {
                 comment_5);
     }
 
-    private List<Video> createVideos() {
+    private List<Video> createVideos(List<User> users) {
         Video video_1 = Video.builder()
                 .title("Lorem Ipsum is simply dummy text of the printing and typesetting.")
+                .userId(users.get(0).getId())
+                .username(users.get(0).getUsername())
                 .channelName("CryptoSingh")
                 .thumbnail("https://source.unsplash.com/1280x720/?technology")
                 .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
@@ -134,6 +137,8 @@ public class BootstrapData implements CommandLineRunner {
 
         Video video_2 = Video.builder()
                 .title("It is a long established fact that a reader will be distracted.")
+                .userId(users.get(1).getId())
+                .username(users.get(1).getUsername())
                 .channelName("Dave2D")
                 .thumbnail("https://source.unsplash.com/1280x720/?news")
                 .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
@@ -153,6 +158,8 @@ public class BootstrapData implements CommandLineRunner {
 
         Video video_3 = Video.builder()
                 .title("Contrary to popular belief, Lorem Ipsum is not simply random text.")
+                .userId(users.get(2).getId())
+                .username(users.get(2).getUsername())
                 .channelName("Fireship")
                 .thumbnail("https://source.unsplash.com/1280x720/?gaming")
                 .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
@@ -172,6 +179,8 @@ public class BootstrapData implements CommandLineRunner {
 
         Video video_4 = Video.builder()
                 .title("Contrary to popular belief, Lorem Ipsum is not simply random text.")
+                .userId(users.get(3).getId())
+                .username(users.get(3).getUsername())
                 .channelName("SomeOrdinaryGamer")
                 .thumbnail("https://source.unsplash.com/1280x720/?fashion")
                 .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
@@ -191,6 +200,8 @@ public class BootstrapData implements CommandLineRunner {
 
         Video video_5 = Video.builder()
                 .title("There are many variations of passages of Lorem Ipsum available.")
+                .userId(users.get(4).getId())
+                .username(users.get(4).getUsername())
                 .channelName("ElectroBOOM")
                 .thumbnail("https://source.unsplash.com/1280x720/?personal")
                 .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
