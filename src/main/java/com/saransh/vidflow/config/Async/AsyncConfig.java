@@ -1,19 +1,32 @@
 package com.saransh.vidflow.config.Async;
 
-import org.springframework.context.annotation.Bean;
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.Executor;
 
 /**
  * author: CryptoSingh1337
  */
 @EnableAsync
 @Configuration
-public class AsyncConfig {
+public class AsyncConfig implements AsyncConfigurer {
 
-    @Bean
-    public SimpleAsyncTaskExecutor simpleAsyncTaskExecutor() {
-        return new SimpleAsyncTaskExecutor();
+    @Override
+    public Executor getAsyncExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(3);
+        taskExecutor.setMaxPoolSize(3);
+        taskExecutor.setQueueCapacity(600);
+        taskExecutor.afterPropertiesSet();
+        return taskExecutor;
+    }
+
+    @Override
+    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+        return new AsyncExceptionHandler();
     }
 }
