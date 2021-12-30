@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,26 +26,28 @@ public class Video {
     private String title;
     @Indexed(name = "channel_idx")
     private String userId;
+    private String username;
     private String channelName;
-    private Long views;
+    private Long views = 0L;
     private LocalDateTime createdAt;
-    private Integer likes;
-    private Integer dislikes;
+    private Integer likes = 0;
+    private Integer dislikes = 0;
     private String thumbnail;
-    private String videoSrc;
+    private String videoUrl;
     private String description;
     private VideoStatus videoStatus;
+    private List<String> tags;
     private Set<Comment> comments;
 
-    public void increaseViews() {
+    public void incrementViews() {
         this.views += 1;
     }
 
-    public void increaseLikes() {
+    public void incrementLikes() {
         this.likes += 1;
     }
 
-    public void increaseDislikes() {
+    public void incrementDisLikes() {
         this.dislikes += 1;
     }
 

@@ -4,6 +4,8 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.mongodb.MongoWriteException;
 import com.saransh.vidflow.exceptions.ResourceNotFoundException;
+import com.saransh.vidflow.exceptions.UnsupportedFormatException;
+import com.saransh.vidflow.exceptions.UploadFailedException;
 import com.saransh.vidflow.model.response.ErrorResponseModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -61,5 +63,15 @@ public class MvcExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {
         return new ResponseEntity<>(new ErrorResponseModel(e.getMessage()), NOT_FOUND);
+    }
+
+    @ExceptionHandler(UnsupportedFormatException.class)
+    public ResponseEntity<?> handleUnsupportedFormatException(UnsupportedFormatException e) {
+        return new ResponseEntity<>(new ErrorResponseModel(e.getMessage()), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UploadFailedException.class)
+    public ResponseEntity<?> handleUploadFailedException(UploadFailedException e) {
+        return new ResponseEntity<>(new ErrorResponseModel(e.getMessage()), SERVICE_UNAVAILABLE);
     }
 }

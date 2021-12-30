@@ -12,6 +12,7 @@ import lombok.*;
 @Builder
 public class UserResponseModel {
     private String username;
+    private String channelName;
     private String firstName;
     private String lastName;
     private String email;
