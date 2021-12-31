@@ -108,18 +108,31 @@ public class VideoServiceImpl implements VideoService {
     @Transactional
     public AddCommentResponseModel addCommentToVideo(String videoId, CommentRequestModel commentRequestModel) {
         log.debug("Adding comment to the video with ID: {}", videoId);
-        Video video = videoRepository.findById(videoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
+        Video video = getVideoByIdHelper(videoId);
         Comment comment = commentMapper.commentRequestModelToComment(commentRequestModel);
         comment.setId(UUID.randomUUID().toString());
         comment.setCreatedAt(LocalDateTime.now());
         video.addComment(comment);
         Video savedVideo = videoRepository.save(video);
+        log.debug("Added comment to the video with comment ID: {}", comment.getId());
         Comment savedComment = savedVideo.getComments().stream()
                 .filter(c -> c.getId().equals(comment.getId()))
                 .findFirst()
                 .orElseThrow(() -> new MongoWriteException("Comment is not added"));
         return commentMapper.commentToAddCommentResponseModel(savedComment);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCommentFromVideo(String videoId, String commentId) {
+        log.debug("Deleting comment with ID: {} from video with ID: {}", videoId, commentId);
+        Video video = getVideoByIdHelper(videoId);
+        boolean status = video.getComments().removeIf(c -> c.getId().equals(commentId));
+        videoRepository.save(video);
+        if (status)
+            log.debug("Deleted comment with ID: {}", commentId);
+        else
+            log.debug("Comment with ID: {} not found", commentId);
     }
 
     private Pageable getAllVideosPageRequest(int page) {
@@ -128,5 +141,10 @@ public class VideoServiceImpl implements VideoService {
 
     private Pageable getAllTrendingVideosPageRequest(int page) {
         return PageRequest.of(page, PAGE_SIZE, Sort.Direction.DESC, "views");
+    }
+
+    private Video getVideoByIdHelper(String videoId) {
+        return videoRepository.findById(videoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
     }
 }
