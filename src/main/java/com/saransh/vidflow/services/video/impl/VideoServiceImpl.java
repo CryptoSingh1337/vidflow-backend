@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -85,7 +86,7 @@ public class VideoServiceImpl implements VideoService {
         video.setUserId(user.getId());
         video.setTitle(videoMetadata.getTitle());
         video.setDescription(videoMetadata.getDescription());
-        video.setCreatedAt(LocalDateTime.now());
+        video.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
         video.setThumbnail(videoMetadata.getThumbnail());
         video.setTags(videoMetadata.getTags());
         video.setChannelName(videoMetadata.getChannelName());
@@ -112,7 +113,7 @@ public class VideoServiceImpl implements VideoService {
         Video video = getVideoByIdHelper(videoId);
         Comment comment = commentMapper.commentRequestModelToComment(commentRequestModel);
         comment.setId(UUID.randomUUID().toString());
-        comment.setCreatedAt(LocalDateTime.now());
+        comment.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
         video.addComment(comment);
         Video savedVideo = videoRepository.save(video);
         log.debug("Added comment to the video with comment ID: {}", comment.getId());
