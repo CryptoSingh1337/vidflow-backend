@@ -124,7 +124,7 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional
-    public void deleteCommentFromVideo(String videoId, String commentId) {
+    public void deleteComment(String videoId, String commentId) {
         log.debug("Deleting comment with ID: {} from video with ID: {}", videoId, commentId);
         Video video = getVideoByIdHelper(videoId);
         boolean status = video.getComments().removeIf(c -> c.getId().equals(commentId));

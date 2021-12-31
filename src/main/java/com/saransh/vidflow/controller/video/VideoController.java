@@ -74,7 +74,7 @@ public class VideoController {
     @DeleteMapping("/{videoId}/comment/{commentId}")
     public ResponseEntity<?> deleteACommentFromVideo(@PathVariable String videoId,
                                                      @PathVariable String commentId) {
-        videoService.deleteCommentFromVideo(videoId, commentId);
+        videoService.deleteComment(videoId, commentId);
         return ResponseEntity.ok(null);
     }
 }
