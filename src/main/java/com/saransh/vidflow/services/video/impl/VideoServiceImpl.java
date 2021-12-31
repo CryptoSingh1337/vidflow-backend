@@ -9,6 +9,7 @@ import com.saransh.vidflow.exceptions.ResourceNotFoundException;
 import com.saransh.vidflow.mapper.CommentMapper;
 import com.saransh.vidflow.mapper.VideoMapper;
 import com.saransh.vidflow.model.request.video.CommentRequestModel;
+import com.saransh.vidflow.model.request.video.UpdateCommentRequestModel;
 import com.saransh.vidflow.model.request.video.VideoMetadataRequestModel;
 import com.saransh.vidflow.model.response.video.AddCommentResponseModel;
 import com.saransh.vidflow.model.response.video.VideoCardResponseModel;
@@ -124,8 +125,20 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional
+    public void updateComment(String videoId, String commentId, UpdateCommentRequestModel updateComment) {
+        log.debug("Updating comment with ID: {} with video ID: {}", commentId, videoId);
+        Video video = getVideoByIdHelper(videoId);
+        Comment comment = video.getComments().stream().filter(c -> c.getId().equals(commentId))
+                .findFirst().orElseThrow();
+        comment.setBody(updateComment.getBody());
+        videoRepository.save(video);
+        log.debug("Updated comment...");
+    }
+
+    @Override
+    @Transactional
     public void deleteComment(String videoId, String commentId) {
-        log.debug("Deleting comment with ID: {} from video with ID: {}", videoId, commentId);
+        log.debug("Deleting comment with ID: {} from video with ID: {}", commentId, videoId);
         Video video = getVideoByIdHelper(videoId);
         boolean status = video.getComments().removeIf(c -> c.getId().equals(commentId));
         videoRepository.save(video);
