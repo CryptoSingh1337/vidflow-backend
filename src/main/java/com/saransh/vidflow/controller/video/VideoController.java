@@ -1,5 +1,6 @@
 package com.saransh.vidflow.controller.video;
 
+import com.saransh.vidflow.model.request.video.CommentRequestModel;
 import com.saransh.vidflow.model.request.video.VideoMetadataRequestModel;
 import com.saransh.vidflow.model.response.video.UploadVideoResponseModel;
 import com.saransh.vidflow.model.response.video.VideoCardResponseModel;
@@ -60,5 +61,12 @@ public class VideoController {
     @GetMapping("/views/{videoId}")
     public void incrementViews(@PathVariable String videoId) {
         videoService.incrementViews(videoId);
+    }
+
+    @PostMapping("/{videoId}/comment")
+    public ResponseEntity<?> addCommentOnVideo(
+            @PathVariable String videoId,
+            @Validated @RequestBody CommentRequestModel commentRequestModel) {
+        return ResponseEntity.ok(videoService.addCommentToVideo(videoId, commentRequestModel));
     }
 }

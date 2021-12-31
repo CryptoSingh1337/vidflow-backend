@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * author: CryptoSingh1337
  */
-public interface VideoService {
+public interface VideoService extends CommentService {
 
     List<VideoCardResponseModel> getAllVideos(int page);
     List<VideoCardResponseModel> getAllTrendingVideos(int page);

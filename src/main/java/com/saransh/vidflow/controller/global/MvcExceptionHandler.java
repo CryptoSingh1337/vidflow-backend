@@ -74,4 +74,9 @@ public class MvcExceptionHandler {
     public ResponseEntity<?> handleUploadFailedException(UploadFailedException e) {
         return new ResponseEntity<>(new ErrorResponseModel(e.getMessage()), SERVICE_UNAVAILABLE);
     }
+
+    @ExceptionHandler(com.saransh.vidflow.exceptions.MongoWriteException.class)
+    public ResponseEntity<?> handleMongoWriteException(com.saransh.vidflow.exceptions.MongoWriteException e) {
+        return new ResponseEntity<>(new ErrorResponseModel(e.getMessage()), SERVICE_UNAVAILABLE);
+    }
 }
