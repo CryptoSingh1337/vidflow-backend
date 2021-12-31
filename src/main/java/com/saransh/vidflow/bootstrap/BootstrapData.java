@@ -76,31 +76,36 @@ public class BootstrapData implements CommandLineRunner {
 
     private Set<Comment> createCommentsSet() {
         Comment comment_1 = Comment.builder()
-                .username("CryptoSingh")
+                .username("test_1")
+                .channelName("CryptoSingh")
                 .body("Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
                 .createdAt(LocalDateTime.now())
                 .build();
 
         Comment comment_2 = Comment.builder()
-                .username("Dave2D")
+                .username("test_2")
+                .channelName("Dave2D")
                 .body("Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
                 .createdAt(LocalDateTime.now())
                 .build();
 
         Comment comment_3 = Comment.builder()
-                .username("Fireship")
+                .username("test_3")
+                .channelName("Fireship")
                 .body("Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
                 .createdAt(LocalDateTime.now())
                 .build();
 
         Comment comment_4 = Comment.builder()
-                .username("ElectroBOOM")
+                .username("test_4")
+                .channelName("ElectroBOOM")
                 .body("Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
                 .createdAt(LocalDateTime.now())
                 .build();
 
         Comment comment_5 = Comment.builder()
-                .username("Java Brains")
+                .username("test_5")
+                .channelName("Java Brains")
                 .body("Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
                 .createdAt(LocalDateTime.now())
                 .build();
