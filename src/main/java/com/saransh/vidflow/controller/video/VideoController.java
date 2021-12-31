@@ -3,10 +3,7 @@ package com.saransh.vidflow.controller.video;
 import com.saransh.vidflow.model.request.video.CommentRequestModel;
 import com.saransh.vidflow.model.request.video.UpdateCommentRequestModel;
 import com.saransh.vidflow.model.request.video.VideoMetadataRequestModel;
-import com.saransh.vidflow.model.response.video.AddCommentResponseModel;
-import com.saransh.vidflow.model.response.video.UploadVideoResponseModel;
-import com.saransh.vidflow.model.response.video.VideoCardResponseModel;
-import com.saransh.vidflow.model.response.video.WatchVideoResponseModel;
+import com.saransh.vidflow.model.response.video.*;
 import com.saransh.vidflow.services.video.VideoService;
 import com.saransh.vidflow.services.video.WrapperUploadOperationsService;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +34,12 @@ public class VideoController {
     @GetMapping("/trending")
     public ResponseEntity<List<VideoCardResponseModel>> getAllTrendingVideos(@RequestParam int page) {
         return ResponseEntity.ok(videoService.getAllTrendingVideos(page));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<SearchVideoResponseModel>> getAllSearchedVideos(@RequestParam String q,
+                                                                               @RequestParam int page) {
+        return ResponseEntity.ok(videoService.getAllSearchedVideos(q, page));
     }
 
     @GetMapping("/{videoId}")

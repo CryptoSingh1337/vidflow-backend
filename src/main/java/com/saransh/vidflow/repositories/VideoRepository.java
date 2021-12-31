@@ -11,4 +11,5 @@ import java.util.List;
  */
 public interface VideoRepository extends MongoRepository<Video, String> {
     List<Video> findAllByVideoStatusEquals(Pageable pageable, String videoStatus);
+    List<Video> findAllByTitleLike(Pageable pageable, String title);
 }

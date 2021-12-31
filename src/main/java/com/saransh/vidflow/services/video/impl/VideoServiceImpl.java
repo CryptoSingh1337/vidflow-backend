@@ -12,6 +12,7 @@ import com.saransh.vidflow.model.request.video.CommentRequestModel;
 import com.saransh.vidflow.model.request.video.UpdateCommentRequestModel;
 import com.saransh.vidflow.model.request.video.VideoMetadataRequestModel;
 import com.saransh.vidflow.model.response.video.AddCommentResponseModel;
+import com.saransh.vidflow.model.response.video.SearchVideoResponseModel;
 import com.saransh.vidflow.model.response.video.VideoCardResponseModel;
 import com.saransh.vidflow.model.response.video.WatchVideoResponseModel;
 import com.saransh.vidflow.repositories.VideoRepository;
@@ -64,6 +65,14 @@ public class VideoServiceImpl implements VideoService {
         return videoRepository.findAllByVideoStatusEquals(getAllTrendingVideosPageRequest(page),
                         VideoStatus.PUBLIC.name()).stream()
                 .map(videoMapper::videoToVideoCard)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SearchVideoResponseModel> getAllSearchedVideos(String q, int page) {
+        log.debug("Searching all the videos with title: {}", q);
+        return videoRepository.findAllByTitleLike(getAllVideosPageRequest(page), q).stream()
+                .map(videoMapper::videoToSearchVideoCard)
                 .collect(Collectors.toList());
     }
 
