@@ -18,6 +18,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * author: CryptoSingh1337
@@ -76,6 +77,7 @@ public class BootstrapData implements CommandLineRunner {
 
     private Set<Comment> createCommentsSet() {
         Comment comment_1 = Comment.builder()
+                .id(UUID.randomUUID().toString())
                 .username("test_1")
                 .channelName("CryptoSingh")
                 .body("Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
@@ -83,6 +85,7 @@ public class BootstrapData implements CommandLineRunner {
                 .build();
 
         Comment comment_2 = Comment.builder()
+                .id(UUID.randomUUID().toString())
                 .username("test_2")
                 .channelName("Dave2D")
                 .body("Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
@@ -90,6 +93,7 @@ public class BootstrapData implements CommandLineRunner {
                 .build();
 
         Comment comment_3 = Comment.builder()
+                .id(UUID.randomUUID().toString())
                 .username("test_3")
                 .channelName("Fireship")
                 .body("Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
@@ -97,6 +101,7 @@ public class BootstrapData implements CommandLineRunner {
                 .build();
 
         Comment comment_4 = Comment.builder()
+                .id(UUID.randomUUID().toString())
                 .username("test_4")
                 .channelName("ElectroBOOM")
                 .body("Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
@@ -104,6 +109,7 @@ public class BootstrapData implements CommandLineRunner {
                 .build();
 
         Comment comment_5 = Comment.builder()
+                .id(UUID.randomUUID().toString())
                 .username("test_5")
                 .channelName("Java Brains")
                 .body("Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
