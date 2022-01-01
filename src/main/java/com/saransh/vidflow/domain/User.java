@@ -29,6 +29,7 @@ public class User {
     private String password;
     private String channelName;
     private String profileImage;
+    private Integer subscribers;
     private Set<String> subscribedTo;
     private Set<String> videos;
     private Set<String> likedVideos;
@@ -58,6 +59,10 @@ public class User {
         this.videoHistory.add(videoId);
     }
 
+    public void incrementSubscribers() {
+        this.subscribers += 1;
+    }
+
     public boolean removeSubscription(String userId) {
         if (this.subscribedTo.isEmpty())
             return false;
@@ -80,5 +85,12 @@ public class User {
         if (this.videoHistory.isEmpty())
             return false;
         return this.videoHistory.remove(videoId);
+    }
+
+    public void decrementSubscribers() {
+        if(this.subscribers - 1 <= 0)
+            this.subscribers = 0;
+        else
+            this.subscribers -= 1;
     }
 }

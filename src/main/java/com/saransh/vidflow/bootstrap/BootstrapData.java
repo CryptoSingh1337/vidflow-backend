@@ -65,6 +65,7 @@ public class BootstrapData implements CommandLineRunner {
                     .username(String.format("%s_%d", "test", i))
                     .firstName("abc")
                     .lastName("abc")
+                    .subscribers(i * 457821)
                     .email("abc@xyz.com")
                     .password(encoder.encode("1234567890"))
                     .channelName(channelName)

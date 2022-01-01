@@ -1,6 +1,7 @@
 package com.saransh.vidflow.services.user.impl;
 
 import com.saransh.vidflow.domain.User;
+import com.saransh.vidflow.exceptions.ResourceNotFoundException;
 import com.saransh.vidflow.mapper.UserMapper;
 import com.saransh.vidflow.model.request.user.UserRequestModel;
 import com.saransh.vidflow.model.response.user.UserResponseModel;
@@ -55,10 +56,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String getChannelNameForUserId(String userId) {
+        return getUserById(userId).getChannelName();
+    }
+
+    @Override
+    public Integer getUserSubscribers(String userId) {
+        return getUserById(userId).getSubscribers();
+    }
+
+    @Override
     @Transactional
     public UserResponseModel insert(UserRequestModel userRequestModel) {
         User user = userMapper.userRequestModelToUser(userRequestModel);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setSubscribers(0);
         user.setProfileImage(String.format("https://avatars.dicebear.com/api/bottts/%s.svg", user.getUsername()));
         return userMapper.userToUserResponseModel(userRepository.save(user));
     }
@@ -72,6 +84,20 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userRequestModel.getEmail());
         user.setUsername(userRequestModel.getUsername());
         return userMapper.userToUserResponseModel(user);
+    }
+
+    @Override
+    @Transactional
+    public void updateSubscribers(String userId, boolean increase) {
+        User user = getUserById(userId);
+        if (increase) {
+            log.debug("Incrementing subscribers...");
+            user.incrementSubscribers();
+        } else {
+            log.debug("Decrementing subscribers...");
+            user.decrementSubscribers();
+        }
+        userRepository.save(user);
     }
 
     @Override
@@ -93,5 +119,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void delete(String username) {
         userRepository.deleteByUsername(username);
+    }
+
+    private User getUserById(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

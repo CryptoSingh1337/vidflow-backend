@@ -12,6 +12,7 @@ import com.saransh.vidflow.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.annotation.Validated;
@@ -52,6 +53,22 @@ public class UserController {
     @GetMapping(value = "/{username}/channel", produces = {"application/json"})
     public ResponseEntity<String> getChannelName(@PathVariable String username) {
         return ResponseEntity.ok(userService.getChannelNameOfAUser(username));
+    }
+
+    @GetMapping("/userId/{userId}/channel")
+    public ResponseEntity<String> getChannelNameForUserId(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.getChannelNameForUserId(userId));
+    }
+
+    @GetMapping("/userId/{userId}/subscribers")
+    public ResponseEntity<Integer> getSubscribersCount(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.getUserSubscribers(userId));
+    }
+
+    @Async
+    @PostMapping("/userId/{userId}/subscribers")
+    public void updateSubscribers(@PathVariable String userId, @RequestParam Boolean increase) {
+        userService.updateSubscribers(userId, increase);
     }
 
     @PostMapping(value ="/register", consumes = {"application/json"}, produces = {"application/json"})
