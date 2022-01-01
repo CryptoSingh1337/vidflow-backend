@@ -42,6 +42,12 @@ public class VideoController {
         return ResponseEntity.ok(videoService.getAllSearchedVideos(q, page));
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<VideoCardResponseModel>> getAllVideosByUsername(@PathVariable String userId,
+                                                                         @RequestParam int page) {
+        return ResponseEntity.ok(videoService.getAllVideosByUserId(userId, page));
+    }
+
     @GetMapping("/{videoId}")
     public ResponseEntity<WatchVideoResponseModel> getVideoById(@PathVariable String videoId) {
         return ResponseEntity.ok(videoService.getVideoById(videoId));

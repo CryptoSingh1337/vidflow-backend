@@ -18,6 +18,7 @@ public class WatchVideoResponseModel {
     private String id;
     private String title;
     private String channelName;
+    private String userId;
     private String description;
     private String videoUrl;
     private Long views;
