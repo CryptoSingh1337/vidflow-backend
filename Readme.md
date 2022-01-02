@@ -37,8 +37,6 @@ Go to the project directory
   cd vidflow-backend
 ```
 
-> **_Note_**: You have to run all these applications one by one. First run Discovery service, Config Server, ApiGateway and then other services
-
 Run verfiy goal
 
 ```bash
