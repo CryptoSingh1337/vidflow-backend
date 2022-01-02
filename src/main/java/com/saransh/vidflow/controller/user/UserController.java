@@ -57,17 +57,17 @@ public class UserController {
         return ResponseEntity.ok(userService.getChannelNameOfAUser(username));
     }
 
-    @GetMapping("/userId/{userId}/channel")
+    @GetMapping(value = "/userId/{userId}/channel", produces = {"application/json"})
     public ResponseEntity<String> getChannelNameForUserId(@PathVariable String userId) {
         return ResponseEntity.ok(userService.getChannelNameForUserId(userId));
     }
 
-    @GetMapping("/userId/{userId}/subscribers/count")
+    @GetMapping(value = "/userId/{userId}/subscribers/count", produces = {"application/json"})
     public ResponseEntity<Integer> getSubscribersCount(@PathVariable String userId) {
         return ResponseEntity.ok(userService.getUserSubscribersCount(userId));
     }
 
-    @GetMapping("/userId/{userId}/subscribed")
+    @GetMapping(value = "/userId/{userId}/subscribed", produces = {"application/json"})
     public ResponseEntity<List<SubscribedChannel>> getSubscribedChannels(@PathVariable String userId) {
         return ResponseEntity.ok(userService.getUserSubscribedChannels(userId));
     }

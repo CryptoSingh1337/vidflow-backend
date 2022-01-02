@@ -26,41 +26,43 @@ public class VideoController {
     private final VideoService videoService;
     private final WrapperUploadOperationsService uploadService;
 
-    @GetMapping
+    @GetMapping(value = "", produces = {"application/json"})
     public ResponseEntity<List<VideoCardResponseModel>> getAllVideos(@RequestParam int page) {
         return ResponseEntity.ok(videoService.getAllVideos(page));
     }
 
-    @GetMapping("/trending")
+    @GetMapping(value = "/trending", produces = {"application/json"})
     public ResponseEntity<List<VideoCardResponseModel>> getAllTrendingVideos(@RequestParam int page) {
         return ResponseEntity.ok(videoService.getAllTrendingVideos(page));
     }
 
-    @GetMapping("/search")
+    @GetMapping(value = "/search", produces = {"application/json"})
     public ResponseEntity<List<SearchVideoResponseModel>> getAllSearchedVideos(@RequestParam String q,
                                                                                @RequestParam int page) {
         return ResponseEntity.ok(videoService.getAllSearchedVideos(q, page));
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping(value = "/user/{userId}", produces = {"application/json"})
     public ResponseEntity<List<VideoCardResponseModel>> getAllVideosByUsername(@PathVariable String userId,
-                                                                         @RequestParam int page) {
+                                                                               @RequestParam int page) {
         return ResponseEntity.ok(videoService.getAllVideosByUserId(userId, page));
     }
 
-    @GetMapping("/{videoId}")
+    @GetMapping(value = "/{videoId}", produces = {"application/json"})
     public ResponseEntity<WatchVideoResponseModel> getVideoById(@PathVariable String videoId) {
         return ResponseEntity.ok(videoService.getVideoById(videoId));
     }
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", produces = {"application/json"})
     public ResponseEntity<UploadVideoResponseModel> uploadVideo(
             @RequestParam("video") MultipartFile video,
             @RequestParam("thumbnail") MultipartFile thumbnail) {
         return ResponseEntity.ok(uploadService.uploadVideoAndThumbnail(video, thumbnail));
     }
 
-    @PostMapping("/{videoId}/video-metadata")
+    @PostMapping(value = "/{videoId}/video-metadata",
+            consumes = {"application/json"},
+            produces = {"application/json"})
     public ResponseEntity<?> updateVideoMetadata(
             @PathVariable String videoId,
             @Validated @RequestBody VideoMetadataRequestModel videoMetadata) {
@@ -74,7 +76,9 @@ public class VideoController {
         videoService.incrementViews(videoId);
     }
 
-    @PostMapping("/{videoId}/comment")
+    @PostMapping(value = "/{videoId}/comment",
+            consumes = {"application/json"},
+            produces = {"application/json"})
     public ResponseEntity<AddCommentResponseModel> addCommentOnVideo(
             @PathVariable String videoId,
             @Validated @RequestBody CommentRequestModel commentRequestModel) {
@@ -82,7 +86,7 @@ public class VideoController {
     }
 
 
-    @PutMapping("/{videoId}/comment/{commentId}")
+    @PutMapping(value = "/{videoId}/comment/{commentId}", consumes = {"application/json"})
     public ResponseEntity<?> updateComment(@PathVariable String videoId,
                                            @PathVariable String commentId,
                                            @Validated @RequestBody UpdateCommentRequestModel updateComment) {
