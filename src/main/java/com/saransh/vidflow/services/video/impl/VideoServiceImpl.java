@@ -71,7 +71,7 @@ public class VideoServiceImpl implements VideoService {
     @Override
     public List<SearchVideoResponseModel> getAllSearchedVideos(String q, int page) {
         log.debug("Searching all the videos with title: {}", q);
-        return videoRepository.findAllByTitleLike(getAllVideosPageRequest(page), q).stream()
+        return videoRepository.findAllByTitleContainingIgnoreCase(getAllVideosPageRequest(page), q).stream()
                 .map(videoMapper::videoToSearchVideoCard)
                 .collect(Collectors.toList());
     }
