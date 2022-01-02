@@ -1,5 +1,6 @@
 package com.saransh.vidflow.mapper;
 
+import com.saransh.vidflow.domain.SubscribedChannel;
 import com.saransh.vidflow.domain.User;
 import com.saransh.vidflow.model.request.user.UserRequestModel;
 import com.saransh.vidflow.model.response.user.UserResponseModel;
@@ -13,4 +14,5 @@ public interface UserMapper {
 
     User userRequestModelToUser(UserRequestModel userRequestModel);
     UserResponseModel userToUserResponseModel(User user);
+    SubscribedChannel userToSubscribedChannel(User user);
 }

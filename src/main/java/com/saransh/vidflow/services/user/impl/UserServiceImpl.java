@@ -78,18 +78,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<SubscribedChannel> getUserSubscribedChannels(String userId) {
         log.debug("Retrieving all the subscribed channels for userId: {}", userId);
-        Set<SubscribedChannel> subscribedChannels = getUserById(userId).getSubscribedTo();
+        Set<User> subscribedChannels = getUserById(userId).getSubscribedTo();
         if (subscribedChannels != null)
-            return new ArrayList<>(subscribedChannels);
+            return subscribedChannels.stream()
+                    .map(userMapper::userToSubscribedChannel)
+                    .collect(Collectors.toList());
         return new ArrayList<>();
     }
 
     @Override
     public boolean getSubscribedChannelStatus(String userId, String subscribedChannelId) {
         log.debug("Checking subscribed status for user ID: {}", userId);
-        Set<SubscribedChannel> subscribedChannels = getUserById(userId).getSubscribedTo();
-        if (subscribedChannels != null)
-            return subscribedChannels.contains(SubscribedChannel.builder().userId(subscribedChannelId).build());
+        User user = getUserById(userId);
+        User subscribedChannel = getUserById(subscribedChannelId);
+        if (user.getSubscribedTo() != null)
+            return user.getSubscribedTo().contains(subscribedChannel);
         return false;
     }
 
@@ -131,15 +134,13 @@ public class UserServiceImpl implements UserService {
         log.debug("Updating subscribed channels for user ID: {}", userId);
         User user = getUserById(userId);
         User channelToSubscribeUser = getUserById(subscribeToUserId);
-        SubscribedChannel channelToBeSubscribed =
-                new SubscribedChannel(subscribeToUserId, getChannelNameForUserId(subscribeToUserId));
         if (increase) {
             log.debug("Incrementing subscribers...");
-            user.addSubscription(channelToBeSubscribed);
+            user.addSubscription(channelToSubscribeUser);
             channelToSubscribeUser.incrementSubscribers();
         } else {
             log.debug("Decrementing subscribers...");
-            user.removeSubscription(subscribeToUserId);
+            user.removeSubscription(channelToSubscribeUser);
             channelToSubscribeUser.decrementSubscribers();
         }
         userRepository.save(user);

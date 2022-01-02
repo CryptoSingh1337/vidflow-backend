@@ -32,17 +32,18 @@ public class User {
     private String channelName;
     private String profileImage;
     private Integer subscribers;
-    private Set<SubscribedChannel> subscribedTo;
+    @DBRef(lazy = true)
+    private Set<User> subscribedTo;
     private Set<String> videos;
     @DBRef(lazy = true)
     private Set<Video> likedVideos;
     @DBRef(lazy = true)
     private Set<Video> videoHistory;
 
-    public void addSubscription(SubscribedChannel channel) {
+    public void addSubscription(User user) {
         if (this.subscribedTo == null)
             this.subscribedTo = new HashSet<>();
-        this.subscribedTo.add(channel);
+        this.subscribedTo.add(user);
     }
 
     public void addVideo(String videoId) {
@@ -67,10 +68,11 @@ public class User {
         this.subscribers += 1;
     }
 
-    public void removeSubscription(String userId) {
-        if (this.subscribedTo.isEmpty())
-            return;
-        this.subscribedTo.removeIf(c -> c.getUserId().equals(userId));
+    public boolean removeSubscription(User user) {
+        if (this.subscribedTo == null || this.subscribedTo.isEmpty())
+            return false;
+        else
+            return this.subscribedTo.remove(user);
     }
 
     public boolean removeVideo(String videoId) {
@@ -80,15 +82,17 @@ public class User {
     }
 
     public boolean removeLikedVideo(Video video) {
-        if (this.likedVideos.isEmpty())
+        if (this.likedVideos == null || this.likedVideos.isEmpty())
             return false;
-        return this.likedVideos.remove(video);
+        else
+            return this.likedVideos.remove(video);
     }
 
     public boolean removeVideoHistory(Video video) {
-        if (this.videoHistory.isEmpty())
+        if (this.videoHistory == null || this.videoHistory.isEmpty())
             return false;
-        return this.videoHistory.remove(video);
+        else
+            return this.videoHistory.remove(video);
     }
 
     public void decrementSubscribers() {
@@ -96,5 +100,15 @@ public class User {
             this.subscribers = 0;
         else
             this.subscribers -= 1;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof User && this.id.equals(((User) obj).id);
     }
 }
