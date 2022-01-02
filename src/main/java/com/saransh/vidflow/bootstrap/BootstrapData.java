@@ -130,7 +130,7 @@ public class BootstrapData implements CommandLineRunner {
                 .title("Lorem Ipsum is simply dummy text of the printing and typesetting.")
                 .userId(users.get(0).getId())
                 .username(users.get(0).getUsername())
-                .channelName("CryptoSingh")
+                .channelName(users.get(0).getChannelName())
                 .thumbnail("https://source.unsplash.com/1280x720/?technology")
                 .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
@@ -151,7 +151,7 @@ public class BootstrapData implements CommandLineRunner {
                 .title("It is a long established fact that a reader will be distracted.")
                 .userId(users.get(1).getId())
                 .username(users.get(1).getUsername())
-                .channelName("Dave2D")
+                .channelName(users.get(0).getChannelName())
                 .thumbnail("https://source.unsplash.com/1280x720/?news")
                 .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
@@ -172,7 +172,7 @@ public class BootstrapData implements CommandLineRunner {
                 .title("Contrary to popular belief, Lorem Ipsum is not simply random text.")
                 .userId(users.get(2).getId())
                 .username(users.get(2).getUsername())
-                .channelName("Fireship")
+                .channelName(users.get(0).getChannelName())
                 .thumbnail("https://source.unsplash.com/1280x720/?gaming")
                 .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
@@ -193,7 +193,7 @@ public class BootstrapData implements CommandLineRunner {
                 .title("Contrary to popular belief, Lorem Ipsum is not simply random text.")
                 .userId(users.get(3).getId())
                 .username(users.get(3).getUsername())
-                .channelName("SomeOrdinaryGamer")
+                .channelName(users.get(0).getChannelName())
                 .thumbnail("https://source.unsplash.com/1280x720/?fashion")
                 .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
@@ -214,7 +214,7 @@ public class BootstrapData implements CommandLineRunner {
                 .title("There are many variations of passages of Lorem Ipsum available.")
                 .userId(users.get(4).getId())
                 .username(users.get(4).getUsername())
-                .channelName("ElectroBOOM")
+                .channelName(users.get(0).getChannelName())
                 .thumbnail("https://source.unsplash.com/1280x720/?personal")
                 .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
