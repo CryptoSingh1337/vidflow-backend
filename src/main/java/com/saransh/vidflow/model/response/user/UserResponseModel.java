@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class UserResponseModel {
+    private String id;
     private String username;
     private String channelName;
     private String firstName;

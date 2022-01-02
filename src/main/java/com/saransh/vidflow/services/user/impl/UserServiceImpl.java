@@ -1,5 +1,6 @@
 package com.saransh.vidflow.services.user.impl;
 
+import com.saransh.vidflow.domain.SubscribedChannel;
 import com.saransh.vidflow.domain.User;
 import com.saransh.vidflow.exceptions.ResourceNotFoundException;
 import com.saransh.vidflow.mapper.UserMapper;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * author: CryptoSingh1337
@@ -61,8 +63,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Integer getUserSubscribers(String userId) {
+    public Integer getUserSubscribersCount(String userId) {
         return getUserById(userId).getSubscribers();
+    }
+
+    @Override
+    public List<SubscribedChannel> getUserSubscribedChannels(String userId) {
+        log.debug("Retrieving all the subscribed channels for userId: {}", userId);
+        return new ArrayList<>(getUserById(userId).getSubscribedTo());
+    }
+
+    @Override
+    public boolean getSubscribedChannelStatus(String userId, String subscribedChannelId) {
+        log.debug("Checking subscribed status for user ID: {}", userId);
+        return getUserById(userId).getSubscribedTo()
+                .contains(SubscribedChannel.builder().userId(subscribedChannelId).build());
     }
 
     @Override
@@ -88,16 +103,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateSubscribers(String userId, boolean increase) {
+    public void updateSubscribers(String userId, String subscribeToUserId, boolean increase) {
+        log.debug("Updating subscribed channels for user ID: {}", userId);
         User user = getUserById(userId);
+        User channelToSubscribeUser = getUserById(subscribeToUserId);
+        SubscribedChannel channelToBeSubscribed =
+                new SubscribedChannel(subscribeToUserId, getChannelNameForUserId(subscribeToUserId));
         if (increase) {
             log.debug("Incrementing subscribers...");
-            user.incrementSubscribers();
+            user.addSubscription(channelToBeSubscribed);
+            channelToSubscribeUser.incrementSubscribers();
         } else {
             log.debug("Decrementing subscribers...");
-            user.decrementSubscribers();
+            user.removeSubscription(subscribeToUserId);
+            channelToSubscribeUser.decrementSubscribers();
         }
         userRepository.save(user);
+        userRepository.save(channelToSubscribeUser);
     }
 
     @Override

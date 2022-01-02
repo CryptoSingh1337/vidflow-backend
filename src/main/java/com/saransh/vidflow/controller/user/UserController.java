@@ -4,6 +4,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.saransh.vidflow.domain.SubscribedChannel;
 import com.saransh.vidflow.model.request.user.UserRequestModel;
 import com.saransh.vidflow.model.response.ErrorResponseModel;
 import com.saransh.vidflow.model.response.user.UserResponseModel;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -60,15 +62,30 @@ public class UserController {
         return ResponseEntity.ok(userService.getChannelNameForUserId(userId));
     }
 
-    @GetMapping("/userId/{userId}/subscribers")
+    @GetMapping("/userId/{userId}/subscribers/count")
     public ResponseEntity<Integer> getSubscribersCount(@PathVariable String userId) {
-        return ResponseEntity.ok(userService.getUserSubscribers(userId));
+        return ResponseEntity.ok(userService.getUserSubscribersCount(userId));
+    }
+
+    @GetMapping("/userId/{userId}/subscribed")
+    public ResponseEntity<List<SubscribedChannel>> getSubscribedChannels(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.getUserSubscribedChannels(userId));
+    }
+
+    @GetMapping("/userId/{userId}/subscribed/{subscribedUserId}")
+    public ResponseEntity<?> getSubscribedChannelStatus(@PathVariable String userId,
+                                                        @PathVariable String subscribedUserId) {
+        boolean status = userService.getSubscribedChannelStatus(userId, subscribedUserId);
+        if (status) return ResponseEntity.ok(null);
+        return ResponseEntity.notFound().build();
     }
 
     @Async
     @PostMapping("/userId/{userId}/subscribers")
-    public void updateSubscribers(@PathVariable String userId, @RequestParam Boolean increase) {
-        userService.updateSubscribers(userId, increase);
+    public void updateSubscribers(@PathVariable String userId,
+                                  @RequestParam String subscribeToUserId,
+                                  @RequestParam Boolean increase) {
+        userService.updateSubscribers(userId, subscribeToUserId, increase);
     }
 
     @PostMapping(value ="/register", consumes = {"application/json"}, produces = {"application/json"})

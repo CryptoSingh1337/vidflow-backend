@@ -30,15 +30,15 @@ public class User {
     private String channelName;
     private String profileImage;
     private Integer subscribers;
-    private Set<String> subscribedTo;
+    private Set<SubscribedChannel> subscribedTo;
     private Set<String> videos;
     private Set<String> likedVideos;
     private Set<String> videoHistory;
 
-    public void addSubscription(String userId) {
+    public void addSubscription(SubscribedChannel channel) {
         if (this.subscribedTo == null)
             this.subscribedTo = new HashSet<>();
-        this.subscribedTo.add(userId);
+        this.subscribedTo.add(channel);
     }
 
     public void addVideo(String videoId) {
@@ -63,10 +63,10 @@ public class User {
         this.subscribers += 1;
     }
 
-    public boolean removeSubscription(String userId) {
+    public void removeSubscription(String userId) {
         if (this.subscribedTo.isEmpty())
-            return false;
-        return this.subscribedTo.remove(userId);
+            return;
+        this.subscribedTo.removeIf(c -> c.getUserId().equals(userId));
     }
 
     public boolean removeVideo(String videoId) {
