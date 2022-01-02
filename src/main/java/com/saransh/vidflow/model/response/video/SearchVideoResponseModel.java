@@ -16,6 +16,7 @@ public class SearchVideoResponseModel {
 
     private String id;
     private String channelName;
+    private String userId;
     private LocalDateTime createdAt;
     private String thumbnail;
     private String title;
