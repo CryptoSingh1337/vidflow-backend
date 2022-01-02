@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * author: CryptoSingh1337
@@ -70,14 +71,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<SubscribedChannel> getUserSubscribedChannels(String userId) {
         log.debug("Retrieving all the subscribed channels for userId: {}", userId);
-        return new ArrayList<>(getUserById(userId).getSubscribedTo());
+        Set<SubscribedChannel> subscribedChannels = getUserById(userId).getSubscribedTo();
+        if (subscribedChannels != null)
+            return new ArrayList<>(subscribedChannels);
+        return new ArrayList<>();
     }
 
     @Override
     public boolean getSubscribedChannelStatus(String userId, String subscribedChannelId) {
         log.debug("Checking subscribed status for user ID: {}", userId);
-        return getUserById(userId).getSubscribedTo()
-                .contains(SubscribedChannel.builder().userId(subscribedChannelId).build());
+        Set<SubscribedChannel> subscribedChannels = getUserById(userId).getSubscribedTo();
+        if (subscribedChannels != null)
+            return subscribedChannels.contains(SubscribedChannel.builder().userId(subscribedChannelId).build());
+        return false;
     }
 
     @Override
