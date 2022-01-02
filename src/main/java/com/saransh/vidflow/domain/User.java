@@ -3,9 +3,11 @@ package com.saransh.vidflow.domain;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -32,8 +34,10 @@ public class User {
     private Integer subscribers;
     private Set<SubscribedChannel> subscribedTo;
     private Set<String> videos;
-    private Set<String> likedVideos;
-    private Set<String> videoHistory;
+    @DBRef(lazy = true)
+    private Set<Video> likedVideos;
+    @DBRef(lazy = true)
+    private Set<Video> videoHistory;
 
     public void addSubscription(SubscribedChannel channel) {
         if (this.subscribedTo == null)
@@ -47,16 +51,16 @@ public class User {
         this.videos.add(videoId);
     }
 
-    public void addLikedVideo(String videoId) {
+    public void addLikedVideo(Video video) {
         if (this.likedVideos == null)
-            this.likedVideos = new HashSet<>();
-        this.likedVideos.add(videoId);
+            this.likedVideos = new LinkedHashSet<>();
+        this.likedVideos.add(video);
     }
 
-    public void addVideoHistory(String videoId) {
+    public void addVideoHistory(Video video) {
         if (this.videoHistory == null)
-            this.videoHistory = new HashSet<>();
-        this.videoHistory.add(videoId);
+            this.videoHistory = new LinkedHashSet<>();
+        this.videoHistory.add(video);
     }
 
     public void incrementSubscribers() {
@@ -75,16 +79,16 @@ public class User {
         return this.videos.remove(videoId);
     }
 
-    public boolean removeLikedVideo(String videoId) {
+    public boolean removeLikedVideo(Video video) {
         if (this.likedVideos.isEmpty())
             return false;
-        return this.likedVideos.remove(videoId);
+        return this.likedVideos.remove(video);
     }
 
-    public boolean removeVideoHistory(String videoId) {
+    public boolean removeVideoHistory(Video video) {
         if (this.videoHistory.isEmpty())
             return false;
-        return this.videoHistory.remove(videoId);
+        return this.videoHistory.remove(video);
     }
 
     public void decrementSubscribers() {

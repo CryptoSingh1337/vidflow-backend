@@ -2,11 +2,15 @@ package com.saransh.vidflow.services.user.impl;
 
 import com.saransh.vidflow.domain.SubscribedChannel;
 import com.saransh.vidflow.domain.User;
+import com.saransh.vidflow.domain.Video;
 import com.saransh.vidflow.exceptions.ResourceNotFoundException;
 import com.saransh.vidflow.mapper.UserMapper;
+import com.saransh.vidflow.mapper.VideoMapper;
 import com.saransh.vidflow.model.request.user.UserRequestModel;
 import com.saransh.vidflow.model.response.user.UserResponseModel;
+import com.saransh.vidflow.model.response.video.SearchVideoResponseModel;
 import com.saransh.vidflow.repositories.UserRepository;
+import com.saransh.vidflow.repositories.VideoRepository;
 import com.saransh.vidflow.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * author: CryptoSingh1337
@@ -29,7 +34,9 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final VideoRepository videoRepository;
     private final UserMapper userMapper;
+    private final VideoMapper videoMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -87,6 +94,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<SearchVideoResponseModel> getWatchHistory(String userId, int page) {
+        log.debug("Retrieving watch history for user with ID: {}", userId);
+        User user = getUserById(userId);
+        if (user.getVideoHistory() != null)
+            return user.getVideoHistory().stream()
+                    .map(videoMapper::videoToSearchVideoCard)
+                    .collect(Collectors.toList());
+        return new ArrayList<>();
+    }
+
+    @Override
     @Transactional
     public UserResponseModel insert(UserRequestModel userRequestModel) {
         User user = userMapper.userRequestModelToUser(userRequestModel);
@@ -130,6 +148,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public void addWatchHistory(String userId, String videoId) {
+        log.debug("Adding video with ID: {} to watch history", videoId);
+        User user = getUserById(userId);
+        Video video = getVideoByIdHelper(videoId);
+        user.addVideoHistory(video);
+        userRepository.save(user);
+        log.debug("Added video to the watch history of user ID: {}", user.getId());
+    }
+
+    @Override
+    @Transactional
     public void updatePassword(String username, String changedPassword) {
         User user = findUserByUsername(username);
         user.setPassword(passwordEncoder.encode(changedPassword));
@@ -152,5 +181,10 @@ public class UserServiceImpl implements UserService {
     private User getUserById(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private Video getVideoByIdHelper(String videoId) {
+        return videoRepository.findById(videoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
     }
 }

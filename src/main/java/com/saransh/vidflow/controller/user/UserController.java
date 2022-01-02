@@ -8,6 +8,7 @@ import com.saransh.vidflow.domain.SubscribedChannel;
 import com.saransh.vidflow.model.request.user.UserRequestModel;
 import com.saransh.vidflow.model.response.ErrorResponseModel;
 import com.saransh.vidflow.model.response.user.UserResponseModel;
+import com.saransh.vidflow.model.response.video.SearchVideoResponseModel;
 import com.saransh.vidflow.services.user.UserService;
 import com.saransh.vidflow.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
@@ -80,12 +81,24 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/userId/{userId}/watch/history")
+    public ResponseEntity<List<SearchVideoResponseModel>> getWatchHistory(@PathVariable String userId,
+                                                                          @RequestParam int page) {
+        return ResponseEntity.ok(userService.getWatchHistory(userId, page));
+    }
+
     @Async
     @PostMapping("/userId/{userId}/subscribers")
     public void updateSubscribers(@PathVariable String userId,
                                   @RequestParam String subscribeToUserId,
                                   @RequestParam Boolean increase) {
         userService.updateSubscribers(userId, subscribeToUserId, increase);
+    }
+
+    @Async
+    @PostMapping("/userId/{userId}/video/{videoId}")
+    public void addWatchHistory(@PathVariable String userId, @PathVariable String videoId) {
+        userService.addWatchHistory(userId, videoId);
     }
 
     @PostMapping(value ="/register", consumes = {"application/json"}, produces = {"application/json"})
