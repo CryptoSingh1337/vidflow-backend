@@ -18,7 +18,7 @@ An open source content sharing platform (YouTube clone).
 
 - JWT token based user authentication and authorization with refresh token.
 - Used pagination and sorting from server side.
-- Stores videos on AWS S3.
+- Stores videos on Microsoft azure blob storage.
 - User can watch/explore videos without authentication and can upload, delete, update thumbnail, title, description of a video.
 - User can subscribe to a channel and will receive notifications for videos.
 - User can like/dislike, share a video.
@@ -36,8 +36,6 @@ Go to the project directory
 ```bash
   cd vidflow-backend
 ```
-
-> **_Note_**: You have to run all these applications one by one. First run Discovery service, Config Server, ApiGateway and then other services
 
 Run verfiy goal
 
@@ -70,5 +68,6 @@ Run Spring Boot application (default port: 8080 or mentioned in `application.pro
   - Spring Data Mongo
   - Spring Data Redis
   - Spring Security
+  - Microsoft Azure Blob Storage
   - **Deployment**:
-    - Amazon AWS
+    - Heroku
