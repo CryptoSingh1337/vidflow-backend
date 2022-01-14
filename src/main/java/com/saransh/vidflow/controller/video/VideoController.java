@@ -43,7 +43,7 @@ public class VideoController {
     }
 
     @GetMapping(value = "/user/{userId}", produces = {"application/json"})
-    public ResponseEntity<List<VideoCardResponseModel>> getAllVideosByUsername(@PathVariable String userId,
+    public ResponseEntity<List<VideoCardResponseModel>> getAllVideosByUserId(@PathVariable String userId,
                                                                                @RequestParam int page) {
         return ResponseEntity.ok(videoService.getAllVideosByUserId(userId, page));
     }
