@@ -153,9 +153,13 @@ public class UserServiceImpl implements UserService {
         log.debug("Adding video with ID: {} to watch history", videoId);
         User user = getUserById(userId);
         Video video = getVideoByIdHelper(videoId);
-        user.addVideoHistory(video);
-        userRepository.save(user);
-        log.debug("Added video to the watch history of user ID: {}", user.getId());
+        if (!user.getVideoHistory().contains(video)) {
+            user.addVideoHistory(video);
+            userRepository.save(user);
+            log.debug("Added video to the watch history of user ID: {}", user.getId());
+        } else {
+            log.debug("Video is already added to the watch history");
+        }
     }
 
     @Override
