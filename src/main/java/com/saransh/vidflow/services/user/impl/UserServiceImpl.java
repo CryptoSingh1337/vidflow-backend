@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Integer getUserSubscribersCount(String userId) {
-        return getUserById(userId).getSubscribers();
+        return getUserById(userId).getSubscribersCount();
     }
 
     @Override
@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseModel insert(UserRequestModel userRequestModel) {
         User user = userMapper.userRequestModelToUser(userRequestModel);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setSubscribers(0);
+        user.setSubscribersCount(0);
         user.setProfileImage(String.format("https://avatars.dicebear.com/api/bottts/%s.svg", user.getUsername()));
         return userMapper.userToUserResponseModel(userRepository.save(user));
     }
@@ -134,17 +134,24 @@ public class UserServiceImpl implements UserService {
         log.debug("Updating subscribed channels for user ID: {}", userId);
         User user = getUserById(userId);
         User channelToSubscribeUser = getUserById(subscribeToUserId);
-        if (increase) {
-            log.debug("Incrementing subscribers...");
-            user.addSubscription(channelToSubscribeUser);
-            channelToSubscribeUser.incrementSubscribers();
-        } else {
-            log.debug("Decrementing subscribers...");
-            user.removeSubscription(channelToSubscribeUser);
-            channelToSubscribeUser.decrementSubscribers();
+        if (!user.getId().equals(channelToSubscribeUser.getId())) {
+            if (increase) {
+                log.debug("Incrementing subscribers...");
+                user.addSubscription(channelToSubscribeUser);
+                channelToSubscribeUser.addSubscriber(user);
+                channelToSubscribeUser.changeSubscriberCount();
+                userRepository.save(user);
+                userRepository.save(channelToSubscribeUser);
+            } else {
+                log.debug("Decrementing subscribers...");
+                if (user.removeSubscription(channelToSubscribeUser)) {
+                    channelToSubscribeUser.removeSubscriber(user);
+                    channelToSubscribeUser.changeSubscriberCount();
+                    userRepository.save(user);
+                    userRepository.save(channelToSubscribeUser);
+                }
+            }
         }
-        userRepository.save(user);
-        userRepository.save(channelToSubscribeUser);
     }
 
     @Override
