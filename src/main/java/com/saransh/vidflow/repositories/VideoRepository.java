@@ -13,4 +13,5 @@ public interface VideoRepository extends MongoRepository<Video, String> {
     List<Video> findAllByVideoStatusEquals(Pageable pageable, String videoStatus);
     List<Video> findAllByTitleContainingIgnoreCase(Pageable pageable, String title);
     List<Video> findAllByUserId(Pageable pageable, String userId);
+    List<Video> findAllByUserId(String userId);
 }

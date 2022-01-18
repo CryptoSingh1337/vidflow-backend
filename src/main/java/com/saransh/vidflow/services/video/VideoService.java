@@ -2,6 +2,7 @@ package com.saransh.vidflow.services.video;
 
 import com.saransh.vidflow.model.request.video.VideoMetadataRequestModel;
 import com.saransh.vidflow.model.response.video.SearchVideoResponseModel;
+import com.saransh.vidflow.model.response.video.UserVideoCardResponseModel;
 import com.saransh.vidflow.model.response.video.VideoCardResponseModel;
 import com.saransh.vidflow.model.response.video.WatchVideoResponseModel;
 
@@ -16,6 +17,7 @@ public interface VideoService extends CommentService {
     List<VideoCardResponseModel> getAllTrendingVideos(int page);
     List<SearchVideoResponseModel> getAllSearchedVideos(String q, int page);
     List<VideoCardResponseModel> getAllVideosByUserId(String userId, int page);
+    List<UserVideoCardResponseModel> getAllVideosByUserId(String userId);
     WatchVideoResponseModel getVideoById(String id);
     void insert(String videoId, VideoMetadataRequestModel videoMetadataRequestModel);
     void incrementViews(String videoId);
