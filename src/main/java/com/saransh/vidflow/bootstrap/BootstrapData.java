@@ -40,6 +40,37 @@ public class BootstrapData implements CommandLineRunner {
         if (userRepository.count() == 0) {
             log.debug("Creating sample users...");
             userRepository.saveAll(createUsers()).forEach(users::add);
+            User user_1 = users.get(0);
+            User user_2 = users.get(1);
+            User user_3 = users.get(2);
+            User user_4 = users.get(3);
+            User user_5 = users.get(4);
+            User user_6 = users.get(5);
+
+            user_1.setSubscribedTo(Set.of(user_2, user_3, user_4, user_5, user_6));
+            user_1.setSubscribers(Set.of(user_2, user_3, user_4, user_5, user_6));
+            user_1.changeSubscriberCount();
+
+            user_2.setSubscribedTo(Set.of(user_1, user_3, user_4, user_5, user_6));
+            user_2.setSubscribers(Set.of(user_1, user_3, user_4, user_5, user_6));
+            user_2.changeSubscriberCount();
+
+            user_3.setSubscribedTo(Set.of(user_2, user_1, user_4, user_5, user_6));
+            user_3.setSubscribers(Set.of(user_2, user_1, user_4, user_5, user_6));
+            user_3.changeSubscriberCount();
+
+            user_4.setSubscribedTo(Set.of(user_2, user_3, user_1, user_5, user_6));
+            user_4.setSubscribers(Set.of(user_2, user_3, user_1, user_5, user_6));
+            user_4.changeSubscriberCount();
+
+            user_5.setSubscribedTo(Set.of(user_2, user_3, user_4, user_1, user_6));
+            user_5.setSubscribers(Set.of(user_2, user_3, user_4, user_1, user_6));
+            user_5.changeSubscriberCount();
+
+            user_6.setSubscribedTo(Set.of(user_2, user_3, user_4, user_5, user_1));
+            user_6.setSubscribers(Set.of(user_2, user_3, user_4, user_5, user_1));
+            user_6.changeSubscriberCount();
+            userRepository.saveAll(users);
         }
         log.debug("Total users: {}", userRepository.count());
         if (videoRepository.count() == 0) {
@@ -66,7 +97,7 @@ public class BootstrapData implements CommandLineRunner {
                     .username(String.format("%s_%d", "test", i))
                     .firstName("abc")
                     .lastName("abc")
-                    .subscribers(i * 457821)
+                    .subscribersCount(0)
                     .email("abc@xyz.com")
                     .password(encoder.encode("1234567890"))
                     .channelName(channelName)
