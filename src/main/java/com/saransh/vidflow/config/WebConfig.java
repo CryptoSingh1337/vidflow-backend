@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("https://vidflow.vercel.app")
+                .allowedOrigins("http://localhost:3000", "https://vidflow.vercel.app", "https://vidflow-client.herokuapp.com")
                 .allowedMethods("GET", "POST", "DELETE", "PUT");
     }
 }
