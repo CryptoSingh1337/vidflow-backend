@@ -31,14 +31,19 @@ public class User {
     private String password;
     private String channelName;
     private String profileImage;
-    private Integer subscribers;
+    private Integer subscribersCount;
     @DBRef(lazy = true)
     private Set<User> subscribedTo;
-    private Set<String> videos;
+    @DBRef(lazy = true)
+    private Set<User> subscribers;
     @DBRef(lazy = true)
     private Set<Video> likedVideos;
     @DBRef(lazy = true)
     private Set<Video> videoHistory;
+
+    public void changeSubscriberCount() {
+        this.subscribersCount = this.subscribers.size();
+    }
 
     public void addSubscription(User user) {
         if (this.subscribedTo == null)
@@ -46,10 +51,10 @@ public class User {
         this.subscribedTo.add(user);
     }
 
-    public void addVideo(String videoId) {
-        if (this.videos == null)
-            this.videos = new HashSet<>();
-        this.videos.add(videoId);
+    public void addSubscriber(User user) {
+        if (this.subscribers == null)
+            this.subscribers = new HashSet<>();
+        this.subscribers.add(user);
     }
 
     public void addLikedVideo(Video video) {
@@ -64,21 +69,16 @@ public class User {
         this.videoHistory.add(video);
     }
 
-    public void incrementSubscribers() {
-        this.subscribers += 1;
-    }
-
     public boolean removeSubscription(User user) {
         if (this.subscribedTo == null || this.subscribedTo.isEmpty())
             return false;
-        else
-            return this.subscribedTo.remove(user);
+        return this.subscribedTo.remove(user);
     }
 
-    public boolean removeVideo(String videoId) {
-        if (this.videos.isEmpty())
+    public boolean removeSubscriber(User user) {
+        if (this.subscribers == null || this.subscribers.isEmpty())
             return false;
-        return this.videos.remove(videoId);
+        return this.subscribers.remove(user);
     }
 
     public boolean removeLikedVideo(Video video) {
@@ -86,20 +86,6 @@ public class User {
             return false;
         else
             return this.likedVideos.remove(video);
-    }
-
-    public boolean removeVideoHistory(Video video) {
-        if (this.videoHistory == null || this.videoHistory.isEmpty())
-            return false;
-        else
-            return this.videoHistory.remove(video);
-    }
-
-    public void decrementSubscribers() {
-        if(this.subscribers - 1 <= 0)
-            this.subscribers = 0;
-        else
-            this.subscribers -= 1;
     }
 
     @Override
