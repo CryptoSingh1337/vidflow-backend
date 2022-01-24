@@ -43,8 +43,9 @@ public class Video {
         this.views += 1;
     }
 
-    public void incrementLikes() {
-        this.likes += 1;
+    public void incrementLikes(boolean isLiked) {
+        if (isLiked) this.likes += 1;
+        else if (this.likes > 0) this.likes -= 1;
     }
 
     public void incrementDisLikes() {

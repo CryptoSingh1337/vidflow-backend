@@ -97,11 +97,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean getVideoLikedStatus(String userId, String videoId) {
+        log.debug("Checking liked status for user ID: {}", userId);
+        User user = getUserById(userId);
+        Video video = getVideoByIdHelper(videoId);
+        if (user.getLikedVideos() != null)
+            return user.getLikedVideos().contains(video);
+        return false;
+    }
+
+    @Override
     public List<SearchVideoResponseModel> getWatchHistory(String userId, int page) {
         log.debug("Retrieving watch history for user with ID: {}", userId);
         User user = getUserById(userId);
         if (user.getVideoHistory() != null)
             return user.getVideoHistory().stream()
+                    .map(videoMapper::videoToSearchVideoCard)
+                    .collect(Collectors.toList());
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<SearchVideoResponseModel> getLikedVideos(String userId, int page) {
+        log.debug("Retrieving liked videos for user with ID: {}", userId);
+        User user = getUserById(userId);
+        if (user.getLikedVideos() != null)
+            return user.getLikedVideos().stream()
                     .map(videoMapper::videoToSearchVideoCard)
                     .collect(Collectors.toList());
         return new ArrayList<>();
@@ -152,6 +173,23 @@ public class UserServiceImpl implements UserService {
                 }
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public void updateLikedVideos(String userId, String videoId, boolean isLiked) {
+        log.debug("Updating liked videos for user ID: {}", userId);
+        User user = getUserById(userId);
+        Video video = getVideoByIdHelper(videoId);
+        if (isLiked) {
+            user.addLikedVideo(video);
+            video.incrementLikes(true);
+        } else {
+            user.removeLikedVideo(video);
+            video.incrementLikes(false);
+        }
+        userRepository.save(user);
+        videoRepository.save(video);
     }
 
     @Override

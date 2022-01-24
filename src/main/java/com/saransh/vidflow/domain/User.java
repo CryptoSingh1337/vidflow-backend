@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -59,13 +58,13 @@ public class User {
 
     public void addLikedVideo(Video video) {
         if (this.likedVideos == null)
-            this.likedVideos = new LinkedHashSet<>();
+            this.likedVideos = new HashSet<>();
         this.likedVideos.add(video);
     }
 
     public void addVideoHistory(Video video) {
         if (this.videoHistory == null)
-            this.videoHistory = new LinkedHashSet<>();
+            this.videoHistory = new HashSet<>();
         this.videoHistory.add(video);
     }
 

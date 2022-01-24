@@ -81,10 +81,24 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/userId/{userId}/watch/history")
+    @GetMapping("/userId/{userId}/video/{videoId}/liked")
+    public ResponseEntity<?> getVideoLikedStatus(@PathVariable String userId,
+                                                 @PathVariable String videoId) {
+        boolean status = userService.getVideoLikedStatus(userId, videoId);
+        if (status) return ResponseEntity.ok(null);
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping(value = "/userId/{userId}/watch/history", produces = {"application/json"})
     public ResponseEntity<List<SearchVideoResponseModel>> getWatchHistory(@PathVariable String userId,
                                                                           @RequestParam int page) {
         return ResponseEntity.ok(userService.getWatchHistory(userId, page));
+    }
+
+    @GetMapping(value = "/userId/{userId}/liked", produces = {"application/json"})
+    public ResponseEntity<List<SearchVideoResponseModel>> getLikedVideos(@PathVariable String userId,
+                                                                         @RequestParam int page) {
+        return ResponseEntity.ok(userService.getLikedVideos(userId, page));
     }
 
     @Async
@@ -99,6 +113,13 @@ public class UserController {
     @PostMapping("/userId/{userId}/video/{videoId}")
     public void addWatchHistory(@PathVariable String userId, @PathVariable String videoId) {
         userService.addWatchHistory(userId, videoId);
+    }
+
+    @PostMapping("/userId/{userId}/video/like/{videoId}")
+    public void updateLikedVideos(@PathVariable String userId,
+                                  @PathVariable String videoId,
+                                  @RequestParam Boolean isLiked) {
+        userService.updateLikedVideos(userId, videoId, isLiked);
     }
 
     @PostMapping(value ="/register", consumes = {"application/json"}, produces = {"application/json"})

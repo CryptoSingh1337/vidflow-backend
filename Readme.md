@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/CryptoSingh1337/vidflow-client/master/static/v.png" align="right" />
+<img src="https://raw.githubusercontent.com/CryptoSingh1337/vidflow-client/master/static/v.png" align="right" height="150" width="132" />
 
 # VidFlow
 
@@ -73,6 +73,13 @@ Frontend repo: [https://github.com/CryptoSingh1337/vidflow-client](https://githu
 
 #### Your videos page
 ![your-videos-page](https://user-images.githubusercontent.com/56120837/150553232-33232171-8389-4d03-878c-58f7390ec4f5.png)
+
+## TODO
+
+- [x] Like/dislike video functionality.
+- [ ] Forgot password via email.
+- [ ] Notifications functionality using redis as data store.
+- [ ] Clear watch history after 21 days using Scheduling Tasks.
 
 ## Run Locally
 
