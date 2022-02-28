@@ -76,7 +76,7 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-bom</artifactId>
             <version>${log4j2.version}</version>
-            <scope>import</scope>
+            <scope>runtime</scope>
             <type>pom</type>
         </dependency>
         <dependency>
