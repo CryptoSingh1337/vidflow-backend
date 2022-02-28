@@ -58,22 +58,22 @@ public class UserController {
         return ResponseEntity.ok(userService.getChannelNameOfAUser(username));
     }
 
-    @GetMapping(value = "/userId/{userId}/channel", produces = {"application/json"})
+    @GetMapping(value = "/id/{userId}/channel", produces = {"application/json"})
     public ResponseEntity<String> getChannelNameForUserId(@PathVariable String userId) {
         return ResponseEntity.ok(userService.getChannelNameForUserId(userId));
     }
 
-    @GetMapping(value = "/userId/{userId}/subscribers/count", produces = {"application/json"})
+    @GetMapping(value = "/id/{userId}/subscribers/count", produces = {"application/json"})
     public ResponseEntity<Integer> getSubscribersCount(@PathVariable String userId) {
         return ResponseEntity.ok(userService.getUserSubscribersCount(userId));
     }
 
-    @GetMapping(value = "/userId/{userId}/subscribed", produces = {"application/json"})
+    @GetMapping(value = "/id/{userId}/subscribed", produces = {"application/json"})
     public ResponseEntity<List<SubscribedChannel>> getSubscribedChannels(@PathVariable String userId) {
         return ResponseEntity.ok(userService.getUserSubscribedChannels(userId));
     }
 
-    @GetMapping("/userId/{userId}/subscribed/{subscribedUserId}")
+    @GetMapping("/id/{userId}/subscribed/id/{subscribedUserId}")
     public ResponseEntity<?> getSubscribedChannelStatus(@PathVariable String userId,
                                                         @PathVariable String subscribedUserId) {
         boolean status = userService.getSubscribedChannelStatus(userId, subscribedUserId);
@@ -81,7 +81,7 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/userId/{userId}/video/{videoId}/liked")
+    @GetMapping("/id/{userId}/video/id/{videoId}/liked")
     public ResponseEntity<?> getVideoLikedStatus(@PathVariable String userId,
                                                  @PathVariable String videoId) {
         boolean status = userService.getVideoLikedStatus(userId, videoId);
@@ -89,20 +89,20 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping(value = "/userId/{userId}/watch/history", produces = {"application/json"})
+    @GetMapping(value = "/id/{userId}/watch/history", produces = {"application/json"})
     public ResponseEntity<List<SearchVideoResponseModel>> getWatchHistory(@PathVariable String userId,
                                                                           @RequestParam int page) {
         return ResponseEntity.ok(userService.getWatchHistory(userId, page));
     }
 
-    @GetMapping(value = "/userId/{userId}/liked", produces = {"application/json"})
+    @GetMapping(value = "/id/{userId}/liked", produces = {"application/json"})
     public ResponseEntity<List<SearchVideoResponseModel>> getLikedVideos(@PathVariable String userId,
                                                                          @RequestParam int page) {
         return ResponseEntity.ok(userService.getLikedVideos(userId, page));
     }
 
     @Async
-    @PostMapping("/userId/{userId}/subscribers")
+    @PostMapping("/id/{userId}/subscribers")
     public void updateSubscribers(@PathVariable String userId,
                                   @RequestParam String subscribeToUserId,
                                   @RequestParam Boolean increase) {
@@ -110,16 +110,21 @@ public class UserController {
     }
 
     @Async
-    @PostMapping("/userId/{userId}/video/{videoId}")
+    @PostMapping("/id/{userId}/video/id/{videoId}")
     public void addWatchHistory(@PathVariable String userId, @PathVariable String videoId) {
         userService.addWatchHistory(userId, videoId);
     }
 
-    @PostMapping("/userId/{userId}/video/like/{videoId}")
+    @PostMapping("/id/{userId}/video/id/{videoId}/like")
     public void updateLikedVideos(@PathVariable String userId,
                                   @PathVariable String videoId,
                                   @RequestParam Boolean isLiked) {
         userService.updateLikedVideos(userId, videoId, isLiked);
+    }
+
+    @PostMapping(value = "/forgot-password", consumes = {"application/json"}, produces = {"application/json"})
+    public ResponseEntity<?> forgotPassword(@RequestBody String email) {
+        return null;
     }
 
     @PostMapping(value ="/register", consumes = {"application/json"}, produces = {"application/json"})

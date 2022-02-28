@@ -82,9 +82,10 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public List<UserVideoCardResponseModel> getAllVideosByUserId(String userId) {
-        log.debug("Retrieving all the video with userId: {}", userId);
-        return videoRepository.findAllByUserId(userId).stream()
+    public List<UserVideoCardResponseModel> getAllVideosByUsername(String username) {
+        log.debug("Retrieving all the video with username: {}", username);
+        User user = userService.findUserByUsername(username);
+        return videoRepository.findAllByUserId(user.getId()).stream()
                 .map(videoMapper::videoToUserVideoCard)
                 .collect(Collectors.toList());
     }

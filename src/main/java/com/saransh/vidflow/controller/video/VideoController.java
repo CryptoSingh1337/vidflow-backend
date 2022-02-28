@@ -9,6 +9,7 @@ import com.saransh.vidflow.services.video.WrapperUploadOperationsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,18 +43,19 @@ public class VideoController {
         return ResponseEntity.ok(videoService.getAllSearchedVideos(q, page));
     }
 
-    @GetMapping(value = "/user/{userId}", produces = {"application/json"})
+    @GetMapping(value = "/user/id/{userId}", produces = {"application/json"})
     public ResponseEntity<List<VideoCardResponseModel>> getAllVideosByUserId(@PathVariable String userId,
                                                                                @RequestParam int page) {
         return ResponseEntity.ok(videoService.getAllVideosByUserId(userId, page));
     }
 
-    @GetMapping(value = "/user/{userId}/all", produces = {"application/json"})
-    public ResponseEntity<List<?>> getAllVideosByUserId(@PathVariable String userId) {
-        return ResponseEntity.ok(videoService.getAllVideosByUserId(userId));
+    @GetMapping(value = "/user/all", produces = {"application/json"})
+    public ResponseEntity<List<?>> getAllVideosByUserId() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        return ResponseEntity.ok(videoService.getAllVideosByUsername(username));
     }
 
-    @GetMapping(value = "/{videoId}", produces = {"application/json"})
+    @GetMapping(value = "/id/{videoId}", produces = {"application/json"})
     public ResponseEntity<WatchVideoResponseModel> getVideoById(@PathVariable String videoId) {
         return ResponseEntity.ok(videoService.getVideoById(videoId));
     }
@@ -65,7 +67,7 @@ public class VideoController {
         return ResponseEntity.ok(uploadService.uploadVideoAndThumbnail(video, thumbnail));
     }
 
-    @PostMapping(value = "/{videoId}/video-metadata",
+    @PostMapping(value = "/id/{videoId}/video-metadata",
             consumes = {"application/json"},
             produces = {"application/json"})
     public ResponseEntity<?> updateVideoMetadata(
@@ -76,12 +78,12 @@ public class VideoController {
     }
 
     @Async
-    @GetMapping("/views/{videoId}")
+    @GetMapping("/views/id/{videoId}")
     public void incrementViews(@PathVariable String videoId) {
         videoService.incrementViews(videoId);
     }
 
-    @PostMapping(value = "/{videoId}/comment",
+    @PostMapping(value = "/id/{videoId}/comment",
             consumes = {"application/json"},
             produces = {"application/json"})
     public ResponseEntity<AddCommentResponseModel> addCommentOnVideo(
@@ -91,7 +93,7 @@ public class VideoController {
     }
 
 
-    @PutMapping(value = "/{videoId}/comment/{commentId}", consumes = {"application/json"})
+    @PutMapping(value = "/id/{videoId}/comment/id/{commentId}", consumes = {"application/json"})
     public ResponseEntity<?> updateComment(@PathVariable String videoId,
                                            @PathVariable String commentId,
                                            @Validated @RequestBody UpdateCommentRequestModel updateComment) {
@@ -99,7 +101,7 @@ public class VideoController {
         return ResponseEntity.ok(null);
     }
 
-    @DeleteMapping("/{videoId}/comment/{commentId}")
+    @DeleteMapping("/id/{videoId}/comment/id/{commentId}")
     public ResponseEntity<?> deleteACommentFromVideo(@PathVariable String videoId,
                                                      @PathVariable String commentId) {
         videoService.deleteComment(videoId, commentId);
