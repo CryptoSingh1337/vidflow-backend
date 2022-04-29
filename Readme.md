@@ -24,7 +24,7 @@ Frontend repo: [https://github.com/CryptoSingh1337/vidflow-client](https://githu
 - User can like/dislike, share a video (copies link to the clipboard).
 - Increase views asynchronously if the user watch that video.
 
-## Application model / Data model
+## Data model
 
 ![application-model](https://user-images.githubusercontent.com/56120837/150513856-e0672393-8aa2-44d2-a3a8-d134633c3e2b.png)
 
