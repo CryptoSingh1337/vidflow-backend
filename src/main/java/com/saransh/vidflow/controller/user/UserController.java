@@ -73,7 +73,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserSubscribedChannels(userId));
     }
 
-    @GetMapping("/id/{userId}/subscribed/id/{subscribedUserId}")
+    @GetMapping(value = "/id/{userId}/subscribed/id/{subscribedUserId}", produces = {"application/json"})
     public ResponseEntity<?> getSubscribedChannelStatus(@PathVariable String userId,
                                                         @PathVariable String subscribedUserId) {
         boolean status = userService.getSubscribedChannelStatus(userId, subscribedUserId);
@@ -81,7 +81,7 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/id/{userId}/video/id/{videoId}/liked")
+    @GetMapping(value = "/id/{userId}/video/id/{videoId}/liked", produces = {"application/json"})
     public ResponseEntity<?> getVideoLikedStatus(@PathVariable String userId,
                                                  @PathVariable String videoId) {
         boolean status = userService.getVideoLikedStatus(userId, videoId);
