@@ -1,0 +1,37 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: VidFlowBackend
+
+  # Servlet
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  # MongoDB
+  data:
+    mongodb:
+      auto-index-creation: true
+
+# JWT
+auth:
+  login:
+    path: /api/v1/login
+  register:
+    path: /api/v1/user/register
+jwt:
+  issuer: VidFlow
+
+# Azure Blob Storage
+storage:
+  connection:
+    string: ${AZURE_STORAGE_CONNECTION_STRING}
+  blob:
+    container:
+      name: ${BLOB_CONTAINER_NAME}
+
+# Custom
+skipUrls: /api/v1/video,/api/v1/video/trending,/api/v1/video/search,/api/v1/video/id/{videoId},/api/v1/video/views/id/{videoId},/api/v1/video/user/id/{userId},/api/v1/user/id/{userId}/channel,/api/v1/user/id/{userId}/subscribers,/api/v1/user/id/{userId}/subscribers/count

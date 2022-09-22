@@ -1,0 +1,15 @@
+# MongoDB
+spring:
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
+
+# JWT
+jwt:
+  token:
+    secret: ${JWT_ACCESS_TOKEN_SECRET}
+    expiration: 86400000
+  refresh:
+    token:
+      secret: ${JWT_REFRESH_TOKEN_SECRET}
+      expiration: 129600000
