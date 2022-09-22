@@ -1,6 +1,9 @@
 package com.saransh.vidflownetwork.request.user;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * author: CryptoSingh1337
@@ -8,7 +11,6 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@RequiredArgsConstructor
 @Builder
 public class ForgotPasswordRequestModel {
 
