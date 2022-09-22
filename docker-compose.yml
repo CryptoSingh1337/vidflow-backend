@@ -1,0 +1,15 @@
+version: '3.1'
+services:
+#  sqs:
+#    image: roribio16/alpine-sqs
+#    ports:
+#      - "9324:9324"
+#      - "9325:9325"
+#    volumes:
+#      - ./scripts/elasticmq.conf:/opt/config/elasticmq.conf
+  mongo:
+    image: mongo:latest
+    volumes:
+      - "./volumes/mongo:/data/db"
+    ports:
+      - "27017:27017"
