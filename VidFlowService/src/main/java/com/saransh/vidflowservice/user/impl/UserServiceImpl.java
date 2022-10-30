@@ -61,6 +61,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByUserId(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+    }
+
+    @Override
     public String getChannelNameOfAUser(String username) {
         return findUserByUsername(username).getChannelName();
     }

@@ -46,12 +46,9 @@ public class VideoServiceImpl implements VideoService {
     private final int PAGE_OFFSET = 10;
 
     @Override
-    public List<VideoCardResponseModel> getAllVideos(int page) {
+    public List<Video> getAllVideos(int page) {
         log.debug("Retrieving all videos");
-        return videoRepository.findAllByVideoStatusEquals(getAllVideosPageRequest(page),
-                        VideoStatus.PUBLIC.name()).stream()
-                .map(videoMapper::videoToVideoCard)
-                .collect(Collectors.toList());
+        return videoRepository.findAll(getAllVideosPageRequest(page)).stream().toList();
     }
 
     @Override

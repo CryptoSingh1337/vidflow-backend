@@ -16,6 +16,7 @@ public interface UserService extends UserDetailsService {
 
     User findUserByUsername(String username);
     UserResponseModel getUser(String username);
+    User getUserByUserId(String userId);
     String getChannelNameOfAUser(String username);
     String getChannelNameForUserId(String userId);
     Integer getUserSubscribersCount(String userId);
