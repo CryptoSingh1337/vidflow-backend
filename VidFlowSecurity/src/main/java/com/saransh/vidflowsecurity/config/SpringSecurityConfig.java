@@ -3,16 +3,20 @@ package com.saransh.vidflowsecurity.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saransh.vidflowsecurity.filters.CustomAuthenticationFilter;
 import com.saransh.vidflowsecurity.filters.CustomAuthorizationFilter;
-import com.saransh.vidflowservice.user.UserService;
 import com.saransh.vidflowutilities.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.List;
@@ -26,34 +30,37 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
-@SuppressWarnings("deprecation")
-public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
+public class SpringSecurityConfig {
 
-    private final Environment env;
     private final ObjectMapper mapper;
     private final JwtUtils jwtUtils;
+    private final Environment env;
     private final PasswordEncoder passwordEncoder;
-    private final UserService userService;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
+    @Bean
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
+        var authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return new ProviderManager(authProvider);
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and()
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(STATELESS).and()
-                .authorizeRequests().antMatchers("/**").permitAll().and()
-                .addFilter(authenticationFilter())
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   AuthenticationManager authenticationManager) throws Exception {
+        return http.cors().and()
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/**").permitAll())
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .addFilter(authenticationFilter(authenticationManager))
                 .addFilterBefore(new CustomAuthorizationFilter(mapper, jwtUtils, env, urlsToSkip()),
-                        UsernamePasswordAuthenticationFilter.class);
+                        UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
-    private CustomAuthenticationFilter authenticationFilter() throws Exception {
+    private CustomAuthenticationFilter authenticationFilter(AuthenticationManager authenticationManager) {
         CustomAuthenticationFilter authenticationFilter =
-                new CustomAuthenticationFilter(authenticationManagerBean(), mapper, jwtUtils);
+                new CustomAuthenticationFilter(authenticationManager, mapper, jwtUtils);
         authenticationFilter.setFilterProcessesUrl(env.getProperty("auth.login.path"));
         return authenticationFilter;
     }

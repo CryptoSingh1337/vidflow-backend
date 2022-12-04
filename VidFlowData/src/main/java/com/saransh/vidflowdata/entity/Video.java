@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * author: CryptoSingh1337
@@ -28,10 +29,10 @@ public class Video {
     private String userId;
     private String username;
     private String channelName;
-    private Long views = 0L;
+    private AtomicLong views = new AtomicLong(0);
     private LocalDateTime createdAt;
-    private Integer likes = 0;
-    private Integer dislikes = 0;
+    private AtomicLong likes = new AtomicLong(0);
+    private AtomicLong dislikes = new AtomicLong(0);
     private String thumbnail;
     private String videoUrl;
     private String description;
@@ -40,16 +41,18 @@ public class Video {
     private Set<Comment> comments;
 
     public void incrementViews() {
-        this.views += 1;
+        this.views.getAndIncrement();
     }
 
     public void incrementLikes(boolean isLiked) {
-        if (isLiked) this.likes += 1;
-        else if (this.likes > 0) this.likes -= 1;
+        if (isLiked)
+            this.likes.getAndIncrement();
+        else if (this.likes.get() > 0)
+            this.likes.getAndDecrement();
     }
 
     public void incrementDisLikes() {
-        this.dislikes += 1;
+        this.dislikes.getAndIncrement();
     }
 
     public void changeVideoStatus(VideoStatus status) {

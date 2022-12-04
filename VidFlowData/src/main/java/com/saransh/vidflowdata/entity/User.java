@@ -50,28 +50,16 @@ public class User {
         this.subscribedTo.add(user);
     }
 
-    public void addSubscriber(User user) {
-        if (this.subscribers == null)
-            this.subscribers = new HashSet<>();
-        this.subscribers.add(user);
-    }
-
-    public void addLikedVideo(Video video) {
-        if (this.likedVideos == null)
-            this.likedVideos = new HashSet<>();
-        this.likedVideos.add(video);
-    }
-
-    public void addVideoHistory(Video video) {
-        if (this.videoHistory == null)
-            this.videoHistory = new HashSet<>();
-        this.videoHistory.add(video);
-    }
-
     public boolean removeSubscription(User user) {
         if (this.subscribedTo == null || this.subscribedTo.isEmpty())
             return false;
         return this.subscribedTo.remove(user);
+    }
+
+    public void addSubscriber(User user) {
+        if (this.subscribers == null)
+            this.subscribers = new HashSet<>();
+        this.subscribers.add(user);
     }
 
     public boolean removeSubscriber(User user) {
@@ -80,11 +68,23 @@ public class User {
         return this.subscribers.remove(user);
     }
 
+    public void addLikedVideo(Video video) {
+        if (this.likedVideos == null)
+            this.likedVideos = new HashSet<>();
+        this.likedVideos.add(video);
+    }
+
     public boolean removeLikedVideo(Video video) {
         if (this.likedVideos == null || this.likedVideos.isEmpty())
             return false;
         else
             return this.likedVideos.remove(video);
+    }
+
+    public void addVideoHistory(Video video) {
+        if (this.videoHistory == null)
+            this.videoHistory = new HashSet<>();
+        this.videoHistory.add(video);
     }
 
     @Override

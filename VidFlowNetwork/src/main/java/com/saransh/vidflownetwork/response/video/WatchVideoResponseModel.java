@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * author: CryptoSingh1337
@@ -22,9 +23,9 @@ public class WatchVideoResponseModel implements Response {
     private String userId;
     private String description;
     private String videoUrl;
-    private Long views;
-    private Integer likes;
-    private Integer dislikes;
+    private AtomicLong views;
+    private AtomicLong likes;
+    private AtomicLong dislikes;
     private LocalDateTime createdAt;
     private String thumbnail;
     private Set<Comment> comments;

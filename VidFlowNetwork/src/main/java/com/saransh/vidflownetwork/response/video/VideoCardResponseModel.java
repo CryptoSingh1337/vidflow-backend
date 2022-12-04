@@ -4,6 +4,7 @@ import com.saransh.vidflownetwork.global.Response;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * author: CryptoSingh1337
@@ -21,5 +22,5 @@ public class VideoCardResponseModel implements Response {
     private LocalDateTime createdAt;
     private String thumbnail;
     private String title;
-    private Long views;
+    private AtomicLong views;
 }

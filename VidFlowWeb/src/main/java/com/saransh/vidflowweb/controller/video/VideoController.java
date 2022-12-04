@@ -1,5 +1,6 @@
 package com.saransh.vidflowweb.controller.video;
 
+import com.saransh.vidflowdata.entity.Video;
 import com.saransh.vidflownetwork.request.video.CommentRequestModel;
 import com.saransh.vidflownetwork.request.video.UpdateCommentRequestModel;
 import com.saransh.vidflownetwork.request.video.VideoMetadataRequestModel;
@@ -28,7 +29,7 @@ public class VideoController {
     private final WrapperUploadOperationsService uploadService;
 
     @GetMapping(value = "", produces = {"application/json"})
-    public ResponseEntity<List<VideoCardResponseModel>> getAllVideos(@RequestParam int page) {
+    public ResponseEntity<List<Video>> getAllVideos(@RequestParam int page) {
         return ResponseEntity.ok(videoService.getAllVideos(page));
     }
 

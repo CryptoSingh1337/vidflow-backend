@@ -5,6 +5,7 @@ import com.saransh.vidflownetwork.global.Response;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * author: CryptoSingh1337
@@ -19,10 +20,10 @@ public class UserVideoCardResponseModel implements Response {
     private String id;
     private String title;
     private String userId;
-    private Long views;
+    private AtomicLong views;
     private LocalDateTime createdAt;
-    private Integer likes;
-    private Integer dislikes;
+    private AtomicLong likes;
+    private AtomicLong dislikes;
     private String thumbnail;
     private String description;
     private VideoStatus videoStatus;

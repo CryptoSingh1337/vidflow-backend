@@ -4,6 +4,7 @@ import com.saransh.vidflownetwork.global.Response;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * author: CryptoSingh1337
@@ -22,5 +23,5 @@ public class SearchVideoResponseModel implements Response {
     private String thumbnail;
     private String title;
     private String description;
-    private Long views;
+    private AtomicLong views;
 }

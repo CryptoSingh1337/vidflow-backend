@@ -15,6 +15,7 @@ import com.saransh.vidflowservice.user.UserService;
 import com.saransh.vidflowutilities.error.AppErrorCode;
 import com.saransh.vidflowutilities.jwt.JwtUtils;
 import com.saransh.vidflowutilities.response.ApiResponseUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

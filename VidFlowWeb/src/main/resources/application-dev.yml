@@ -4,6 +4,11 @@ spring:
     mongodb:
       uri: mongodb://localhost:27017/vidflow
 
+# Logging
+logging:
+  level:
+    com.saransh: debug
+
 # JWT
 jwt:
   token:

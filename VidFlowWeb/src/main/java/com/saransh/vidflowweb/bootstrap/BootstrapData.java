@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * author: CryptoSingh1337
@@ -180,9 +181,9 @@ public class BootstrapData implements CommandLineRunner {
                         "survived not only five centuries, but also the leap into electronic typesetting, remaining " +
                         "essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets.")
                 .videoStatus(VideoStatus.PUBLIC)
-                .likes(15_000)
-                .dislikes(1_005)
-                .views(1_547_856L)
+                .likes(new AtomicLong(15_000))
+                .dislikes(new AtomicLong(1_005))
+                .views(new AtomicLong(1_547_856L))
                 .createdAt(LocalDateTime.now(ZoneOffset.UTC).minus(Period.ofYears(3)))
                 .build();
 
@@ -201,9 +202,9 @@ public class BootstrapData implements CommandLineRunner {
                         "survived not only five centuries, but also the leap into electronic typesetting, remaining " +
                         "essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets.")
                 .videoStatus(VideoStatus.PUBLIC)
-                .likes(80_456)
-                .dislikes(15_462)
-                .views(14_785_623L)
+                .likes(new AtomicLong(80_456))
+                .dislikes(new AtomicLong(15_462))
+                .views(new AtomicLong(14_785_623L))
                 .createdAt(LocalDateTime.now(ZoneOffset.UTC).minus(Period.ofYears(3)))
                 .build();
 
@@ -222,9 +223,9 @@ public class BootstrapData implements CommandLineRunner {
                         "survived not only five centuries, but also the leap into electronic typesetting, remaining " +
                         "essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets.")
                 .videoStatus(VideoStatus.PUBLIC)
-                .likes(1_258_964)
-                .dislikes(7_865)
-                .views(14_789_652_325L)
+                .likes(new AtomicLong(1_258_964))
+                .dislikes(new AtomicLong(7_865))
+                .views(new AtomicLong(14_789_652_325L))
                 .createdAt(LocalDateTime.now(ZoneOffset.UTC).minus(Period.ofWeeks(3)))
                 .build();
 
@@ -243,9 +244,9 @@ public class BootstrapData implements CommandLineRunner {
                         "survived not only five centuries, but also the leap into electronic typesetting, remaining " +
                         "essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets.")
                 .videoStatus(VideoStatus.PUBLIC)
-                .likes(65_432)
-                .dislikes(5_874)
-                .views(74_564_654L)
+                .likes(new AtomicLong(65_432))
+                .dislikes(new AtomicLong(5_874))
+                .views(new AtomicLong(74_564_654L))
                 .createdAt(LocalDateTime.now(ZoneOffset.UTC).minus(Period.ofDays(45)))
                 .build();
 
@@ -264,9 +265,9 @@ public class BootstrapData implements CommandLineRunner {
                         "survived not only five centuries, but also the leap into electronic typesetting, remaining " +
                         "essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets.")
                 .videoStatus(VideoStatus.PUBLIC)
-                .likes(75_698)
-                .dislikes(4_563)
-                .views(16_479_843L)
+                .likes(new AtomicLong(75_698))
+                .dislikes(new AtomicLong(4_563))
+                .views(new AtomicLong(16_479_843L))
                 .createdAt(LocalDateTime.now(ZoneOffset.UTC).minus(Period.ofMonths(5)))
                 .build();
 
@@ -287,9 +288,9 @@ public class BootstrapData implements CommandLineRunner {
                         "id. In hac habitasse platea dictumst. In ac nisi augue. Nunc sed dui ultricies, lobortis " +
                         "lectus vel, egestas velit. Cras sollicitudin tincidunt ante, at volutpat.")
                 .videoStatus(VideoStatus.PUBLIC)
-                .likes(56_895)
-                .dislikes(785)
-                .views(45_786_213L)
+                .likes(new AtomicLong(56_895))
+                .dislikes(new AtomicLong(785))
+                .views(new AtomicLong(45_786_213L))
                 .createdAt(LocalDateTime.now(ZoneOffset.UTC))
                 .build();
 
