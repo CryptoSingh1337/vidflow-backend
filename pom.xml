@@ -18,7 +18,7 @@
     <properties>
         <java.version>17</java.version>
         <main-class>com.saransh.vidflowweb.VidFlowWebApplication</main-class>
-
+        <aws.version>2.19.4</aws.version>
         <azure.version>12.19.0</azure.version>
         <java-jwt.version>4.0.0</java-jwt.version>
         <log4j2.version>2.18.0</log4j2.version>
@@ -38,6 +38,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>${aws.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>com.azure</groupId>
                 <artifactId>azure-storage-blob</artifactId>
