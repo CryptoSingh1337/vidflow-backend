@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:alpine
+FROM azul/prime:17
 VOLUME /tmp
 COPY target/*.jar app.jar
 EXPOSE 5000

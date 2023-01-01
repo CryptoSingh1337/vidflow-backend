@@ -1,0 +1,51 @@
+type Query {
+    user(id: String!): User
+    videos(page: Int!): [Video]
+}
+
+type Comment {
+    id: ID!
+    username: String
+    channelName: String
+    body: String
+    createdAt: String
+}
+
+enum VideoStatus {
+    PRIVATE
+    UNLISTED
+    PUBLIC
+}
+
+type Video {
+    id: ID!
+    title: String
+    userId: String
+    channelName: String
+    username: String
+    views: String
+    createdAt: String
+    likes: Int
+    dislikes: Int
+    thumbnail: String
+    videoUrl: String
+    description: String
+    videoStatus: VideoStatus
+    tags: [String]
+    comments: [Comment]
+}
+
+type User {
+    id: ID!
+    username: String
+    channelName: String
+    firstName: String
+    lastName: String
+    email: String
+    profileImage: String
+    subscribersCount: Int
+    subscribedTo: [User]
+    subscribers: [User]
+    likedVideos: [Video]
+    videoHistory: [Video]
+}
