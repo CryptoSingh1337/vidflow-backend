@@ -174,7 +174,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username(users.get(0).getUsername())
                 .channelName(users.get(0).getChannelName())
                 .thumbnail("https://source.unsplash.com/1280x720/?technology")
-                .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
+                .videoUrl("https://vidflow.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
                         "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
                         "printer took a galley of type and scrambled it to make a type specimen book. It has " +
@@ -195,7 +195,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username(users.get(1).getUsername())
                 .channelName(users.get(1).getChannelName())
                 .thumbnail("https://source.unsplash.com/1280x720/?news")
-                .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
+                .videoUrl("https://vidflow.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
                         "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
                         "printer took a galley of type and scrambled it to make a type specimen book. It has " +
@@ -216,7 +216,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username(users.get(2).getUsername())
                 .channelName(users.get(2).getChannelName())
                 .thumbnail("https://source.unsplash.com/1280x720/?gaming")
-                .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
+                .videoUrl("https://vidflow.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
                         "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
                         "printer took a galley of type and scrambled it to make a type specimen book. It has " +
@@ -237,7 +237,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username(users.get(3).getUsername())
                 .channelName(users.get(3).getChannelName())
                 .thumbnail("https://source.unsplash.com/1280x720/?fashion")
-                .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
+                .videoUrl("https://vidflow.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
                         "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
                         "printer took a galley of type and scrambled it to make a type specimen book. It has " +
@@ -258,7 +258,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username(users.get(4).getUsername())
                 .channelName(users.get(4).getChannelName())
                 .thumbnail("https://source.unsplash.com/1280x720/?personal")
-                .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
+                .videoUrl("https://vidflow.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
                         "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
                         "printer took a galley of type and scrambled it to make a type specimen book. It has " +
@@ -280,7 +280,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username(users.get(5).getUsername())
                 .channelName(users.get(5).getChannelName())
                 .thumbnail("https://source.unsplash.com/1280x720/?business")
-                .videoUrl("https://vidflowstorage.blob.core.windows.net/vidflow/sample.mp4")
+                .videoUrl("https://vidflow.blob.core.windows.net/vidflow/sample.mp4")
                 .description("Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut egestas, urna at " +
                         "ultrices imperdiet, enim tellus porttitor mi, porta rhoncus est dui vitae augue. " +
                         "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis " +

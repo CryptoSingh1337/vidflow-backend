@@ -13,6 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetUrlRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,10 +33,43 @@ import java.util.Set;
 public class VideoOperationsServiceImpl implements VideoOperationsService {
 
     private final BlobContainerClient blobContainerClient;
+    private final S3Client s3Client;
+    private final String BUCKET_NAME = "vidflow";
     private final Set<String> fileTypes = Set.of("video/mp4", "video/webm", "video/ogg");
 
     @Override
-    public List<String> uploadVideo(String username, MultipartFile videoFile) {
+    public List<String> uploadVideoToAws(String username, MultipartFile videoFile) {
+        if (validateVideoFileType(videoFile.getContentType())) {
+            log.debug("Uploading video...");
+            List<String> videoDetails = new ArrayList<>(2);
+            String id = new ObjectId().toString();
+            videoDetails.add(id);
+
+            String key = generateBucketPath(username, id,
+                    getFileType(Objects.requireNonNull(videoFile.getOriginalFilename())));
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(BUCKET_NAME)
+                    .key(key)
+                    .build();
+            try {
+                RequestBody requestBody = RequestBody.fromBytes(videoFile.getBytes());
+                s3Client.putObject(putObjectRequest, requestBody);
+                GetUrlRequest getUrlRequest = GetUrlRequest.builder()
+                        .bucket(BUCKET_NAME)
+                        .key(key)
+                        .build();
+                videoDetails.add(s3Client.utilities().getUrl(getUrlRequest).toExternalForm());
+                return videoDetails;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new UnsupportedFormatException("Unsupported video format");
+        }
+    }
+
+    @Override
+    public List<String> uploadVideoToAzure(String username, MultipartFile videoFile) {
         if (validateVideoFileType(videoFile.getContentType())) {
             log.debug("Uploading video...");
             List<String> videoDetails = new ArrayList<>(2);
@@ -58,7 +95,7 @@ public class VideoOperationsServiceImpl implements VideoOperationsService {
     }
 
     @Override
-    public void deleteVideo(String username, String videoId) {
+    public void deleteVideoFromAzure(String username, String videoId) {
         log.debug("Deleting video with username: {}, videoId: {}",
                 username, videoId);
         BlobClient blobClient = blobContainerClient.
@@ -81,5 +118,9 @@ public class VideoOperationsServiceImpl implements VideoOperationsService {
 
     private String generateDeleteBlobName(String username, String videoId) {
         return String.format("%s/%s", username, videoId);
+    }
+
+    private String generateBucketPath(String username, String videoId, String videoExtension) {
+        return String.format("%s/%s/%s.%s", username, videoId, videoId, videoExtension);
     }
 }

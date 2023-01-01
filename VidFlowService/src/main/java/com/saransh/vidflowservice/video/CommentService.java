@@ -10,6 +10,8 @@ import com.saransh.vidflownetwork.response.video.AddCommentResponseModel;
 public interface CommentService {
 
     AddCommentResponseModel addCommentToVideo(String videoId, CommentRequestModel comment);
+
     void updateComment(String videoId, String commentId, UpdateCommentRequestModel commentRequestModel);
+
     void deleteComment(String videoId, String commentId);
 }

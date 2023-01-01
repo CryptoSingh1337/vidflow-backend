@@ -12,6 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetUrlRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -25,11 +29,39 @@ import java.util.Set;
 @Service
 public class ThumbnailOperationsServiceImpl implements ThumbnailOperationsService {
 
+    private final S3Client s3Client;
     private final BlobContainerClient containerClient;
+    private final String BUCKET_NAME = "vidflow";
     private final Set<String> fileTypes = Set.of("image/png", "image/jpeg", "image/jpg");
 
     @Override
-    public String uploadThumbnail(String username, String videoId, MultipartFile thumbnail) {
+    public String uploadThumbnailToAws(String username, String videoId, MultipartFile thumbnail) {
+        if (validateImageFileType(thumbnail.getContentType())) {
+            log.debug("Uploading thumbnail...");
+            String key = generateBucketPath(username, videoId,
+                    getFileType(Objects.requireNonNull(thumbnail.getOriginalFilename())));
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(BUCKET_NAME)
+                    .key(key)
+                    .build();
+            try {
+                RequestBody requestBody = RequestBody.fromBytes(thumbnail.getBytes());
+                s3Client.putObject(putObjectRequest, requestBody);
+                GetUrlRequest getUrlRequest = GetUrlRequest.builder()
+                        .bucket(BUCKET_NAME)
+                        .key(key)
+                        .build();
+                return s3Client.utilities().getUrl(getUrlRequest).toExternalForm();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new UnsupportedFormatException("Unsupported thumbnail format");
+        }
+    }
+
+    @Override
+    public String uploadThumbnailToAzure(String username, String videoId, MultipartFile thumbnail) {
         if (validateImageFileType(thumbnail.getContentType())) {
             log.debug("Uploading thumbnail...");
             BlobClient blobClient = containerClient.getBlobClient(
@@ -58,6 +90,10 @@ public class ThumbnailOperationsServiceImpl implements ThumbnailOperationsServic
     }
 
     private String generateBlobName(String username, String videoId, String imageExtension) {
+        return String.format("%s/%s/%s.%s", username, videoId, videoId, imageExtension);
+    }
+
+    private String generateBucketPath(String username, String videoId, String imageExtension) {
         return String.format("%s/%s/%s.%s", username, videoId, videoId, imageExtension);
     }
 }

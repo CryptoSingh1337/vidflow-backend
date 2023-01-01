@@ -9,5 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface WrapperUploadOperationsService {
 
     UploadVideoResponseModel uploadVideoAndThumbnail(MultipartFile video, MultipartFile thumbnail);
+
     void deleteVideoAndThumbnail(String videoId);
 }

@@ -9,6 +9,9 @@ import java.util.List;
  */
 public interface VideoOperationsService {
 
-    List<String> uploadVideo(String username, MultipartFile videoFile);
-    void deleteVideo(String username, String videoId);
+    List<String> uploadVideoToAws(String username, MultipartFile videoFile);
+
+    List<String> uploadVideoToAzure(String username, MultipartFile videoFile);
+
+    void deleteVideoFromAzure(String username, String videoId);
 }
