@@ -83,6 +83,29 @@ Frontend repo: [https://github.com/CryptoSingh1337/vidflow-client](https://githu
 - [ ] Notifications functionality using redis as data store.
 - [ ] Clear watch history after 21 days using Scheduling Tasks.
 
+## Environment variables
+
+Development environment:
+```bash
+AZURE_STORAGE_CONNECTION_STRING
+BLOB_CONTAINER_NAME
+S3_ACCESS_KEY
+S3_SECRET_KEY
+CLOUD_FRONT_BASE
+```
+
+Production environment:
+```bash
+JWT_ACCESS_TOKEN_SECRET
+JWT_REFRESH_TOKEN_SECRET
+MONGO_URL
+AZURE_STORAGE_CONNECTION_STRING
+BLOB_CONTAINER_NAME
+S3_ACCESS_KEY
+S3_SECRET_KEY
+CLOUD_FRONT_BASE
+```
+
 ## Run Locally
 
 Clone the project
@@ -120,7 +143,8 @@ Run Spring Boot application (default port: 8080 or mentioned in `application.pro
   - Vuex Router
   - Vuetify
   - **Deployment**:
-    - Heroku
+    - Vercel
+    - AWS
 
 - **Server**:
   - Java
@@ -129,5 +153,6 @@ Run Spring Boot application (default port: 8080 or mentioned in `application.pro
   - Spring Data Redis
   - Spring Security
   - Microsoft Azure Blob Storage
+  - AWS Simple Storage Service
   - **Deployment**:
-    - Heroku
+    - AWS
