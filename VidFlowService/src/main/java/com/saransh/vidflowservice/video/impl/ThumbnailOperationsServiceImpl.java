@@ -10,11 +10,11 @@ import com.saransh.vidflowutilities.exceptions.UnsupportedFormatException;
 import com.saransh.vidflowutilities.exceptions.UploadFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
@@ -33,6 +33,8 @@ public class ThumbnailOperationsServiceImpl implements ThumbnailOperationsServic
     private final BlobContainerClient containerClient;
     private final String BUCKET_NAME = "vidflow";
     private final Set<String> fileTypes = Set.of("image/png", "image/jpeg", "image/jpg");
+    @Value("${CLOUD_FRONT_BASE}")
+    private String CLOUDFRONT_BASE_URL;
 
     @Override
     public String uploadThumbnailToAws(String username, String videoId, MultipartFile thumbnail) {
@@ -47,11 +49,7 @@ public class ThumbnailOperationsServiceImpl implements ThumbnailOperationsServic
             try {
                 RequestBody requestBody = RequestBody.fromBytes(thumbnail.getBytes());
                 s3Client.putObject(putObjectRequest, requestBody);
-                GetUrlRequest getUrlRequest = GetUrlRequest.builder()
-                        .bucket(BUCKET_NAME)
-                        .key(key)
-                        .build();
-                return s3Client.utilities().getUrl(getUrlRequest).toExternalForm();
+                return CLOUDFRONT_BASE_URL + key;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

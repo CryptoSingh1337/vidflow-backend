@@ -26,9 +26,9 @@ public class WrapperUploadOperationsServiceImpl implements WrapperUploadOperatio
     @Override
     public UploadVideoResponseModel uploadVideoAndThumbnail(MultipartFile video, MultipartFile thumbnail) {
         String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        List<String> videoDetails = videoOperationsService.uploadVideoToAzure(username, video);
+        List<String> videoDetails = videoOperationsService.uploadVideoToAws(username, video);
         log.debug("Video uploaded with videoId: {} and url: {}", videoDetails.get(0), videoDetails.get(1));
-        String thumbnailUrl = thumbnailOperationsService.uploadThumbnailToAzure(username, videoDetails.get(0), thumbnail);
+        String thumbnailUrl = thumbnailOperationsService.uploadThumbnailToAws(username, videoDetails.get(0), thumbnail);
         log.debug("Thumbnail uploaded with url: {}", thumbnailUrl);
         return UploadVideoResponseModel.builder()
                 .videoId(videoDetails.get(0))
