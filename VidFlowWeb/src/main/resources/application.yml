@@ -35,7 +35,7 @@ storage:
 
 # AWS
 aws:
-  enable: true
+  enable: false
   cloud-front:
     base: ${CLOUD_FRONT_BASE}
   s3:

@@ -4,6 +4,8 @@ import com.azure.core.util.Context;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobHttpHeaders;
+import com.azure.storage.blob.models.BlobItem;
+import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.blob.options.BlobParallelUploadOptions;
 import com.saransh.vidflowservice.video.VideoOperationsService;
 import com.saransh.vidflowutilities.exceptions.UnsupportedFormatException;
@@ -19,6 +21,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -117,9 +120,12 @@ public class VideoOperationsServiceImpl implements VideoOperationsService {
     public void deleteVideoFromAzure(String username, String videoId) {
         log.debug("Deleting video with username: {}, videoId: {}",
                 username, videoId);
-        BlobClient blobClient = blobContainerClient.
-                getBlobClient(generateDeleteBlobName(username, videoId));
-        blobClient.getBlockBlobClient().delete();
+        ListBlobsOptions listBlobsOptions = new ListBlobsOptions()
+                .setPrefix(generateDeleteBlobName(username, videoId));
+        for (BlobItem blobItem : blobContainerClient.listBlobs(listBlobsOptions, Duration.ofMillis(500))) {
+            final BlobClient sourceBlobClient = blobContainerClient.getBlobClient(blobItem.getName());
+            sourceBlobClient.delete();
+        }
         log.debug("Video deleted...");
     }
 
