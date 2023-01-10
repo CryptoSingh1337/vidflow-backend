@@ -28,7 +28,7 @@ public class VideoController {
     private final VideoService videoService;
     private final WrapperUploadOperationsService uploadService;
 
-    @GetMapping(value = "", produces = {"application/json"})
+    @GetMapping(produces = {"application/json"})
     public ResponseEntity<List<Video>> getAllVideos(@RequestParam int page) {
         return ResponseEntity.ok(videoService.getAllVideos(page));
     }
@@ -106,6 +106,13 @@ public class VideoController {
     public ResponseEntity<?> deleteACommentFromVideo(@PathVariable String videoId,
                                                      @PathVariable String commentId) {
         videoService.deleteComment(videoId, commentId);
+        return ResponseEntity.ok(null);
+    }
+
+    @DeleteMapping("/id/{videoId}")
+    public ResponseEntity<?> deleteVideo(@PathVariable String videoId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        videoService.deleteVideoById(username, videoId);
         return ResponseEntity.ok(null);
     }
 }

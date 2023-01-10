@@ -9,14 +9,17 @@ import com.saransh.vidflownetwork.request.video.CommentRequestModel;
 import com.saransh.vidflownetwork.request.video.UpdateCommentRequestModel;
 import com.saransh.vidflownetwork.request.video.VideoMetadataRequestModel;
 import com.saransh.vidflownetwork.response.video.*;
+import com.saransh.vidflowservice.events.DeleteVideoEvent;
 import com.saransh.vidflowservice.mapper.CommentMapper;
 import com.saransh.vidflowservice.mapper.VideoMapper;
 import com.saransh.vidflowservice.user.UserService;
 import com.saransh.vidflowservice.video.VideoService;
 import com.saransh.vidflowutilities.exceptions.MongoWriteException;
 import com.saransh.vidflowutilities.exceptions.ResourceNotFoundException;
+import com.saransh.vidflowutilities.exceptions.UnAuthorizeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -42,6 +45,7 @@ public class VideoServiceImpl implements VideoService {
     private final UserService userService;
     private final VideoMapper videoMapper;
     private final CommentMapper commentMapper;
+    private final ApplicationEventPublisher publisher;
     
     private final int PAGE_OFFSET = 10;
 
@@ -122,6 +126,22 @@ public class VideoServiceImpl implements VideoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
         video.incrementViews();
         videoRepository.save(video);
+    }
+
+    @Override
+    @Transactional
+    public void deleteVideoById(String username, String id) {
+        log.debug("Deleting video with ID: {}", id);
+        if (username == null || username.length() == 0)
+            throw new UnAuthorizeException("User not authorized");
+
+        Video video = getVideoByIdHelper(id);
+        if (username.equals(video.getUsername())) {
+            videoRepository.deleteById(id);
+            publisher.publishEvent(new DeleteVideoEvent(username, id));
+        } else {
+            throw new UnAuthorizeException("User not authorized");
+        }
     }
 
     @Override

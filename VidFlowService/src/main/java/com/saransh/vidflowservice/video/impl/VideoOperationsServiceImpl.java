@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,6 +90,27 @@ public class VideoOperationsServiceImpl implements VideoOperationsService {
         } else {
             throw new UnsupportedFormatException("Unsupported video format");
         }
+    }
+
+    @Override
+    public void deleteVideoFromAws(String username, String videoId) {
+        log.debug("Deleting video with username: {}, videoId: {}", username, videoId);
+        ListObjectsRequest listObjectsRequest = ListObjectsRequest.builder()
+                .bucket(BUCKET_NAME)
+                .prefix(String.format("%s/%s", username, videoId))
+                .build();
+        List<ObjectIdentifier> objectIdentifiers = s3Client.listObjects(listObjectsRequest).contents().stream()
+                .map(S3Object::key)
+                .map(key -> ObjectIdentifier.builder().key(key).build())
+                .toList();
+        log.debug("Keys: {}", objectIdentifiers);
+        DeleteObjectsRequest deleteObjectRequest = DeleteObjectsRequest.builder()
+                .bucket(BUCKET_NAME)
+                .delete(Delete.builder()
+                        .objects(objectIdentifiers)
+                        .build())
+                .build();
+        s3Client.deleteObjects(deleteObjectRequest);
     }
 
     @Override

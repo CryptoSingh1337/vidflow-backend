@@ -13,5 +13,7 @@ public interface VideoOperationsService {
 
     List<String> uploadVideoToAzure(String username, MultipartFile videoFile);
 
+    void deleteVideoFromAws(String username, String videoId);
+
     void deleteVideoFromAzure(String username, String videoId);
 }

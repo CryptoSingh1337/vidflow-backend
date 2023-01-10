@@ -6,6 +6,7 @@ import com.mongodb.MongoWriteException;
 import com.saransh.vidflownetwork.global.ApiResponse;
 import com.saransh.vidflowutilities.error.AppErrorCode;
 import com.saransh.vidflowutilities.exceptions.ResourceNotFoundException;
+import com.saransh.vidflowutilities.exceptions.UnAuthorizeException;
 import com.saransh.vidflowutilities.exceptions.UnsupportedFormatException;
 import com.saransh.vidflowutilities.exceptions.UploadFailedException;
 import com.saransh.vidflowutilities.response.ApiResponseUtil;
@@ -25,6 +26,13 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @Slf4j
 @ControllerAdvice
 public class MvcExceptionHandler {
+
+    @ExceptionHandler(UnAuthorizeException.class)
+    public ResponseEntity<ApiResponse<?>> handleUnAuthorizeException(UnAuthorizeException e) {
+        log.error(e.getMessage());
+        return ResponseEntity.status(BAD_REQUEST)
+                .body(ApiResponseUtil.createApiErrorResponse(AppErrorCode.APP_AUTH_004));
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {

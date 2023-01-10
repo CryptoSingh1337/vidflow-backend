@@ -29,4 +29,6 @@ public interface VideoService extends CommentService {
     void insert(String videoId, VideoMetadataRequestModel videoMetadataRequestModel);
 
     void incrementViews(String videoId);
+
+    void deleteVideoById(String username, String id);
 }

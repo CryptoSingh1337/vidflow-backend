@@ -10,5 +10,5 @@ public interface WrapperUploadOperationsService {
 
     UploadVideoResponseModel uploadVideoAndThumbnail(MultipartFile video, MultipartFile thumbnail);
 
-    void deleteVideoAndThumbnail(String videoId);
+    void deleteVideoAndThumbnail(String username, String videoId);
 }

@@ -21,3 +21,7 @@ jwt:
     token:
       secret: ${JWT_REFRESH_TOKEN_SECRET}
       expiration: 129600000
+
+logging:
+  level:
+    com.saransh: debug
