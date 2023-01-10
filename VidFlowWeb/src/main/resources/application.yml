@@ -33,7 +33,14 @@ storage:
     container:
       name: ${BLOB_CONTAINER_NAME}
 
-# Custom
-skipUrls: /api/v1/video,/api/v1/video/trending,/api/v1/video/search,/api/v1/video/id/{videoId},/api/v1/video/views/id/{videoId},/api/v1/video/user/id/{userId},/api/v1/user/id/{userId}/channel,/api/v1/user/id/{userId}/subscribers,/api/v1/user/id/{userId}/subscribers/count
+# AWS
 aws:
   enable: true
+  cloud-front:
+    base: ${CLOUD_FRONT_BASE}
+  s3:
+    access-key: ${S3_ACCESS_KEY}
+    secret-key: ${S3_SECRET_KEY}
+
+# Custom
+skipUrls: /api/v1/video,/api/v1/video/trending,/api/v1/video/search,/api/v1/video/id/{videoId},/api/v1/video/views/id/{videoId},/api/v1/video/user/id/{userId},/api/v1/user/id/{userId}/channel,/api/v1/user/id/{userId}/subscribers,/api/v1/user/id/{userId}/subscribers/count
