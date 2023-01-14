@@ -67,6 +67,7 @@
 				</executions>
 				<configuration>
 					<mainClass>${main-class}</mainClass>
+					<executable>true</executable>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
