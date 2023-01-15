@@ -1,0 +1,10 @@
+[Unit]
+Description=vidflow
+After=syslog.target
+After=network.target[Service]
+
+[Service]
+ExecStart=/home/ubuntu/start
+
+[Install]
+WantedBy=multi-user.target
