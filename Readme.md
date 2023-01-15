@@ -171,8 +171,8 @@ Run Spring Boot application (default port: 8080 or mentioned in `application.pro
 
 | Record name       |  Type  | Routing | Value                    |
 |-------------------|:------:|---------|--------------------------|
-| <domain-name>     |   A    | Simple  | <load-balancer-dns-name> |
-| www.<domain-name> | CNAME  | Simple  | <domain-name>            |
+| [domain-name]     |   A    | Simple  | [load-balancer-dns-name] |
+| www.[domain-name] | CNAME  | Simple  | [domain-name]            |
 
 10. Create a bucket with default configuration with the name `vidflow`.
 11. Create a cloudfront distribution with the following configuration:
