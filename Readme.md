@@ -132,6 +132,63 @@ Run Spring Boot application (default port: 8080 or mentioned in `application.pro
   ./mvnw spring-boot:run
 ```
 
+## AWS setup
+1. Create a ec2 instance.
+2. Add the following inbound rules in the security group:
+
+| Type       | Protocol | Port  | Source    |
+|------------|----------|-------|-----------|
+| Custom TCP | TCP      | 27017 | 0.0.0.0/0 |
+| HTTP       | TCP      | 80    | 0.0.0.0/0 |
+| HTTPS      | TCP      | 443   | 0.0.0.0/0 |
+
+3. Create a target group with the following configuration:
+
+| Config                | Value       |
+|-----------------------|-------------|
+| Target type           | Instances   |
+| Target group name     | vidflow     |
+| Protocol              | HTTP        |
+| Port                  | 80          |
+| Protocol version      | HTTP1       |
+| Health check protocol | HTTP        |
+| Health check path     | /index.html |
+
+4. Register target and select the ec2 instance.
+5. Request Certificate in Certificate manager and add the provided record in the advance DNS setting.
+6. Create a load balancer with following configuration:
+
+| Config             | Value            |
+|--------------------|------------------|
+| Load balancer type | Application      |
+| Load balancer name | vidflow          |
+| Scheme             | Internet-facing  |
+| IP address type    | IPv4             |
+
+7. In Route 53, create a hosted zone with the domain name.
+8. Change the default name server with the aws name server in the domain name provider portal.
+9. Create the following records:
+
+| Record name       |  Type  | Routing | Value                    |
+|-------------------|:------:|---------|--------------------------|
+| <domain-name>     |   A    | Simple  | <load-balancer-dns-name> |
+| www.<domain-name> | CNAME  | Simple  | <domain-name>            |
+
+10. Create a bucket with default configuration with the name `vidflow`.
+11. Create a cloudfront distribution with the following configuration:
+
+| Config                  | Value                  |
+|-------------------------|------------------------|
+| Origin domain           | Amazon s3              |
+| Enable Origin shield    | No                     |
+| Viewer protocol policy  | Redirect HTTP to HTTPS |
+| Allowed HTTP methods    | GET, HEAD              |
+| Restrict viewer access  | No                     |
+
+## Azure setup
+
+Create a microsoft storage account and copy the connection string.
+
 ## Tech Stack
 
 - **Client**:
