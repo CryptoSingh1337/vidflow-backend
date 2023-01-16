@@ -45,7 +45,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String requestPath = req.getServletPath();
         if (requestPath.equals(env.getProperty("auth.login.path")) ||
-                requestPath.equals(env.getProperty("auth.register.path")))
+                requestPath.equals(env.getProperty("auth.register.path")) ||
+                requestPath.equals(env.getProperty("auth.refreshToken.path")))
             filterChain.doFilter(req, res);
         else {
             String authToken = req.getHeader(AUTHORIZATION);

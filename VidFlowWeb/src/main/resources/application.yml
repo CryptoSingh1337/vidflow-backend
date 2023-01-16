@@ -22,6 +22,8 @@ auth:
     path: /api/v1/login
   register:
     path: /api/v1/user/register
+  refreshToken:
+    path: /api/v1/user/token/refresh
 jwt:
   issuer: VidFlow
 
