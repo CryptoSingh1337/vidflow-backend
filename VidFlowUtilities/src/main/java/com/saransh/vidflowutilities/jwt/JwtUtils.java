@@ -9,7 +9,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 /**
@@ -29,12 +31,10 @@ public class JwtUtils {
     public String generateAccessToken(User user) {
         return JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(
-                        new Date(System.currentTimeMillis() +
-                                Integer.parseInt(
-                                        Objects.requireNonNull(
-                                                env.getProperty("jwt.token.expiration")
-                                        ))))
+                .withExpiresAt(LocalDateTime.now()
+                        .plus(Long.parseLong(
+                                        Objects.requireNonNull(env.getProperty("jwt.token.expiration"))),
+                                ChronoUnit.MILLIS).toInstant(ZoneOffset.UTC))
                 .withIssuer(ISSUER)
                 .sign(getTokenAlgorithm());
     }
@@ -42,11 +42,10 @@ public class JwtUtils {
     public String generateRefreshToken(User user) {
         return JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() +
-                        Integer.parseInt(
-                                Objects.requireNonNull(
-                                        env.getProperty("jwt.refresh.token.expiration")
-                                ))))
+                .withExpiresAt(LocalDateTime.now()
+                        .plus(Long.parseLong(
+                                        Objects.requireNonNull(env.getProperty("jwt.refresh.token.expiration"))),
+                                ChronoUnit.MILLIS).toInstant(ZoneOffset.UTC))
                 .withIssuer(ISSUER)
                 .sign(getRefreshTokenAlgorithm());
     }
