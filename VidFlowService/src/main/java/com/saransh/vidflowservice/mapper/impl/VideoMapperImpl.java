@@ -9,11 +9,9 @@ import com.saransh.vidflownetwork.response.video.VideoCardResponseModel;
 import com.saransh.vidflownetwork.response.video.WatchVideoResponseModel;
 import com.saransh.vidflowservice.mapper.VideoMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author CryptoSingh1337
@@ -41,10 +39,11 @@ public class VideoMapperImpl implements VideoMapper {
         watchVideoResponseModel.createdAt(video.getCreatedAt());
         watchVideoResponseModel.thumbnail(video.getThumbnail());
         Set<Comment> set = video.getComments();
-        if (set != null) {
-            watchVideoResponseModel.comments(new LinkedHashSet<Comment>(set));
+        if (CollectionUtils.isEmpty(set)) {
+            watchVideoResponseModel.comments(new HashSet<>());
+        } else {
+            watchVideoResponseModel.comments(new LinkedHashSet<>(set));
         }
-
         return watchVideoResponseModel.build();
     }
 
@@ -104,7 +103,7 @@ public class VideoMapperImpl implements VideoMapper {
         video.videoStatus(videoMetadata.getVideoStatus());
         List<String> list = videoMetadata.getTags();
         if (list != null) {
-            video.tags(new ArrayList<String>(list));
+            video.tags(new ArrayList<>(list));
         }
 
         return video.build();
