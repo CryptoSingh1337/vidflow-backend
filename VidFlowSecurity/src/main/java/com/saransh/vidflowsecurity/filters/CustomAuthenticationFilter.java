@@ -34,7 +34,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             throws AuthenticationException {
         try {
             LoginRequestModel user = mapper.readValue(req.getReader(), LoginRequestModel.class);
-            log.debug("Username: {} and Password: {}", user.getUsername(), user.getPassword());
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
             return authManager.authenticate(authToken);
