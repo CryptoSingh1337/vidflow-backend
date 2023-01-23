@@ -33,8 +33,10 @@ public class ThumbnailOperationsServiceImpl implements ThumbnailOperationsServic
     private final BlobContainerClient containerClient;
     private final String BUCKET_NAME = "vidflow";
     private final Set<String> fileTypes = Set.of("image/png", "image/jpeg", "image/jpg");
-    @Value("${CLOUD_FRONT_BASE}")
+    @Value("${aws.cloud-front.baseUrl}")
     private String CLOUDFRONT_BASE_URL;
+    @Value("${azure.cdn.baseUrl}")
+    private String AZURE_CDN_BASE_URL;
 
     @Override
     public String uploadThumbnailToAws(String username, String videoId, MultipartFile thumbnail) {
@@ -62,15 +64,15 @@ public class ThumbnailOperationsServiceImpl implements ThumbnailOperationsServic
     public String uploadThumbnailToAzure(String username, String videoId, MultipartFile thumbnail) {
         if (validateImageFileType(thumbnail.getContentType())) {
             log.debug("Uploading thumbnail...");
-            BlobClient blobClient = containerClient.getBlobClient(
-                    generateBlobName(username, videoId,
-                            getFileType(Objects.requireNonNull(thumbnail.getOriginalFilename()))));
+            String key = generateBlobName(username, videoId,
+                    getFileType(Objects.requireNonNull(thumbnail.getOriginalFilename())));
+            BlobClient blobClient = containerClient.getBlobClient(key);
             try {
                 BlobParallelUploadOptions blobParallelUploadOptions =
                         new BlobParallelUploadOptions(thumbnail.getInputStream());
                 blobParallelUploadOptions.setHeaders(new BlobHttpHeaders().setContentType(thumbnail.getContentType()));
                 blobClient.uploadWithResponse(blobParallelUploadOptions, null, Context.NONE);
-                return blobClient.getBlockBlobClient().getBlobUrl();
+                return AZURE_CDN_BASE_URL + key;
             } catch (IOException e) {
                 throw new UploadFailedException("Thumbnail is unable to upload");
             }

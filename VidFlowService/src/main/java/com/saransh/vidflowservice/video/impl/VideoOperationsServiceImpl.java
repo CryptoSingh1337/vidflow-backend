@@ -39,8 +39,10 @@ public class VideoOperationsServiceImpl implements VideoOperationsService {
     private final S3Client s3Client;
     private final String BUCKET_NAME = "vidflow";
     private final Set<String> fileTypes = Set.of("video/mp4", "video/webm", "video/ogg");
-    @Value("${CLOUD_FRONT_BASE}")
+    @Value("${aws.cloud-front.baseUrl}")
     private String CLOUDFRONT_BASE_URL;
+    @Value("${azure.cdn.baseUrl}")
+    private String AZURE_CDN_BASE_URL;
 
     @Override
     public List<String> uploadVideoToAws(String username, MultipartFile videoFile) {
@@ -75,17 +77,17 @@ public class VideoOperationsServiceImpl implements VideoOperationsService {
             log.debug("Uploading video...");
             List<String> videoDetails = new ArrayList<>(2);
             String id = new ObjectId().toString();
+            String key = generateUploadBlobName(username, id,
+                    getFileType(Objects.requireNonNull(videoFile.getOriginalFilename())));
             videoDetails.add(id);
-            BlobClient blobClient = blobContainerClient.getBlobClient(
-                    generateUploadBlobName(username, id,
-                            getFileType(Objects.requireNonNull(videoFile.getOriginalFilename()))));
+            BlobClient blobClient = blobContainerClient.getBlobClient(key);
             try {
                 BlobParallelUploadOptions blobParallelUploadOptions =
                         new BlobParallelUploadOptions(videoFile.getInputStream());
                 blobParallelUploadOptions.setHeaders(new BlobHttpHeaders()
                         .setContentType(videoFile.getContentType()));
                 blobClient.uploadWithResponse(blobParallelUploadOptions, null, Context.NONE);
-                videoDetails.add(blobClient.getBlockBlobClient().getBlobUrl());
+                videoDetails.add(AZURE_CDN_BASE_URL + key);
                 return videoDetails;
             } catch (IOException ignored) {
                 throw new UploadFailedException("Video is unable to upload");
