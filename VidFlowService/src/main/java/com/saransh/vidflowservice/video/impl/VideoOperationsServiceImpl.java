@@ -87,7 +87,7 @@ public class VideoOperationsServiceImpl implements VideoOperationsService {
                 blobParallelUploadOptions.setHeaders(new BlobHttpHeaders()
                         .setContentType(videoFile.getContentType()));
                 blobClient.uploadWithResponse(blobParallelUploadOptions, null, Context.NONE);
-                videoDetails.add(AZURE_CDN_BASE_URL + key);
+                videoDetails.add(AZURE_CDN_BASE_URL + "vidflow/" + key);
                 return videoDetails;
             } catch (IOException ignored) {
                 throw new UploadFailedException("Video is unable to upload");

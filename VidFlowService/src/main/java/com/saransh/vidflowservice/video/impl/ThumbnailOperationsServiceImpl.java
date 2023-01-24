@@ -72,7 +72,7 @@ public class ThumbnailOperationsServiceImpl implements ThumbnailOperationsServic
                         new BlobParallelUploadOptions(thumbnail.getInputStream());
                 blobParallelUploadOptions.setHeaders(new BlobHttpHeaders().setContentType(thumbnail.getContentType()));
                 blobClient.uploadWithResponse(blobParallelUploadOptions, null, Context.NONE);
-                return AZURE_CDN_BASE_URL + key;
+                return AZURE_CDN_BASE_URL + "vidflow/" + key;
             } catch (IOException e) {
                 throw new UploadFailedException("Thumbnail is unable to upload");
             }
