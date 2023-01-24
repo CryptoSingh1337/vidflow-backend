@@ -27,10 +27,8 @@ public class VideoMetadataRequestModel {
     @Size(min = 1, max = 500)
     private String description;
 
-    @NotBlank
-    private String thumbnail;
+    private String thumbnailUrl;
 
-    @NotBlank
     private String videoUrl;
 
     private List<String> tags;

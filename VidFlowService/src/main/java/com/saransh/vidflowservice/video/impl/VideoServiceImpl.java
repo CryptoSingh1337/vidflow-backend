@@ -46,7 +46,7 @@ public class VideoServiceImpl implements VideoService {
     private final VideoMapper videoMapper;
     private final CommentMapper commentMapper;
     private final ApplicationEventPublisher publisher;
-    
+
     private final int PAGE_OFFSET = 10;
 
     @Override
@@ -109,7 +109,7 @@ public class VideoServiceImpl implements VideoService {
         video.setTitle(videoMetadata.getTitle());
         video.setDescription(videoMetadata.getDescription());
         video.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
-        video.setThumbnail(videoMetadata.getThumbnail());
+        video.setThumbnail(videoMetadata.getThumbnailUrl());
         video.setTags(videoMetadata.getTags());
         video.setChannelName(videoMetadata.getChannelName());
         video.setUsername(videoMetadata.getUsername());

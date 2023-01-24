@@ -97,7 +97,7 @@ public class VideoMapperImpl implements VideoMapper {
         video.title(videoMetadata.getTitle());
         video.username(videoMetadata.getUsername());
         video.channelName(videoMetadata.getChannelName());
-        video.thumbnail(videoMetadata.getThumbnail());
+        video.thumbnail(videoMetadata.getThumbnailUrl());
         video.videoUrl(videoMetadata.getVideoUrl());
         video.description(videoMetadata.getDescription());
         video.videoStatus(videoMetadata.getVideoStatus());

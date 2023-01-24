@@ -5,9 +5,11 @@ import com.saransh.vidflownetwork.request.video.CommentRequestModel;
 import com.saransh.vidflownetwork.request.video.UpdateCommentRequestModel;
 import com.saransh.vidflownetwork.request.video.VideoMetadataRequestModel;
 import com.saransh.vidflownetwork.response.video.*;
+import com.saransh.vidflowservice.events.InsertVideoMetadataEvent;
 import com.saransh.vidflowservice.video.VideoService;
 import com.saransh.vidflowservice.video.WrapperUploadOperationsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +29,7 @@ public class VideoController {
 
     private final VideoService videoService;
     private final WrapperUploadOperationsService uploadService;
+    private final ApplicationEventPublisher publisher;
 
     @GetMapping(produces = {"application/json"})
     public ResponseEntity<List<Video>> getAllVideos(@RequestParam int page) {
@@ -46,7 +49,7 @@ public class VideoController {
 
     @GetMapping(value = "/user/id/{userId}", produces = {"application/json"})
     public ResponseEntity<List<VideoCardResponseModel>> getAllVideosByUserId(@PathVariable String userId,
-                                                                               @RequestParam int page) {
+                                                                             @RequestParam int page) {
         return ResponseEntity.ok(videoService.getAllVideosByUserId(userId, page));
     }
 
@@ -66,6 +69,19 @@ public class VideoController {
             @RequestParam("video") MultipartFile video,
             @RequestParam("thumbnail") MultipartFile thumbnail) {
         return ResponseEntity.ok(uploadService.uploadVideoAndThumbnail(video, thumbnail));
+    }
+
+    @PostMapping(value = "/upload/new", consumes = {"multipart/form-data"}, produces = {"application/json"})
+    public ResponseEntity<UploadVideoResponseModel> upload(
+            @RequestParam("video") MultipartFile video,
+            @RequestParam("thumbnail") MultipartFile thumbnail,
+            @Validated @RequestParam("metadata") VideoMetadataRequestModel videoMetadata) {
+        System.out.println(videoMetadata);
+        UploadVideoResponseModel uploadVideoResponseModel = uploadService.uploadVideoAndThumbnail(video, thumbnail);
+        videoMetadata.setVideoUrl(uploadVideoResponseModel.getVideoUrl());
+        videoMetadata.setThumbnailUrl(uploadVideoResponseModel.getThumbnailUrl());
+        publisher.publishEvent(new InsertVideoMetadataEvent(uploadVideoResponseModel.getVideoId(), videoMetadata));
+        return ResponseEntity.ok(uploadVideoResponseModel);
     }
 
     @PostMapping(value = "/id/{videoId}/video-metadata",
