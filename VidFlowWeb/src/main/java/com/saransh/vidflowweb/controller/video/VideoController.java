@@ -64,6 +64,9 @@ public class VideoController {
         return ResponseEntity.ok(videoService.getVideoById(videoId));
     }
 
+    /**
+     * The below method will be merged into this endpoint after the migration
+     */
     @PostMapping(value = "/upload", produces = {"application/json"})
     public ResponseEntity<UploadVideoResponseModel> uploadVideo(
             @RequestParam("video") MultipartFile video,
@@ -71,6 +74,9 @@ public class VideoController {
         return ResponseEntity.ok(uploadService.uploadVideoAndThumbnail(video, thumbnail));
     }
 
+    /**
+     * This method is created for migration purpose only, will be removed later
+     */
     @PostMapping(value = "/upload/new", consumes = {"multipart/form-data"}, produces = {"application/json"})
     public ResponseEntity<UploadVideoResponseModel> upload(
             @RequestParam("video") MultipartFile video,
