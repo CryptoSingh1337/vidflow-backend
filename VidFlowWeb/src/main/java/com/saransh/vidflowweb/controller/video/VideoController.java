@@ -8,12 +8,14 @@ import com.saransh.vidflownetwork.response.video.*;
 import com.saransh.vidflowservice.events.InsertVideoMetadataEvent;
 import com.saransh.vidflowservice.video.VideoService;
 import com.saransh.vidflowservice.video.WrapperUploadOperationsService;
+import com.saransh.vidflowweb.validator.VideoMetadataValidatorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +32,7 @@ public class VideoController {
     private final VideoService videoService;
     private final WrapperUploadOperationsService uploadService;
     private final ApplicationEventPublisher publisher;
+    private final VideoMetadataValidatorService videoMetadataValidatorService;
 
     @GetMapping(produces = {"application/json"})
     public ResponseEntity<List<Video>> getAllVideos(@RequestParam int page) {
@@ -81,8 +84,10 @@ public class VideoController {
     public ResponseEntity<UploadVideoResponseModel> upload(
             @RequestParam("video") MultipartFile video,
             @RequestParam("thumbnail") MultipartFile thumbnail,
-            @Validated @RequestParam("metadata") VideoMetadataRequestModel videoMetadata) {
-        System.out.println(videoMetadata);
+            @RequestParam("metadata") VideoMetadataRequestModel videoMetadata)
+            throws NoSuchMethodException, MethodArgumentNotValidException {
+        videoMetadataValidatorService.validateInput(videoMetadata, this.getClass().getMethod("upload",
+                MultipartFile.class, MultipartFile.class, VideoMetadataRequestModel.class));
         UploadVideoResponseModel uploadVideoResponseModel = uploadService.uploadVideoAndThumbnail(video, thumbnail);
         videoMetadata.setVideoUrl(uploadVideoResponseModel.getVideoUrl());
         videoMetadata.setThumbnailUrl(uploadVideoResponseModel.getThumbnailUrl());
