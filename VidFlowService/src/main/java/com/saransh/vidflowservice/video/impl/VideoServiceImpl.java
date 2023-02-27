@@ -51,12 +51,14 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public List<Video> getAllVideos(int page) {
+        // TODO: Change the response to be of type Page
         log.debug("Retrieving all videos");
         return videoRepository.findAll(getAllVideosPageRequest(page)).stream().toList();
     }
 
     @Override
     public List<VideoCardResponseModel> getAllTrendingVideos(int page) {
+        // TODO: Change the response to be of type Page
         log.debug("Retrieving all trending videos");
         return videoRepository.findAllByVideoStatusEquals(getAllTrendingVideosPageRequest(page),
                         VideoStatus.PUBLIC.name()).stream()
@@ -66,6 +68,7 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public List<SearchVideoResponseModel> getAllSearchedVideos(String q, int page) {
+        // TODO: Change the response to be of type Page
         log.debug("Searching all the videos with title: {}", q);
         return videoRepository.findAllByTitleContainingIgnoreCase(getAllVideosPageRequest(page), q).stream()
                 .map(videoMapper::videoToSearchVideoCard)
@@ -74,6 +77,7 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public List<VideoCardResponseModel> getAllVideosByUserId(String userId, int page) {
+        // TODO: Change the response to be of type Page
         log.debug("Retrieving all the video with userId: {}", userId);
         return videoRepository.findAllByUserId(getAllVideosPageRequest(page), userId).stream()
                 .map(videoMapper::videoToVideoCard)
@@ -82,6 +86,7 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public List<UserVideoCardResponseModel> getAllVideosByUsername(String username) {
+        // TODO: Change the response to be of type Page
         log.debug("Retrieving all the video with username: {}", username);
         User user = userService.findUserByUsername(username);
         return videoRepository.findAllByUserId(user.getId()).stream()

@@ -114,6 +114,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<SearchVideoResponseModel> getWatchHistory(String userId, int page) {
+        // TODO: implement pagination
         log.debug("Retrieving watch history for user with ID: {}", userId);
         User user = getUserById(userId);
         if (user.getVideoHistory() != null)
@@ -125,6 +126,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<SearchVideoResponseModel> getLikedVideos(String userId, int page) {
+        // TODO: implement pagination
         log.debug("Retrieving liked videos for user with ID: {}", userId);
         User user = getUserById(userId);
         if (user.getLikedVideos() != null)
