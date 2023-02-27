@@ -88,6 +88,7 @@ public class UserController {
     @GetMapping(value = "/id/{userId}/video/id/{videoId}/liked", produces = {"application/json"})
     public ResponseEntity<?> getVideoLikedStatus(@PathVariable String userId,
                                                  @PathVariable String videoId) {
+        // TODO: change response status
         boolean status = userService.getVideoLikedStatus(userId, videoId);
         if (status) return ResponseEntity.ok(null);
         return ResponseEntity.notFound().build();
