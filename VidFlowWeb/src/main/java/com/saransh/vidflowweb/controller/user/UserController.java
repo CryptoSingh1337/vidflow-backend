@@ -80,6 +80,7 @@ public class UserController {
     @GetMapping(value = "/id/{userId}/subscribed/id/{subscribedUserId}", produces = {"application/json"})
     public ResponseEntity<?> getSubscribedChannelStatus(@PathVariable String userId,
                                                         @PathVariable String subscribedUserId) {
+        // TODO: change the response status
         boolean status = userService.getSubscribedChannelStatus(userId, subscribedUserId);
         if (status) return ResponseEntity.ok(null);
         return ResponseEntity.notFound().build();
