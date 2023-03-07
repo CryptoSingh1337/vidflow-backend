@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -24,7 +25,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -53,7 +53,7 @@ public class VideoOperationsServiceImpl implements VideoOperationsService {
             videoDetails.add(id);
 
             String key = generateBucketPath(username, id,
-                    getFileType(Objects.requireNonNull(videoFile.getOriginalFilename())));
+                    StringUtils.getFilenameExtension(videoFile.getOriginalFilename()));
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(BUCKET_NAME)
                     .key(key)
@@ -78,7 +78,7 @@ public class VideoOperationsServiceImpl implements VideoOperationsService {
             List<String> videoDetails = new ArrayList<>(2);
             String id = new ObjectId().toString();
             String key = generateUploadBlobName(username, id,
-                    getFileType(Objects.requireNonNull(videoFile.getOriginalFilename())));
+                    StringUtils.getFilenameExtension(videoFile.getOriginalFilename()));
             videoDetails.add(id);
             BlobClient blobClient = blobContainerClient.getBlobClient(key);
             try {
