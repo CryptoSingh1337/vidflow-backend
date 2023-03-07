@@ -127,6 +127,7 @@ public class VideoMapperImpl implements VideoMapper {
         userVideoCardResponseModel.thumbnail(video.getThumbnail());
         userVideoCardResponseModel.description(video.getDescription());
         userVideoCardResponseModel.videoStatus(video.getVideoStatus());
+        userVideoCardResponseModel.tags(video.getTags());
 
         return userVideoCardResponseModel.build();
     }
