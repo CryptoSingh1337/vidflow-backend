@@ -125,6 +125,7 @@ public class VideoController {
     public ResponseEntity<?> updateComment(@PathVariable String videoId,
                                            @PathVariable String commentId,
                                            @Validated @RequestBody UpdateCommentRequestModel updateComment) {
+        // TODO: return the updated comment
         videoService.updateComment(videoId, commentId, updateComment);
         return ResponseEntity.ok(null);
     }
