@@ -9,6 +9,7 @@ sudo systemctl start nginx
 sudo systemctl enable nginx
 
 sudo cp nginx/default /etc/nginx/sites-available/default
+sudo mv /var/www/html/index.nginx-debian.html /var/www/html/index.html
 sudo nginx -t
 
 sudo cp build.sh $HOME/build.sh
