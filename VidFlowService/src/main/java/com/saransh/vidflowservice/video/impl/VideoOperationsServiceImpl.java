@@ -55,6 +55,7 @@ public class VideoOperationsServiceImpl implements VideoOperationsService {
             String key = generateBucketPath(username, id,
                     StringUtils.getFilenameExtension(videoFile.getOriginalFilename()));
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .contentType(videoFile.getContentType())
                     .bucket(BUCKET_NAME)
                     .key(key)
                     .build();

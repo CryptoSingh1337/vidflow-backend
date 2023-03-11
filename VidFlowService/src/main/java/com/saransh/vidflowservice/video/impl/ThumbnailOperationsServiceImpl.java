@@ -45,6 +45,7 @@ public class ThumbnailOperationsServiceImpl implements ThumbnailOperationsServic
             String key = generateBucketPath(username, videoId,
                     getFileType(Objects.requireNonNull(thumbnail.getOriginalFilename())));
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .contentType(thumbnail.getContentType())
                     .bucket(BUCKET_NAME)
                     .key(key)
                     .build();
