@@ -9,6 +9,8 @@ import com.saransh.vidflownetwork.request.video.CommentRequestModel;
 import com.saransh.vidflownetwork.request.video.UpdateCommentRequestModel;
 import com.saransh.vidflownetwork.request.video.VideoMetadataRequestModel;
 import com.saransh.vidflownetwork.response.video.*;
+import com.saransh.vidflownetwork.v2.response.video.CommentResponseModel;
+import com.saransh.vidflownetwork.v2.response.video.GetAllVideosResponseModel;
 import com.saransh.vidflownetwork.v2.response.video.UserProperties;
 import com.saransh.vidflowservice.events.DeleteVideoEvent;
 import com.saransh.vidflowservice.mapper.CommentMapper;
@@ -22,9 +24,14 @@ import com.saransh.vidflowutilities.exceptions.UnAuthorizeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,10 +56,12 @@ public class VideoServiceImpl implements VideoService {
     private final VideoMapper videoMapper;
     private final CommentMapper commentMapper;
     private final ApplicationEventPublisher publisher;
+    private final MongoTemplate mongoTemplate;
 
     private final int PAGE_OFFSET = 10;
 
     @Override
+    @Deprecated
     public List<Video> getAllVideos(int page) {
         // TODO: Change the response to be of type Page
         log.debug("Retrieving all videos");
@@ -60,6 +69,26 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
+    public GetAllVideosResponseModel<com.saransh.vidflownetwork.v2.response.video.VideoCardResponseModel> getAllVideosPagination(
+            Integer page, Sort sort) {
+        log.debug("Retrieving all videos for index page");
+        Pageable pageable = getPageable(page);
+        Query query = getQuery(pageable);
+        if (sort != null)
+            query.with(sort);
+        query.fields().include("id", "title", "userId", "channelName", "views", "createdAt", "thumbnail");
+        query.addCriteria(Criteria.where("videoStatus").in("PUBLIC"));
+        List<com.saransh.vidflownetwork.v2.response.video.VideoCardResponseModel> videos = mongoTemplate
+                .find(query, Video.class).stream()
+                .map(videoMapper::videoToVideoCardV2)
+                .toList();
+        return GetAllVideosResponseModel.<com.saransh.vidflownetwork.v2.response.video.VideoCardResponseModel>builder()
+                .videos(getPaginatedData(videos, pageable, query))
+                .build();
+    }
+
+    @Override
+    @Deprecated
     public List<VideoCardResponseModel> getAllTrendingVideos(int page) {
         // TODO: Change the response to be of type Page
         log.debug("Retrieving all trending videos");
@@ -76,6 +105,22 @@ public class VideoServiceImpl implements VideoService {
         return videoRepository.findAllByTitleContainingIgnoreCase(getAllVideosPageRequest(page), q).stream()
                 .map(videoMapper::videoToSearchVideoCard)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public GetAllVideosResponseModel<com.saransh.vidflownetwork.v2.response.video.SearchVideoResponseModel> getAllSearchedVideosPaginated(String searchTitle, Integer page) {
+        log.debug("Searching all the videos with title: {}", searchTitle);
+        Pageable pageable = getPageable(page);
+        Query query = getQuery(pageable);
+        query.addCriteria(Criteria.where("title")
+                .regex(String.format("^%s", searchTitle), "i"));
+        query.addCriteria(Criteria.where("videoStatus").in("PUBLIC"));
+        List<com.saransh.vidflownetwork.v2.response.video.SearchVideoResponseModel> videos = mongoTemplate.find(query, Video.class).stream()
+                .map(videoMapper::videoToSearchVideoCardV2)
+                .toList();
+        return GetAllVideosResponseModel.<com.saransh.vidflownetwork.v2.response.video.SearchVideoResponseModel>builder()
+                .videos(getPaginatedData(videos, pageable, query))
+                .build();
     }
 
     @Override
@@ -176,6 +221,7 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional
+    @Deprecated
     public AddCommentResponseModel addCommentToVideo(String videoId, CommentRequestModel commentRequestModel) {
         log.debug("Adding comment to the video with ID: {}", videoId);
         Video video = getVideoByIdHelper(videoId);
@@ -189,11 +235,30 @@ public class VideoServiceImpl implements VideoService {
                 .filter(c -> c.getId().equals(comment.getId()))
                 .findFirst()
                 .orElseThrow(() -> new MongoWriteException("Comment is not added"));
-        return commentMapper.commentToAddCommentResponseModel(savedComment);
+        return commentMapper.commentToCommentResponseModel(savedComment);
     }
 
     @Override
     @Transactional
+    public CommentResponseModel addCommentToVideoV2(String videoId, com.saransh.vidflownetwork.v2.request.video.CommentRequestModel commentRequestModel) {
+        log.debug("Adding comment to the video with ID: {}", videoId);
+        Video video = getVideoByIdHelper(videoId);
+        Comment comment = commentMapper.commentRequestModelToCommentV2(commentRequestModel);
+        comment.setId(UUID.randomUUID().toString());
+        comment.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
+        video.addComment(comment);
+        Video savedVideo = videoRepository.save(video);
+        log.debug("Added comment to the video with comment ID: {}", comment.getId());
+        Comment savedComment = savedVideo.getComments().stream()
+                .filter(c -> c.getId().equals(comment.getId()))
+                .findFirst()
+                .orElseThrow(() -> new MongoWriteException("Comment is not added"));
+        return commentMapper.commentToCommentResponseModelV2(savedComment);
+    }
+
+    @Override
+    @Transactional
+    @Deprecated
     public void updateComment(String videoId, String commentId, UpdateCommentRequestModel updateComment) {
         log.debug("Updating comment with ID: {} with video ID: {}", commentId, videoId);
         Video video = getVideoByIdHelper(videoId);
@@ -202,6 +267,18 @@ public class VideoServiceImpl implements VideoService {
         comment.setBody(updateComment.getBody());
         videoRepository.save(video);
         log.debug("Updated comment...");
+    }
+
+    @Override
+    public CommentResponseModel updateCommentV2(String videoId, String commentId, com.saransh.vidflownetwork.v2.request.video.UpdateCommentRequestModel updateComment) {
+        log.debug("Updating comment with ID: {} with video ID: {}", commentId, videoId);
+        Video video = getVideoByIdHelper(videoId);
+        Comment comment = video.getComments().stream().filter(c -> c.getId().equals(commentId))
+                .findFirst().orElseThrow();
+        comment.setBody(updateComment.getBody());
+        videoRepository.save(video);
+        log.debug("Updated comment...");
+        return commentMapper.commentToCommentResponseModelV2(comment);
     }
 
     @Override
@@ -228,5 +305,22 @@ public class VideoServiceImpl implements VideoService {
     private Video getVideoByIdHelper(String videoId) {
         return videoRepository.findById(videoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
+    }
+
+    private <T> Page<T> getPaginatedData(List<T> data, Pageable pageable, Query query) {
+        return PageableExecutionUtils.getPage(data, pageable,
+                () -> mongoTemplate.count(query.skip(-1).limit(-1),
+                        Video.class));
+    }
+
+    private Pageable getPageable(int page) {
+        return PageRequest.of(page, PAGE_OFFSET);
+    }
+
+    private Query getQuery(Pageable pageable) {
+        return new Query()
+                .with(pageable)
+                .skip(Integer.toUnsignedLong(pageable.getPageSize() * pageable.getPageNumber()))
+                .limit(pageable.getPageSize());
     }
 }

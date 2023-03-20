@@ -127,12 +127,34 @@ public class VideoMapperImpl implements VideoMapper {
     }
 
     @Override
+    @Deprecated
     public SearchVideoResponseModel videoToSearchVideoCard(Video video) {
         if (video == null) {
             return null;
         }
 
         SearchVideoResponseModel.SearchVideoResponseModelBuilder searchVideoResponseModel = SearchVideoResponseModel.builder();
+
+        searchVideoResponseModel.id(video.getId());
+        searchVideoResponseModel.channelName(video.getChannelName());
+        searchVideoResponseModel.userId(video.getUserId());
+        searchVideoResponseModel.createdAt(video.getCreatedAt());
+        searchVideoResponseModel.thumbnail(video.getThumbnail());
+        searchVideoResponseModel.title(video.getTitle());
+        searchVideoResponseModel.description(video.getDescription());
+        searchVideoResponseModel.views(video.getViews());
+
+        return searchVideoResponseModel.build();
+    }
+
+    @Override
+    public com.saransh.vidflownetwork.v2.response.video.SearchVideoResponseModel videoToSearchVideoCardV2(Video video) {
+        if (video == null) {
+            return null;
+        }
+
+        com.saransh.vidflownetwork.v2.response.video.SearchVideoResponseModel.SearchVideoResponseModelBuilder searchVideoResponseModel =
+                com.saransh.vidflownetwork.v2.response.video.SearchVideoResponseModel.builder();
 
         searchVideoResponseModel.id(video.getId());
         searchVideoResponseModel.channelName(video.getChannelName());

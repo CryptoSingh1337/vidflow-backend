@@ -24,7 +24,10 @@ public interface VideoMapper {
 
     com.saransh.vidflownetwork.v2.response.video.VideoCardResponseModel videoToVideoCardV2(Video video);
 
+    @Deprecated
     SearchVideoResponseModel videoToSearchVideoCard(Video video);
+
+    com.saransh.vidflownetwork.v2.response.video.SearchVideoResponseModel videoToSearchVideoCardV2(Video video);
 
     Video videoMetadataToVideo(VideoMetadataRequestModel videoMetadata);
 
