@@ -14,9 +14,16 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface VideoMapper {
 
+    @Deprecated
     WatchVideoResponseModel videoToWatchVideo(Video video);
+
+    com.saransh.vidflownetwork.v2.response.video.WatchVideoResponseModel videoToWatchVideoResponse(Video video, int subscribersCount);
+
     VideoCardResponseModel videoToVideoCard(Video video);
+
     SearchVideoResponseModel videoToSearchVideoCard(Video video);
+
     Video videoMetadataToVideo(VideoMetadataRequestModel videoMetadata);
+
     UserVideoCardResponseModel videoToUserVideoCard(Video video);
 }

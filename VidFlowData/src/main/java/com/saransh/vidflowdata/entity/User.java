@@ -87,6 +87,12 @@ public class User {
         this.videoHistory.add(video);
     }
 
+    public boolean isLikedVideo(Video video) {
+        if (this.likedVideos == null)
+            return false;
+        return this.likedVideos.contains(video);
+    }
+
     @Override
     public int hashCode() {
         return this.id.hashCode();

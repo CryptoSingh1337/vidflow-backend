@@ -1,4 +1,4 @@
-package com.saransh.vidflowweb.controller.graphql;
+package com.saransh.vidflowweb.controller.v1.graphql;
 
 import com.saransh.vidflowdata.entity.User;
 import com.saransh.vidflowdata.entity.Video;

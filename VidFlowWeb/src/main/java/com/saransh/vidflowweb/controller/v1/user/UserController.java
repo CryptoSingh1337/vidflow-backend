@@ -1,4 +1,4 @@
-package com.saransh.vidflowweb.controller.user;
+package com.saransh.vidflowweb.controller.v1.user;
 
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -36,7 +36,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
  * author: CryptoSingh1337
  */
 @RequiredArgsConstructor
-@RestController
+@RestController("userControllerV1")
 @RequestMapping("/api/v1/user")
 public class UserController {
 

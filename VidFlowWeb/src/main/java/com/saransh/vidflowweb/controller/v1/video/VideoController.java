@@ -1,4 +1,4 @@
-package com.saransh.vidflowweb.controller.video;
+package com.saransh.vidflowweb.controller.v1.video;
 
 import com.saransh.vidflowdata.entity.Video;
 import com.saransh.vidflownetwork.request.video.CommentRequestModel;
@@ -25,7 +25,7 @@ import java.util.List;
  * author: CryptoSingh1337
  */
 @RequiredArgsConstructor
-@RestController
+@RestController("videoControllerV1")
 @RequestMapping("/api/v1/video")
 public class VideoController {
 

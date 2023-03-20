@@ -7,6 +7,8 @@ import com.saransh.vidflownetwork.response.video.SearchVideoResponseModel;
 import com.saransh.vidflownetwork.response.video.UserVideoCardResponseModel;
 import com.saransh.vidflownetwork.response.video.VideoCardResponseModel;
 import com.saransh.vidflownetwork.response.video.WatchVideoResponseModel;
+import com.saransh.vidflownetwork.v2.response.video.BaseVideoModel;
+import com.saransh.vidflownetwork.v2.response.video.Channel;
 import com.saransh.vidflowservice.mapper.VideoMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -45,6 +47,43 @@ public class VideoMapperImpl implements VideoMapper {
             watchVideoResponseModel.comments(new LinkedHashSet<>(set));
         }
         return watchVideoResponseModel.build();
+    }
+
+    @Override
+    public com.saransh.vidflownetwork.v2.response.video.WatchVideoResponseModel videoToWatchVideoResponse(
+            Video video, int subscribersCount) {
+        com.saransh.vidflownetwork.v2.response.video.WatchVideoResponseModel
+                .WatchVideoResponseModelBuilder watchVideoResponseModelBuilder = com.saransh.vidflownetwork.v2.response
+                .video.WatchVideoResponseModel.builder();
+
+        Channel channel = Channel.builder()
+                .subscribers(subscribersCount)
+                .build();
+
+        BaseVideoModel baseVideoModel = BaseVideoModel.builder()
+                .id(video.getId())
+                .title(video.getTitle())
+                .channelName(video.getChannelName())
+                .userId(video.getUserId())
+                .description(video.getDescription())
+                .videoUrl(video.getVideoUrl())
+                .views(video.getViews())
+                .likes(video.getLikes())
+                .dislikes(video.getDislikes())
+                .createdAt(video.getCreatedAt())
+                .thumbnail(video.getThumbnail())
+                .build();
+
+        if (CollectionUtils.isEmpty(video.getComments())) {
+            baseVideoModel.setComments(new HashSet<>());
+        } else {
+            baseVideoModel.setComments(new LinkedHashSet<>(video.getComments()));
+        }
+
+        return watchVideoResponseModelBuilder
+                .channel(channel)
+                .video(baseVideoModel)
+                .build();
     }
 
     @Override

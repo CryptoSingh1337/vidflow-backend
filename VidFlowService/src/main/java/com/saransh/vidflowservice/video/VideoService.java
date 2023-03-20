@@ -24,7 +24,10 @@ public interface VideoService extends CommentService {
 
     List<UserVideoCardResponseModel> getAllVideosByUsername(String userId);
 
+    @Deprecated
     WatchVideoResponseModel getVideoById(String id);
+
+    com.saransh.vidflownetwork.v2.response.video.WatchVideoResponseModel getVideoById(String id, Boolean likeStatus, String userId);
 
     void insert(String videoId, VideoMetadataRequestModel videoMetadataRequestModel);
 

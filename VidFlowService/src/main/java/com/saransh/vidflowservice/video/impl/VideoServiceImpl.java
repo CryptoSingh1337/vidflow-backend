@@ -9,11 +9,13 @@ import com.saransh.vidflownetwork.request.video.CommentRequestModel;
 import com.saransh.vidflownetwork.request.video.UpdateCommentRequestModel;
 import com.saransh.vidflownetwork.request.video.VideoMetadataRequestModel;
 import com.saransh.vidflownetwork.response.video.*;
+import com.saransh.vidflownetwork.v2.response.video.UserProperties;
 import com.saransh.vidflowservice.events.DeleteVideoEvent;
 import com.saransh.vidflowservice.mapper.CommentMapper;
 import com.saransh.vidflowservice.mapper.VideoMapper;
 import com.saransh.vidflowservice.user.UserService;
 import com.saransh.vidflowservice.video.VideoService;
+import com.saransh.vidflowutilities.exceptions.BadRequestException;
 import com.saransh.vidflowutilities.exceptions.MongoWriteException;
 import com.saransh.vidflowutilities.exceptions.ResourceNotFoundException;
 import com.saransh.vidflowutilities.exceptions.UnAuthorizeException;
@@ -26,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -95,11 +98,33 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
+    @Deprecated
     public WatchVideoResponseModel getVideoById(String id) {
         log.debug("Retrieving video with ID: {}", id);
         Video video = videoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
         return videoMapper.videoToWatchVideo(video);
+    }
+
+    @Override
+    public com.saransh.vidflownetwork.v2.response.video.WatchVideoResponseModel getVideoById(
+            String id, Boolean likeStatus, String userId) {
+        log.debug("Retrieving video with ID: {}", id);
+        Video video = getVideoByIdHelper(id);
+        int subscribersCount = userService.getUserByUserId(video.getUserId()).getSubscribersCount();
+        com.saransh.vidflownetwork.v2.response.video.WatchVideoResponseModel watchVideoResponseModel = videoMapper
+                .videoToWatchVideoResponse(video, subscribersCount);
+
+        if (likeStatus && !StringUtils.hasLength(userId))
+            throw new BadRequestException("Invalid user id");
+
+        if (likeStatus) {
+            User authenticatedUser = userService.getUserByUserId(userId);
+            watchVideoResponseModel.setUserProperties(UserProperties.builder()
+                    .likeStatus(authenticatedUser.isLikedVideo(video))
+                    .build());
+        }
+        return watchVideoResponseModel;
     }
 
     @Override

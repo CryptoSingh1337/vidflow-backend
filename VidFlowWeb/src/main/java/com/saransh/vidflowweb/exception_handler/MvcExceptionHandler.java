@@ -5,10 +5,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.mongodb.MongoWriteException;
 import com.saransh.vidflownetwork.global.ApiResponse;
 import com.saransh.vidflowutilities.error.AppErrorCode;
-import com.saransh.vidflowutilities.exceptions.ResourceNotFoundException;
-import com.saransh.vidflowutilities.exceptions.UnAuthorizeException;
-import com.saransh.vidflowutilities.exceptions.UnsupportedFormatException;
-import com.saransh.vidflowutilities.exceptions.UploadFailedException;
+import com.saransh.vidflowutilities.exceptions.*;
 import com.saransh.vidflowutilities.response.ApiResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -81,7 +78,7 @@ public class MvcExceptionHandler {
     @ExceptionHandler(UnsupportedFormatException.class)
     public ResponseEntity<?> handleUnsupportedFormatException(UnsupportedFormatException e) {
         return ResponseEntity.status(BAD_REQUEST)
-                .body(ApiResponseUtil.createApiErrorResponse(AppErrorCode.APP_CLT_400));
+                .body(ApiResponseUtil.createApiErrorResponse(AppErrorCode.APP_CLT_400_1));
     }
 
     @ExceptionHandler(UploadFailedException.class)
@@ -94,5 +91,11 @@ public class MvcExceptionHandler {
     public ResponseEntity<?> handleMongoWriteException(com.saransh.vidflowutilities.exceptions.MongoWriteException e) {
         return ResponseEntity.status(BAD_REQUEST)
                 .body(ApiResponseUtil.createApiErrorResponse(AppErrorCode.APP_INT_500));
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<?> handleBadRequestException(BadRequestException e) {
+        return ResponseEntity.status(BAD_REQUEST)
+                .body(ApiResponseUtil.createApiErrorResponse(AppErrorCode.APP_CLT_400_2));
     }
 }
