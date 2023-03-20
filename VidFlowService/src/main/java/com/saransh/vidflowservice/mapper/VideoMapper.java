@@ -19,7 +19,10 @@ public interface VideoMapper {
 
     com.saransh.vidflownetwork.v2.response.video.WatchVideoResponseModel videoToWatchVideoResponse(Video video, int subscribersCount);
 
+    @Deprecated
     VideoCardResponseModel videoToVideoCard(Video video);
+
+    com.saransh.vidflownetwork.v2.response.video.VideoCardResponseModel videoToVideoCardV2(Video video);
 
     SearchVideoResponseModel videoToSearchVideoCard(Video video);
 

@@ -13,4 +13,5 @@ import lombok.*;
 public class UserProperties {
 
     private Boolean likeStatus;
+    private Boolean subscribeStatus;
 }

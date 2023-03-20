@@ -8,17 +8,24 @@ import com.saransh.vidflowdata.repository.VideoRepository;
 import com.saransh.vidflownetwork.request.user.UserRequestModel;
 import com.saransh.vidflownetwork.response.user.UserResponseModel;
 import com.saransh.vidflownetwork.response.video.SearchVideoResponseModel;
+import com.saransh.vidflownetwork.v2.response.user.GetChannelDetailsResponseModel;
+import com.saransh.vidflownetwork.v2.response.video.Channel;
+import com.saransh.vidflownetwork.v2.response.video.UserProperties;
 import com.saransh.vidflowservice.mapper.UserMapper;
 import com.saransh.vidflowservice.mapper.VideoMapper;
 import com.saransh.vidflowservice.user.UserService;
+import com.saransh.vidflowutilities.exceptions.BadRequestException;
 import com.saransh.vidflowutilities.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final VideoMapper videoMapper;
     private final PasswordEncoder passwordEncoder;
+    private final int PAGE_OFFSET = 10;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -61,9 +69,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByUserId(String userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+    public User getUserById(String userId) {
+        return getUserByIdHelper(userId);
     }
 
     @Override
@@ -72,19 +79,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Deprecated
     public String getChannelNameForUserId(String userId) {
-        return getUserById(userId).getChannelName();
+        return getUserByIdHelper(userId).getChannelName();
     }
 
     @Override
     public Integer getUserSubscribersCount(String userId) {
-        return getUserById(userId).getSubscribersCount();
+        return getUserByIdHelper(userId).getSubscribersCount();
     }
 
     @Override
     public List<SubscribedChannel> getUserSubscribedChannels(String userId) {
         log.debug("Retrieving all the subscribed channels for userId: {}", userId);
-        Set<User> subscribedChannels = getUserById(userId).getSubscribedTo();
+        Set<User> subscribedChannels = getUserByIdHelper(userId).getSubscribedTo();
         if (subscribedChannels != null)
             return subscribedChannels.stream()
                     .map(userMapper::userToSubscribedChannel)
@@ -95,17 +103,45 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean getSubscribedChannelStatus(String userId, String subscribedChannelId) {
         log.debug("Checking subscribed status for user ID: {}", userId);
-        User user = getUserById(userId);
-        User subscribedChannel = getUserById(subscribedChannelId);
+        User user = getUserByIdHelper(userId);
+        User subscribedChannel = getUserByIdHelper(subscribedChannelId);
         if (user.getSubscribedTo() != null)
             return user.getSubscribedTo().contains(subscribedChannel);
         return false;
     }
 
     @Override
+    public GetChannelDetailsResponseModel getChannelDetailsById(String userId, Boolean subscribeStatus,
+                                                                Integer page, String authenticatedUserId) {
+        log.debug("Retrieving all the video with userId: {}", userId);
+        List<com.saransh.vidflownetwork.v2.response.video.VideoCardResponseModel> videos = videoRepository
+                .findAllByUserId(getAllVideosPageRequest(page), userId).stream()
+                .map(videoMapper::videoToVideoCardV2)
+                .collect(Collectors.toList());
+        User subscribedChannel = getUserById(userId);
+        GetChannelDetailsResponseModel.GetChannelDetailsResponseModelBuilder getChannelDetailsResponseModelBuilder =
+                GetChannelDetailsResponseModel.builder();
+        getChannelDetailsResponseModelBuilder.videos(videos);
+        getChannelDetailsResponseModelBuilder.channel(Channel.builder()
+                .subscribers(subscribedChannel.getSubscribersCount())
+                .build());
+
+        if (subscribeStatus && !StringUtils.hasLength(authenticatedUserId))
+            throw new BadRequestException("Invalid user id");
+
+        if (subscribeStatus) {
+            User user = getUserByIdHelper(authenticatedUserId);
+            getChannelDetailsResponseModelBuilder.userProperties(UserProperties.builder()
+                    .subscribeStatus(user.isSubscribedChannel(subscribedChannel))
+                    .build());
+        }
+        return getChannelDetailsResponseModelBuilder.build();
+    }
+
+    @Override
     public boolean getVideoLikedStatus(String userId, String videoId) {
         log.debug("Checking liked status for user ID: {}", userId);
-        User user = getUserById(userId);
+        User user = getUserByIdHelper(userId);
         Video video = getVideoByIdHelper(videoId);
         if (user.getLikedVideos() != null)
             return user.getLikedVideos().contains(video);
@@ -116,7 +152,7 @@ public class UserServiceImpl implements UserService {
     public List<SearchVideoResponseModel> getWatchHistory(String userId, int page) {
         // TODO: implement pagination
         log.debug("Retrieving watch history for user with ID: {}", userId);
-        User user = getUserById(userId);
+        User user = getUserByIdHelper(userId);
         if (user.getVideoHistory() != null)
             return user.getVideoHistory().stream()
                     .map(videoMapper::videoToSearchVideoCard)
@@ -128,7 +164,7 @@ public class UserServiceImpl implements UserService {
     public List<SearchVideoResponseModel> getLikedVideos(String userId, int page) {
         // TODO: implement pagination
         log.debug("Retrieving liked videos for user with ID: {}", userId);
-        User user = getUserById(userId);
+        User user = getUserByIdHelper(userId);
         if (user.getLikedVideos() != null)
             return user.getLikedVideos().stream()
                     .map(videoMapper::videoToSearchVideoCard)
@@ -161,8 +197,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateSubscribers(String userId, String subscribeToUserId, boolean increase) {
         log.debug("Updating subscribed channels for user ID: {}", userId);
-        User user = getUserById(userId);
-        User channelToSubscribeUser = getUserById(subscribeToUserId);
+        User user = getUserByIdHelper(userId);
+        User channelToSubscribeUser = getUserByIdHelper(subscribeToUserId);
         if (!user.getId().equals(channelToSubscribeUser.getId())) {
             if (increase) {
                 log.debug("Incrementing subscribers...");
@@ -187,7 +223,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateLikedVideos(String userId, String videoId, boolean isLiked) {
         log.debug("Updating liked videos for user ID: {}", userId);
-        User user = getUserById(userId);
+        User user = getUserByIdHelper(userId);
         Video video = getVideoByIdHelper(videoId);
         if (isLiked) {
             user.addLikedVideo(video);
@@ -204,7 +240,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void addWatchHistory(String userId, String videoId) {
         log.debug("Adding video with ID: {} to watch history", videoId);
-        User user = getUserById(userId);
+        User user = getUserByIdHelper(userId);
         Video video = getVideoByIdHelper(videoId);
         if (user.getVideoHistory() == null || !user.getVideoHistory().contains(video)) {
             user.addVideoHistory(video);
@@ -236,7 +272,7 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteByUsername(username);
     }
 
-    private User getUserById(String userId) {
+    private User getUserByIdHelper(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
@@ -244,5 +280,9 @@ public class UserServiceImpl implements UserService {
     private Video getVideoByIdHelper(String videoId) {
         return videoRepository.findById(videoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
+    }
+
+    private Pageable getAllVideosPageRequest(int page) {
+        return PageRequest.of(page, PAGE_OFFSET);
     }
 }

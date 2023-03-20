@@ -5,6 +5,7 @@ import com.saransh.vidflowdata.entity.User;
 import com.saransh.vidflownetwork.request.user.UserRequestModel;
 import com.saransh.vidflownetwork.response.user.UserResponseModel;
 import com.saransh.vidflownetwork.response.video.SearchVideoResponseModel;
+import com.saransh.vidflownetwork.v2.response.user.GetChannelDetailsResponseModel;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -15,22 +16,43 @@ import java.util.List;
 public interface UserService extends UserDetailsService {
 
     User findUserByUsername(String username);
+
     UserResponseModel getUser(String username);
-    User getUserByUserId(String userId);
+
+    User getUserById(String userId);
+
     String getChannelNameOfAUser(String username);
+
+    @Deprecated
     String getChannelNameForUserId(String userId);
+
     Integer getUserSubscribersCount(String userId);
+
     List<SubscribedChannel> getUserSubscribedChannels(String userId);
+
     boolean getSubscribedChannelStatus(String userId, String subscribedChannelId);
+
+    GetChannelDetailsResponseModel getChannelDetailsById(String userId, Boolean subscribeStatus, Integer page, String authenticatedUserId);
+
     boolean getVideoLikedStatus(String userId, String videoId);
+
     List<SearchVideoResponseModel> getWatchHistory(String userId, int page);
+
     List<SearchVideoResponseModel> getLikedVideos(String userId, int page);
+
     UserResponseModel insert(UserRequestModel userRequestModel);
+
     UserResponseModel update(String username, UserRequestModel userRequestModel);
+
     void updateSubscribers(String userId, String subscribeToChannel, boolean increment);
+
     void updateLikedVideos(String userId, String videoId, boolean increment);
+
     void addWatchHistory(String userId, String videoId);
+
     void updatePassword(String username, String changedPassword);
+
     void updateChannelName(String username, String channelName);
+
     void delete(String username);
 }

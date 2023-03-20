@@ -111,7 +111,7 @@ public class VideoServiceImpl implements VideoService {
             String id, Boolean likeStatus, String userId) {
         log.debug("Retrieving video with ID: {}", id);
         Video video = getVideoByIdHelper(id);
-        int subscribersCount = userService.getUserByUserId(video.getUserId()).getSubscribersCount();
+        int subscribersCount = userService.getUserSubscribersCount(video.getUserId());
         com.saransh.vidflownetwork.v2.response.video.WatchVideoResponseModel watchVideoResponseModel = videoMapper
                 .videoToWatchVideoResponse(video, subscribersCount);
 
@@ -119,7 +119,7 @@ public class VideoServiceImpl implements VideoService {
             throw new BadRequestException("Invalid user id");
 
         if (likeStatus) {
-            User authenticatedUser = userService.getUserByUserId(userId);
+            User authenticatedUser = userService.getUserById(userId);
             watchVideoResponseModel.setUserProperties(UserProperties.builder()
                     .likeStatus(authenticatedUser.isLikedVideo(video))
                     .build());

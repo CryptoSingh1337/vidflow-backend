@@ -93,6 +93,12 @@ public class User {
         return this.likedVideos.contains(video);
     }
 
+    public boolean isSubscribedChannel(User user) {
+        if (this.subscribedTo == null)
+            return false;
+        return this.subscribedTo.contains(user);
+    }
+
     @Override
     public int hashCode() {
         return this.id.hashCode();

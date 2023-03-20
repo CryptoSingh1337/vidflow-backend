@@ -18,7 +18,7 @@ public record GraphqlController(UserService userService, VideoService videoServi
 
     @QueryMapping("user")
     public User getUserByUserId(@Argument String id) {
-        return userService.getUserByUserId(id);
+        return userService.getUserById(id);
     }
 
     @QueryMapping("videos")
