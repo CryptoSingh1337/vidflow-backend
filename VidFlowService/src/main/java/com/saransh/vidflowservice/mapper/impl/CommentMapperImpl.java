@@ -68,7 +68,7 @@ public class CommentMapperImpl implements CommentMapper {
             return null;
         }
 
-        CommentResponseModel.AddCommentResponseModelBuilder addCommentResponseModel = CommentResponseModel.builder();
+        CommentResponseModel.CommentResponseModelBuilder addCommentResponseModel = CommentResponseModel.builder();
 
         addCommentResponseModel.id(comment.getId());
         addCommentResponseModel.username(comment.getUsername());

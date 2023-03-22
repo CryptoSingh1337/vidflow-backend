@@ -10,6 +10,7 @@ import com.saransh.vidflowservice.events.InsertVideoMetadataEvent;
 import com.saransh.vidflowservice.video.VideoService;
 import com.saransh.vidflowservice.video.WrapperUploadOperationsService;
 import com.saransh.vidflowweb.validator.VideoMetadataValidatorService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +28,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * author: CryptoSingh1337
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v2/video")
-public record VideoController(VideoService videoService, WrapperUploadOperationsService uploadOperationsService,
-                              ApplicationEventPublisher publisher,
-                              VideoMetadataValidatorService videoMetadataValidatorService) {
+public class VideoController {
+    private final VideoService videoService;
+    private final WrapperUploadOperationsService uploadOperationsService;
+    private final ApplicationEventPublisher publisher;
+    private final VideoMetadataValidatorService videoMetadataValidatorService;
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<GetAllVideosResponseModel<VideoCardResponseModel>>> getAllVideos(Integer page) {
