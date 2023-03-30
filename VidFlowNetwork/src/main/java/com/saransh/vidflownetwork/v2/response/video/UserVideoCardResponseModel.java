@@ -1,4 +1,4 @@
-package com.saransh.vidflownetwork.response.video;
+package com.saransh.vidflownetwork.v2.response.video;
 
 import com.saransh.vidflowdata.entity.VideoStatus;
 import com.saransh.vidflownetwork.global.Response;
@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @AllArgsConstructor
 @Builder
 public class UserVideoCardResponseModel implements Response {
-
     private String id;
     private String title;
     private String userId;

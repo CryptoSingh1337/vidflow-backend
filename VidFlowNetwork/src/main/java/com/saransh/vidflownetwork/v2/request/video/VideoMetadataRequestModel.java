@@ -1,4 +1,4 @@
-package com.saransh.vidflownetwork.request.video;
+package com.saransh.vidflownetwork.v2.request.video;
 
 import com.saransh.vidflowdata.entity.VideoStatus;
 import jakarta.validation.constraints.NotBlank;
@@ -22,23 +22,16 @@ public class VideoMetadataRequestModel {
     @NotBlank
     @Size(min = 1, max = 100)
     private String title;
-
     @NotBlank
     @Size(min = 1, max = 500)
     private String description;
-
-    private String thumbnailUrl;
-
-    private String videoUrl;
-
-    private List<String> tags;
-
     @NotBlank
     private String channelName;
-
     @NotBlank
     private String username;
-
     @NotNull
     private VideoStatus videoStatus;
+    private String thumbnailUrl;
+    private String videoUrl;
+    private List<String> tags;
 }

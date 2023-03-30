@@ -1,14 +1,13 @@
 package com.saransh.vidflowservice.user;
 
-import com.saransh.vidflowdata.entity.SubscribedChannel;
 import com.saransh.vidflowdata.entity.User;
-import com.saransh.vidflownetwork.request.user.UserRequestModel;
-import com.saransh.vidflownetwork.response.user.UserResponseModel;
-import com.saransh.vidflownetwork.response.video.SearchVideoResponseModel;
+import com.saransh.vidflownetwork.v2.request.user.UserRequestModel;
 import com.saransh.vidflownetwork.v2.response.user.GetChannelDetailsResponseModel;
+import com.saransh.vidflownetwork.v2.response.user.SubscribedChannelResponseModel;
+import com.saransh.vidflownetwork.v2.response.user.UserResponseModel;
+import com.saransh.vidflownetwork.v2.response.video.GetAllVideosResponseModel;
+import com.saransh.vidflownetwork.v2.response.video.SearchVideoResponseModel;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
-import java.util.List;
 
 /**
  * author: CryptoSingh1337
@@ -21,24 +20,16 @@ public interface UserService extends UserDetailsService {
 
     User getUserById(String userId);
 
-    String getChannelNameOfAUser(String username);
-
-    @Deprecated
-    String getChannelNameForUserId(String userId);
-
     Integer getUserSubscribersCount(String userId);
 
-    List<SubscribedChannel> getUserSubscribedChannels(String userId);
+    GetChannelDetailsResponseModel getChannelDetailsById(String userId, Boolean subscribeStatus, Integer page,
+                                                         String authenticatedUserId);
 
-    boolean getSubscribedChannelStatus(String userId, String subscribedChannelId);
+    GetAllVideosResponseModel<SearchVideoResponseModel> getWatchHistory(String userId, Integer page);
 
-    GetChannelDetailsResponseModel getChannelDetailsById(String userId, Boolean subscribeStatus, Integer page, String authenticatedUserId);
+    GetAllVideosResponseModel<SearchVideoResponseModel> getLikedVideos(String userId, Integer page);
 
-    boolean getVideoLikedStatus(String userId, String videoId);
-
-    List<SearchVideoResponseModel> getWatchHistory(String userId, int page);
-
-    List<SearchVideoResponseModel> getLikedVideos(String userId, int page);
+    SubscribedChannelResponseModel getSubscribedChannels(String userId);
 
     UserResponseModel insert(UserRequestModel userRequestModel);
 

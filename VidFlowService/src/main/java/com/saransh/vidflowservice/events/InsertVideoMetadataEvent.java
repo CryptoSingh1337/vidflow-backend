@@ -1,6 +1,6 @@
 package com.saransh.vidflowservice.events;
 
-import com.saransh.vidflownetwork.request.video.VideoMetadataRequestModel;
+import com.saransh.vidflownetwork.v2.request.video.VideoMetadataRequestModel;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * author: CryptoSingh1337
@@ -58,7 +59,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     decodedJWT = verifier.verify(token);
                 } catch (TokenExpiredException e) {
                     res.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    res.setContentType("application/json");
+                    res.setContentType(APPLICATION_JSON_VALUE);
                     mapper.writeValue(res.getWriter(),
                             ApiResponseUtil.createApiErrorResponse(AppErrorCode.APP_AUTH_003));
                     return;
@@ -70,7 +71,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(req, res);
             } else {
                 res.setStatus(HttpStatus.UNAUTHORIZED.value());
-                res.setContentType("application/json");
+                res.setContentType(APPLICATION_JSON_VALUE);
                 mapper.writeValue(res.getWriter(),
                         ApiResponseUtil.createApiErrorResponse(AppErrorCode.APP_AUTH_001));
             }
@@ -80,7 +81,15 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest req) {
         String requestPath = req.getServletPath();
+        String requestMethod = req.getMethod();
+
+        if ("PUT".equals(requestMethod) && pathMatcher.match("/api/v2/video/views/id/{videoId}", requestPath))
+            return true;
+
+        if (!"GET".equals(req.getMethod()))
+            return false;
+
         return urls.stream()
-                .anyMatch(p -> pathMatcher.match(p, requestPath) && req.getMethod().equals("GET"));
+                .anyMatch(p -> pathMatcher.match(p, requestPath));
     }
 }

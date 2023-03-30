@@ -1,16 +1,14 @@
 package com.saransh.vidflowservice.user.impl;
 
-import com.saransh.vidflowdata.entity.SubscribedChannel;
 import com.saransh.vidflowdata.entity.User;
 import com.saransh.vidflowdata.entity.Video;
 import com.saransh.vidflowdata.repository.UserRepository;
 import com.saransh.vidflowdata.repository.VideoRepository;
-import com.saransh.vidflownetwork.request.user.UserRequestModel;
-import com.saransh.vidflownetwork.response.user.UserResponseModel;
-import com.saransh.vidflownetwork.response.video.SearchVideoResponseModel;
+import com.saransh.vidflownetwork.v2.request.user.UserRequestModel;
 import com.saransh.vidflownetwork.v2.response.user.GetChannelDetailsResponseModel;
-import com.saransh.vidflownetwork.v2.response.video.Channel;
-import com.saransh.vidflownetwork.v2.response.video.UserProperties;
+import com.saransh.vidflownetwork.v2.response.user.SubscribedChannelResponseModel;
+import com.saransh.vidflownetwork.v2.response.user.UserResponseModel;
+import com.saransh.vidflownetwork.v2.response.video.*;
 import com.saransh.vidflowservice.mapper.UserMapper;
 import com.saransh.vidflowservice.mapper.VideoMapper;
 import com.saransh.vidflowservice.user.UserService;
@@ -18,6 +16,8 @@ import com.saransh.vidflowutilities.exceptions.BadRequestException;
 import com.saransh.vidflowutilities.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -74,56 +74,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String getChannelNameOfAUser(String username) {
-        return findUserByUsername(username).getChannelName();
-    }
-
-    @Override
-    @Deprecated
-    public String getChannelNameForUserId(String userId) {
-        return getUserByIdHelper(userId).getChannelName();
-    }
-
-    @Override
     public Integer getUserSubscribersCount(String userId) {
         return getUserByIdHelper(userId).getSubscribersCount();
     }
 
     @Override
-    public List<SubscribedChannel> getUserSubscribedChannels(String userId) {
-        log.debug("Retrieving all the subscribed channels for userId: {}", userId);
-        Set<User> subscribedChannels = getUserByIdHelper(userId).getSubscribedTo();
-        if (subscribedChannels != null)
-            return subscribedChannels.stream()
-                    .map(userMapper::userToSubscribedChannel)
-                    .collect(Collectors.toList());
-        return new ArrayList<>();
-    }
-
-    @Override
-    public boolean getSubscribedChannelStatus(String userId, String subscribedChannelId) {
-        log.debug("Checking subscribed status for user ID: {}", userId);
-        User user = getUserByIdHelper(userId);
-        User subscribedChannel = getUserByIdHelper(subscribedChannelId);
-        if (user.getSubscribedTo() != null)
-            return user.getSubscribedTo().contains(subscribedChannel);
-        return false;
-    }
-
-    @Override
     public GetChannelDetailsResponseModel getChannelDetailsById(String userId, Boolean subscribeStatus,
                                                                 Integer page, String authenticatedUserId) {
+        // TODO: videos property must be paginated
         log.debug("Retrieving all the video with userId: {}", userId);
-        List<com.saransh.vidflownetwork.v2.response.video.VideoCardResponseModel> videos = videoRepository
-                .findAllByUserId(getAllVideosPageRequest(page), userId).stream()
-                .map(videoMapper::videoToVideoCardV2)
-                .collect(Collectors.toList());
-        User subscribedChannel = getUserById(userId);
+        Page<VideoCardResponseModel> videos = videoRepository
+                .findAllByUserId(getAllVideosPageRequest(page), userId)
+                .map(videoMapper::videoToVideoCard);
+        User fetchedChannel = getUserById(userId);
         GetChannelDetailsResponseModel.GetChannelDetailsResponseModelBuilder getChannelDetailsResponseModelBuilder =
                 GetChannelDetailsResponseModel.builder();
         getChannelDetailsResponseModelBuilder.videos(videos);
         getChannelDetailsResponseModelBuilder.channel(Channel.builder()
-                .subscribers(subscribedChannel.getSubscribersCount())
+                .name(fetchedChannel.getChannelName())
+                .subscribers(fetchedChannel.getSubscribersCount())
                 .build());
 
         if (subscribeStatus && !StringUtils.hasLength(authenticatedUserId))
@@ -131,45 +100,62 @@ public class UserServiceImpl implements UserService {
 
         if (subscribeStatus) {
             User user = getUserByIdHelper(authenticatedUserId);
-            getChannelDetailsResponseModelBuilder.userProperties(UserProperties.builder()
-                    .subscribeStatus(user.isSubscribedChannel(subscribedChannel))
+            getChannelDetailsResponseModelBuilder.userMetadata(UserMetadata.builder()
+                    .subscribeStatus(user.isSubscribedChannel(fetchedChannel))
                     .build());
         }
         return getChannelDetailsResponseModelBuilder.build();
     }
 
     @Override
-    public boolean getVideoLikedStatus(String userId, String videoId) {
-        log.debug("Checking liked status for user ID: {}", userId);
-        User user = getUserByIdHelper(userId);
-        Video video = getVideoByIdHelper(videoId);
-        if (user.getLikedVideos() != null)
-            return user.getLikedVideos().contains(video);
-        return false;
-    }
-
-    @Override
-    public List<SearchVideoResponseModel> getWatchHistory(String userId, int page) {
-        // TODO: implement pagination
+    public GetAllVideosResponseModel<SearchVideoResponseModel> getWatchHistory(String userId, Integer page) {
         log.debug("Retrieving watch history for user with ID: {}", userId);
         User user = getUserByIdHelper(userId);
-        if (user.getVideoHistory() != null)
-            return user.getVideoHistory().stream()
-                    .map(videoMapper::videoToSearchVideoCard)
-                    .collect(Collectors.toList());
-        return new ArrayList<>();
+        GetAllVideosResponseModel<SearchVideoResponseModel> getAllVideosResponseModel =
+                GetAllVideosResponseModel.<SearchVideoResponseModel>builder().build();
+        Pageable pageable = PageRequest.of(page, PAGE_OFFSET);
+        if (user.getVideoHistory() != null) {
+            getAllVideosResponseModel.setVideos(new PageImpl<>(user.getVideoHistory().stream()
+                    .toList(), pageable, user.getLikedVideos().size())
+                    .map(videoMapper::videoToSearchVideoCard));
+        } else {
+            getAllVideosResponseModel.setVideos(new PageImpl<>(new ArrayList<>(), pageable, 0));
+        }
+        return getAllVideosResponseModel;
     }
 
     @Override
-    public List<SearchVideoResponseModel> getLikedVideos(String userId, int page) {
-        // TODO: implement pagination
+    public GetAllVideosResponseModel<SearchVideoResponseModel> getLikedVideos(String userId, Integer page) {
+        // TODO: implement pagination on query level using $slice
         log.debug("Retrieving liked videos for user with ID: {}", userId);
         User user = getUserByIdHelper(userId);
-        if (user.getLikedVideos() != null)
-            return user.getLikedVideos().stream()
-                    .map(videoMapper::videoToSearchVideoCard)
-                    .collect(Collectors.toList());
-        return new ArrayList<>();
+        GetAllVideosResponseModel<SearchVideoResponseModel> getAllVideosResponseModel =
+                GetAllVideosResponseModel.<SearchVideoResponseModel>builder().build();
+        Pageable pageable = PageRequest.of(page, PAGE_OFFSET);
+        if (user.getLikedVideos() != null) {
+            getAllVideosResponseModel.setVideos(new PageImpl<>(user.getLikedVideos().stream()
+                    .toList(), pageable, user.getLikedVideos().size())
+                    .map(videoMapper::videoToSearchVideoCard));
+        } else {
+            getAllVideosResponseModel.setVideos(new PageImpl<>(new ArrayList<>(), pageable, 0));
+        }
+        return getAllVideosResponseModel;
+    }
+
+    @Override
+    public SubscribedChannelResponseModel getSubscribedChannels(String userId) {
+        log.debug("Retrieving the subscribed channels for the user ID: {}", userId);
+        Set<User> subscribedChannels = getUserByIdHelper(userId).getSubscribedTo();
+        SubscribedChannelResponseModel.SubscribedChannelResponseModelBuilder subscribedChannelResponseModelBuilder =
+                SubscribedChannelResponseModel.builder();
+        if (subscribedChannels != null) {
+            subscribedChannelResponseModelBuilder.subscribedChannels(subscribedChannels.stream()
+                    .map(userMapper::userToSubscribedChannel)
+                    .collect(Collectors.toSet()));
+        } else {
+            subscribedChannelResponseModelBuilder.subscribedChannels(new HashSet<>());
+        }
+        return subscribedChannelResponseModelBuilder.build();
     }
 
     @Override

@@ -11,5 +11,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class Channel {
+    private String name;
     private Integer subscribers;
 }

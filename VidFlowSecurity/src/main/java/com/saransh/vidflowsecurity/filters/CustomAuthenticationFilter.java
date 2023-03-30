@@ -1,8 +1,8 @@
 package com.saransh.vidflowsecurity.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.saransh.vidflownetwork.request.user.LoginRequestModel;
-import com.saransh.vidflownetwork.response.user.SuccessfulLoginResponseModel;
+import com.saransh.vidflownetwork.v2.request.user.LoginRequestModel;
+import com.saransh.vidflownetwork.v2.response.user.SuccessfulLoginResponseModel;
 import com.saransh.vidflowutilities.jwt.JwtUtils;
 import com.saransh.vidflowutilities.response.ApiResponseUtil;
 import jakarta.servlet.FilterChain;
@@ -17,6 +17,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * Created by CryptSingh1337 on 10/12/2021
@@ -56,7 +58,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         successfulLogin.setAccessToken(accessToken);
         successfulLogin.setRefreshToken(refreshToken);
 
-        res.setContentType("application/json");
+        res.setContentType(APPLICATION_JSON_VALUE);
         mapper.writeValue(res.getWriter(), ApiResponseUtil.createApiSuccessResponse(successfulLogin));
     }
 }

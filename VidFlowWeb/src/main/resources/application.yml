@@ -19,11 +19,11 @@ spring:
 # JWT
 auth:
   login:
-    path: /api/v1/login
+    path: /api/v2/login
   register:
-    path: /api/v1/user/register
+    path: /api/v2/user/register
   refreshToken:
-    path: /api/v1/user/token/refresh
+    path: /api/v2/user/token/refresh
 jwt:
   issuer: VidFlow
 
@@ -48,4 +48,4 @@ aws:
     secret-key: ${S3_SECRET_KEY}
 
 # Custom
-skipUrls: /api/v1/video,/api/v1/video/trending,/api/v1/video/search,/api/v1/video/id/{videoId},/api/v1/video/views/id/{videoId},/api/v1/video/user/id/{userId},/api/v1/user/id/{userId}/channel,/api/v1/user/id/{userId}/subscribers,/api/v1/user/id/{userId}/subscribers/count,/api/v2/video/id/{videoId}
+skipUrls: /api/v2/video,/api/v2/video/trending,/api/v2/video/search,/api/v2/video/user/id/{userId},/api/v2/video/id/{videoId},/api/v2/user/id/{userId}/channel

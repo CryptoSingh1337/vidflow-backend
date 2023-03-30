@@ -1,10 +1,9 @@
-package com.saransh.vidflowweb.controller.v2.video;
+package com.saransh.vidflowweb.controller.video;
 
 import com.saransh.vidflownetwork.global.ApiResponse;
-import com.saransh.vidflownetwork.request.video.VideoMetadataRequestModel;
-import com.saransh.vidflownetwork.response.video.UploadVideoResponseModel;
 import com.saransh.vidflownetwork.v2.request.video.CommentRequestModel;
 import com.saransh.vidflownetwork.v2.request.video.UpdateCommentRequestModel;
+import com.saransh.vidflownetwork.v2.request.video.VideoMetadataRequestModel;
 import com.saransh.vidflownetwork.v2.response.video.*;
 import com.saransh.vidflowservice.events.InsertVideoMetadataEvent;
 import com.saransh.vidflowservice.video.VideoService;
@@ -37,35 +36,43 @@ public class VideoController {
     private final VideoMetadataValidatorService videoMetadataValidatorService;
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<GetAllVideosResponseModel<VideoCardResponseModel>>> getAllVideos(Integer page) {
-        return ResponseEntity.ok(createApiSuccessResponse(videoService
-                .getAllVideosPagination(page, null)));
+    public ResponseEntity<ApiResponse<GetAllVideosResponseModel<VideoCardResponseModel>>> getAllVideos(
+            @RequestParam Integer page) {
+        return ResponseEntity.ok(createApiSuccessResponse(videoService.getAllVideos(page, null)));
     }
 
     @GetMapping(value = "/trending", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<GetAllVideosResponseModel<VideoCardResponseModel>>> getAllTrendingVideos(Integer page) {
-        return ResponseEntity.ok(createApiSuccessResponse(videoService
-                .getAllVideosPagination(page, Sort.by("views").descending())));
+    public ResponseEntity<ApiResponse<GetAllVideosResponseModel<VideoCardResponseModel>>> getAllTrendingVideos(
+            @RequestParam Integer page) {
+        return ResponseEntity.ok(createApiSuccessResponse(videoService.getAllVideos(page,
+                Sort.by("views").descending())));
     }
 
     @GetMapping(value = "/search", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<GetAllVideosResponseModel<SearchVideoResponseModel>>> getAllVideosByTitle(@RequestParam String q, @RequestParam Integer page) {
-        return ResponseEntity.ok(createApiSuccessResponse(videoService
-                .getAllSearchedVideosPaginated(q, page)));
+    public ResponseEntity<ApiResponse<GetAllVideosResponseModel<SearchVideoResponseModel>>> getAllVideosByTitle(
+            @RequestParam String q, @RequestParam Integer page) {
+        return ResponseEntity.ok(createApiSuccessResponse(videoService.getAllVideosByTitle(q, page)));
+    }
+
+    @GetMapping(value = "/user/all", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse<GetAllVideosResponseModel<UserVideoCardResponseModel>>> getAllVideosByUsername(
+            @RequestParam Integer page) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        return ResponseEntity.ok(createApiSuccessResponse(videoService.getAllVideosByUsername(username, page)));
+    }
+
+    @GetMapping(value = "/user/id/{userId}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse<GetAllVideosResponseModel<VideoCardResponseModel>>> getAllVideosByUserId(
+            @PathVariable String userId, @RequestParam Integer page) {
+        return ResponseEntity.ok(createApiSuccessResponse(videoService.getAllVideosByUserId(userId, page)));
     }
 
     @GetMapping(value = "/id/{videoId}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<WatchVideoResponseModel>> getVideoById(
             @PathVariable String videoId, @RequestParam Boolean likeStatus,
-            @RequestParam(required = false) String userId) {
-        return ResponseEntity.ok(createApiSuccessResponse(videoService
-                .getVideoById(videoId, likeStatus, userId)));
-    }
-
-    @Async
-    @GetMapping("/views/id/{videoId}")
-    public void incrementViews(@PathVariable String videoId) {
-        videoService.incrementViews(videoId);
+            @RequestParam Boolean subscribeStatus, @RequestParam(required = false) String userId) {
+        return ResponseEntity.ok(createApiSuccessResponse(videoService.getVideoById(videoId, likeStatus,
+                subscribeStatus, userId)));
     }
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data", produces = APPLICATION_JSON_VALUE)
@@ -83,12 +90,17 @@ public class VideoController {
         return ResponseEntity.ok(uploadVideoResponseModel);
     }
 
+    @Async
+    @PutMapping("/views/id/{videoId}")
+    public void increaseViews(@PathVariable String videoId) {
+        videoService.increaseViews(videoId);
+    }
+
     @PostMapping(value = "/id/{videoId}/comment", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<CommentResponseModel>> addCommentOnVideo(
-            @PathVariable String videoId,
-            @Validated @RequestBody CommentRequestModel commentRequestModel) {
-        return ResponseEntity.ok(createApiSuccessResponse(videoService
-                .addCommentToVideoV2(videoId, commentRequestModel)));
+            @PathVariable String videoId, @Validated @RequestBody CommentRequestModel commentRequestModel) {
+        return ResponseEntity.ok(createApiSuccessResponse(videoService.addCommentToVideo(videoId,
+                commentRequestModel)));
     }
 
     @PutMapping(value = "/id/{videoId}/comment/id/{commentId}", consumes = APPLICATION_JSON_VALUE)
@@ -96,12 +108,11 @@ public class VideoController {
             @PathVariable String videoId, @PathVariable String commentId,
             @Validated @RequestBody UpdateCommentRequestModel updateComment) {
         return ResponseEntity.ok(createApiSuccessResponse(videoService
-                .updateCommentV2(videoId, commentId, updateComment)));
+                .updateComment(videoId, commentId, updateComment)));
     }
 
     @DeleteMapping("/id/{videoId}/comment/id/{commentId}")
-    public ResponseEntity<?> deleteACommentFromVideo(@PathVariable String videoId,
-                                                     @PathVariable String commentId) {
+    public ResponseEntity<?> deleteACommentFromVideo(@PathVariable String videoId, @PathVariable String commentId) {
         videoService.deleteComment(videoId, commentId);
         return ResponseEntity.ok(null);
     }

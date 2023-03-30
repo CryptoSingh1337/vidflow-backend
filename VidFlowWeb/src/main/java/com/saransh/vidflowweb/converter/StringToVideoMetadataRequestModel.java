@@ -2,7 +2,7 @@ package com.saransh.vidflowweb.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.saransh.vidflownetwork.request.video.VideoMetadataRequestModel;
+import com.saransh.vidflownetwork.v2.request.video.VideoMetadataRequestModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

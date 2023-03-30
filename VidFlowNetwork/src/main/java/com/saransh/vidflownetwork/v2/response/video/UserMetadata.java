@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserProperties {
+public class UserMetadata {
 
     private Boolean likeStatus;
     private Boolean subscribeStatus;

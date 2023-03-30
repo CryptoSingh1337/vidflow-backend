@@ -1,6 +1,6 @@
 package com.saransh.vidflowservice.video;
 
-import com.saransh.vidflownetwork.response.video.UploadVideoResponseModel;
+import com.saransh.vidflownetwork.v2.response.video.UploadVideoResponseModel;
 import org.springframework.web.multipart.MultipartFile;
 
 /**

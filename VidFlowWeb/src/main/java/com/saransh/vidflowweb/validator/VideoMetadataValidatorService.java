@@ -1,6 +1,6 @@
 package com.saransh.vidflowweb.validator;
 
-import com.saransh.vidflownetwork.request.video.VideoMetadataRequestModel;
+import com.saransh.vidflownetwork.v2.request.video.VideoMetadataRequestModel;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;

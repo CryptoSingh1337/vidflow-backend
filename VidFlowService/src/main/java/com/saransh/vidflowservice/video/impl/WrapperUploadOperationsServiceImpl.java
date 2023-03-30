@@ -1,6 +1,6 @@
 package com.saransh.vidflowservice.video.impl;
 
-import com.saransh.vidflownetwork.response.video.UploadVideoResponseModel;
+import com.saransh.vidflownetwork.v2.response.video.UploadVideoResponseModel;
 import com.saransh.vidflowservice.video.ThumbnailOperationsService;
 import com.saransh.vidflowservice.video.VideoOperationsService;
 import com.saransh.vidflowservice.video.WrapperUploadOperationsService;

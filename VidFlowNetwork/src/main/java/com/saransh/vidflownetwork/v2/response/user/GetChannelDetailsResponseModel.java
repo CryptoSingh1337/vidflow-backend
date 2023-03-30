@@ -2,11 +2,10 @@ package com.saransh.vidflownetwork.v2.response.user;
 
 import com.saransh.vidflownetwork.global.Response;
 import com.saransh.vidflownetwork.v2.response.video.Channel;
-import com.saransh.vidflownetwork.v2.response.video.UserProperties;
+import com.saransh.vidflownetwork.v2.response.video.UserMetadata;
 import com.saransh.vidflownetwork.v2.response.video.VideoCardResponseModel;
 import lombok.*;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 /**
  * author: CryptoSingh1337
@@ -18,7 +17,7 @@ import java.util.List;
 @Builder
 public class GetChannelDetailsResponseModel implements Response {
 
-    private List<VideoCardResponseModel> videos;
+    private Page<VideoCardResponseModel> videos;
     private Channel channel;
-    private UserProperties userProperties;
+    private UserMetadata userMetadata;
 }

@@ -3,15 +3,11 @@ package com.saransh.vidflowservice.video.impl;
 import com.saransh.vidflowdata.entity.Comment;
 import com.saransh.vidflowdata.entity.User;
 import com.saransh.vidflowdata.entity.Video;
-import com.saransh.vidflowdata.entity.VideoStatus;
 import com.saransh.vidflowdata.repository.VideoRepository;
-import com.saransh.vidflownetwork.request.video.CommentRequestModel;
-import com.saransh.vidflownetwork.request.video.UpdateCommentRequestModel;
-import com.saransh.vidflownetwork.request.video.VideoMetadataRequestModel;
-import com.saransh.vidflownetwork.response.video.*;
-import com.saransh.vidflownetwork.v2.response.video.CommentResponseModel;
-import com.saransh.vidflownetwork.v2.response.video.GetAllVideosResponseModel;
-import com.saransh.vidflownetwork.v2.response.video.UserProperties;
+import com.saransh.vidflownetwork.v2.request.video.CommentRequestModel;
+import com.saransh.vidflownetwork.v2.request.video.UpdateCommentRequestModel;
+import com.saransh.vidflownetwork.v2.request.video.VideoMetadataRequestModel;
+import com.saransh.vidflownetwork.v2.response.video.*;
 import com.saransh.vidflowservice.events.DeleteVideoEvent;
 import com.saransh.vidflowservice.mapper.CommentMapper;
 import com.saransh.vidflowservice.mapper.VideoMapper;
@@ -24,14 +20,9 @@ import com.saransh.vidflowutilities.exceptions.UnAuthorizeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,9 +30,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * author: CryptoSingh1337
@@ -50,124 +39,78 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class VideoServiceImpl implements VideoService {
-
     private final VideoRepository videoRepository;
     private final UserService userService;
     private final VideoMapper videoMapper;
     private final CommentMapper commentMapper;
     private final ApplicationEventPublisher publisher;
-    private final MongoTemplate mongoTemplate;
-
     private final int PAGE_OFFSET = 10;
 
     @Override
-    @Deprecated
-    public List<Video> getAllVideos(int page) {
-        // TODO: Change the response to be of type Page
-        log.debug("Retrieving all videos");
-        return videoRepository.findAll(getAllVideosPageRequest(page)).stream().toList();
-    }
-
-    @Override
-    public GetAllVideosResponseModel<com.saransh.vidflownetwork.v2.response.video.VideoCardResponseModel> getAllVideosPagination(
-            Integer page, Sort sort) {
+    public GetAllVideosResponseModel<VideoCardResponseModel> getAllVideos(Integer page, Sort sort) {
         log.debug("Retrieving all videos for index page");
-        Pageable pageable = getPageable(page);
-        Query query = getQuery(pageable);
-        if (sort != null)
-            query.with(sort);
-        query.fields().include("id", "title", "userId", "channelName", "views", "createdAt", "thumbnail");
-        query.addCriteria(Criteria.where("videoStatus").in("PUBLIC"));
-        List<com.saransh.vidflownetwork.v2.response.video.VideoCardResponseModel> videos = mongoTemplate
-                .find(query, Video.class).stream()
-                .map(videoMapper::videoToVideoCardV2)
-                .toList();
-        return GetAllVideosResponseModel.<com.saransh.vidflownetwork.v2.response.video.VideoCardResponseModel>builder()
-                .videos(getPaginatedData(videos, pageable, query))
+        Pageable pageable;
+        if (sort != null) {
+            pageable = PageRequest.of(page, PAGE_OFFSET, sort);
+        } else {
+            pageable = getPageable(page);
+        }
+        return GetAllVideosResponseModel.<VideoCardResponseModel>builder()
+                .videos(videoRepository.findAllPublicVideos(pageable)
+                        .map(videoMapper::videoToVideoCard))
                 .build();
     }
 
     @Override
-    @Deprecated
-    public List<VideoCardResponseModel> getAllTrendingVideos(int page) {
-        // TODO: Change the response to be of type Page
-        log.debug("Retrieving all trending videos");
-        return videoRepository.findAllByVideoStatusEquals(getAllTrendingVideosPageRequest(page),
-                        VideoStatus.PUBLIC.name()).stream()
-                .map(videoMapper::videoToVideoCard)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<SearchVideoResponseModel> getAllSearchedVideos(String q, int page) {
-        // TODO: Change the response to be of type Page
-        log.debug("Searching all the videos with title: {}", q);
-        return videoRepository.findAllByTitleContainingIgnoreCase(getAllVideosPageRequest(page), q).stream()
-                .map(videoMapper::videoToSearchVideoCard)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public GetAllVideosResponseModel<com.saransh.vidflownetwork.v2.response.video.SearchVideoResponseModel> getAllSearchedVideosPaginated(String searchTitle, Integer page) {
+    public GetAllVideosResponseModel<SearchVideoResponseModel> getAllVideosByTitle(String searchTitle, Integer page) {
         log.debug("Searching all the videos with title: {}", searchTitle);
-        Pageable pageable = getPageable(page);
-        Query query = getQuery(pageable);
-        query.addCriteria(Criteria.where("title")
-                .regex(String.format("^%s", searchTitle), "i"));
-        query.addCriteria(Criteria.where("videoStatus").in("PUBLIC"));
-        List<com.saransh.vidflownetwork.v2.response.video.SearchVideoResponseModel> videos = mongoTemplate.find(query, Video.class).stream()
-                .map(videoMapper::videoToSearchVideoCardV2)
-                .toList();
-        return GetAllVideosResponseModel.<com.saransh.vidflownetwork.v2.response.video.SearchVideoResponseModel>builder()
-                .videos(getPaginatedData(videos, pageable, query))
+        return GetAllVideosResponseModel.<SearchVideoResponseModel>builder()
+                .videos(videoRepository.findAllByTitleRegex(String.format(".*%s.*", searchTitle),
+                                getPageable(page))
+                        .map(videoMapper::videoToSearchVideoCard))
                 .build();
     }
 
     @Override
-    public List<VideoCardResponseModel> getAllVideosByUserId(String userId, int page) {
-        // TODO: Change the response to be of type Page
-        log.debug("Retrieving all the video with userId: {}", userId);
-        return videoRepository.findAllByUserId(getAllVideosPageRequest(page), userId).stream()
-                .map(videoMapper::videoToVideoCard)
-                .collect(Collectors.toList());
+    public GetAllVideosResponseModel<UserVideoCardResponseModel> getAllVideosByUsername(String username, Integer page) {
+        log.debug("Retrieving all the videos with username: {}", username);
+        return GetAllVideosResponseModel.<UserVideoCardResponseModel>builder()
+                .videos(videoRepository.findAllByUsername(username, getPageable(page))
+                        .map(videoMapper::videoToUserVideoCard))
+                .build();
     }
 
     @Override
-    public List<UserVideoCardResponseModel> getAllVideosByUsername(String username) {
-        // TODO: Change the response to be of type Page
-        log.debug("Retrieving all the video with username: {}", username);
-        User user = userService.findUserByUsername(username);
-        return videoRepository.findAllByUserId(user.getId()).stream()
-                .map(videoMapper::videoToUserVideoCard)
-                .collect(Collectors.toList());
+    public GetAllVideosResponseModel<VideoCardResponseModel> getAllVideosByUserId(String userId, Integer page) {
+        log.debug("Retrieving all the video with user ID: {}", userId);
+        return GetAllVideosResponseModel.<VideoCardResponseModel>builder()
+                .videos(videoRepository.findAllByUserId(userId, getPageable(page))
+                        .map(videoMapper::videoToVideoCard))
+                .build();
     }
 
     @Override
-    @Deprecated
-    public WatchVideoResponseModel getVideoById(String id) {
-        log.debug("Retrieving video with ID: {}", id);
-        Video video = videoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
-        return videoMapper.videoToWatchVideo(video);
-    }
-
-    @Override
-    public com.saransh.vidflownetwork.v2.response.video.WatchVideoResponseModel getVideoById(
-            String id, Boolean likeStatus, String userId) {
+    public WatchVideoResponseModel getVideoById(String id, Boolean likeStatus, Boolean subscribeStatus, String userId) {
         log.debug("Retrieving video with ID: {}", id);
         Video video = getVideoByIdHelper(id);
         int subscribersCount = userService.getUserSubscribersCount(video.getUserId());
-        com.saransh.vidflownetwork.v2.response.video.WatchVideoResponseModel watchVideoResponseModel = videoMapper
-                .videoToWatchVideoResponse(video, subscribersCount);
+        WatchVideoResponseModel watchVideoResponseModel = videoMapper.videoToWatchVideoResponse(video, subscribersCount);
 
-        if (likeStatus && !StringUtils.hasLength(userId))
+        if ((likeStatus && !StringUtils.hasLength(userId)) || (subscribeStatus && !StringUtils.hasLength(userId)))
             throw new BadRequestException("Invalid user id");
 
-        if (likeStatus) {
+        if (likeStatus || subscribeStatus) {
             User authenticatedUser = userService.getUserById(userId);
-            watchVideoResponseModel.setUserProperties(UserProperties.builder()
-                    .likeStatus(authenticatedUser.isLikedVideo(video))
-                    .build());
+            UserMetadata.UserMetadataBuilder userPropertiesBuilder = UserMetadata.builder();
+            if (likeStatus) {
+                userPropertiesBuilder.likeStatus(authenticatedUser.isLikedVideo(video));
+            }
+            if (subscribeStatus) {
+                User subscribedChannel = userService.getUserById(video.getUserId());
+                userPropertiesBuilder.subscribeStatus(authenticatedUser
+                        .isSubscribedChannel(subscribedChannel));
+            }
+            watchVideoResponseModel.setUserMetadata(userPropertiesBuilder.build());
         }
         return watchVideoResponseModel;
     }
@@ -195,7 +138,7 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional
-    public void incrementViews(String videoId) {
+    public void increaseViews(String videoId) {
         log.debug("Incrementing views...");
         Video video = videoRepository.findById(videoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
@@ -221,8 +164,7 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional
-    @Deprecated
-    public AddCommentResponseModel addCommentToVideo(String videoId, CommentRequestModel commentRequestModel) {
+    public CommentResponseModel addCommentToVideo(String videoId, CommentRequestModel commentRequestModel) {
         log.debug("Adding comment to the video with ID: {}", videoId);
         Video video = getVideoByIdHelper(videoId);
         Comment comment = commentMapper.commentRequestModelToComment(commentRequestModel);
@@ -240,26 +182,8 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     @Transactional
-    public CommentResponseModel addCommentToVideoV2(String videoId, com.saransh.vidflownetwork.v2.request.video.CommentRequestModel commentRequestModel) {
-        log.debug("Adding comment to the video with ID: {}", videoId);
-        Video video = getVideoByIdHelper(videoId);
-        Comment comment = commentMapper.commentRequestModelToCommentV2(commentRequestModel);
-        comment.setId(UUID.randomUUID().toString());
-        comment.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
-        video.addComment(comment);
-        Video savedVideo = videoRepository.save(video);
-        log.debug("Added comment to the video with comment ID: {}", comment.getId());
-        Comment savedComment = savedVideo.getComments().stream()
-                .filter(c -> c.getId().equals(comment.getId()))
-                .findFirst()
-                .orElseThrow(() -> new MongoWriteException("Comment is not added"));
-        return commentMapper.commentToCommentResponseModelV2(savedComment);
-    }
-
-    @Override
-    @Transactional
-    @Deprecated
-    public void updateComment(String videoId, String commentId, UpdateCommentRequestModel updateComment) {
+    public CommentResponseModel updateComment(String videoId, String commentId,
+                                              UpdateCommentRequestModel updateComment) {
         log.debug("Updating comment with ID: {} with video ID: {}", commentId, videoId);
         Video video = getVideoByIdHelper(videoId);
         Comment comment = video.getComments().stream().filter(c -> c.getId().equals(commentId))
@@ -267,18 +191,7 @@ public class VideoServiceImpl implements VideoService {
         comment.setBody(updateComment.getBody());
         videoRepository.save(video);
         log.debug("Updated comment...");
-    }
-
-    @Override
-    public CommentResponseModel updateCommentV2(String videoId, String commentId, com.saransh.vidflownetwork.v2.request.video.UpdateCommentRequestModel updateComment) {
-        log.debug("Updating comment with ID: {} with video ID: {}", commentId, videoId);
-        Video video = getVideoByIdHelper(videoId);
-        Comment comment = video.getComments().stream().filter(c -> c.getId().equals(commentId))
-                .findFirst().orElseThrow();
-        comment.setBody(updateComment.getBody());
-        videoRepository.save(video);
-        log.debug("Updated comment...");
-        return commentMapper.commentToCommentResponseModelV2(comment);
+        return commentMapper.commentToCommentResponseModel(comment);
     }
 
     @Override
@@ -294,33 +207,12 @@ public class VideoServiceImpl implements VideoService {
             log.debug("Comment with ID: {} not found", commentId);
     }
 
-    private Pageable getAllVideosPageRequest(int page) {
-        return PageRequest.of(page, PAGE_OFFSET);
-    }
-
-    private Pageable getAllTrendingVideosPageRequest(int page) {
-        return PageRequest.of(page, PAGE_OFFSET, Sort.Direction.DESC, "views");
-    }
-
     private Video getVideoByIdHelper(String videoId) {
         return videoRepository.findById(videoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
     }
 
-    private <T> Page<T> getPaginatedData(List<T> data, Pageable pageable, Query query) {
-        return PageableExecutionUtils.getPage(data, pageable,
-                () -> mongoTemplate.count(query.skip(-1).limit(-1),
-                        Video.class));
-    }
-
     private Pageable getPageable(int page) {
         return PageRequest.of(page, PAGE_OFFSET);
-    }
-
-    private Query getQuery(Pageable pageable) {
-        return new Query()
-                .with(pageable)
-                .skip(Integer.toUnsignedLong(pageable.getPageSize() * pageable.getPageNumber()))
-                .limit(pageable.getPageSize());
     }
 }

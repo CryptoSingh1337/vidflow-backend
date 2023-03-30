@@ -1,4 +1,4 @@
-package com.saransh.vidflownetwork.request.user;
+package com.saransh.vidflownetwork.v2.request.user;
 
 import lombok.Builder;
 import lombok.Getter;

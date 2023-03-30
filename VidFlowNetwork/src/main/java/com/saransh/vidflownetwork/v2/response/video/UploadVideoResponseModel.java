@@ -1,4 +1,4 @@
-package com.saransh.vidflownetwork.response.video;
+package com.saransh.vidflownetwork.v2.response.video;
 
 import com.saransh.vidflownetwork.global.Response;
 import lombok.*;

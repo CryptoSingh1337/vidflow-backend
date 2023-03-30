@@ -2,8 +2,8 @@ package com.saransh.vidflowservice.mapper.impl;
 
 import com.saransh.vidflowdata.entity.SubscribedChannel;
 import com.saransh.vidflowdata.entity.User;
-import com.saransh.vidflownetwork.request.user.UserRequestModel;
-import com.saransh.vidflownetwork.response.user.UserResponseModel;
+import com.saransh.vidflownetwork.v2.request.user.UserRequestModel;
+import com.saransh.vidflownetwork.v2.response.user.UserResponseModel;
 import com.saransh.vidflowservice.mapper.UserMapper;
 import org.springframework.stereotype.Component;
 
@@ -37,17 +37,19 @@ public class UserMapperImpl implements UserMapper {
             return null;
         }
 
-        UserResponseModel.UserResponseModelBuilder userResponseModel = UserResponseModel.builder();
+        UserResponseModel.User.UserBuilder userBuilder = UserResponseModel.User.builder();
 
-        userResponseModel.id(user.getId());
-        userResponseModel.username(user.getUsername());
-        userResponseModel.channelName(user.getChannelName());
-        userResponseModel.firstName(user.getFirstName());
-        userResponseModel.lastName(user.getLastName());
-        userResponseModel.email(user.getEmail());
-        userResponseModel.profileImage(user.getProfileImage());
+        userBuilder.id(user.getId());
+        userBuilder.username(user.getUsername());
+        userBuilder.channelName(user.getChannelName());
+        userBuilder.firstName(user.getFirstName());
+        userBuilder.lastName(user.getLastName());
+        userBuilder.email(user.getEmail());
+        userBuilder.profileImage(user.getProfileImage());
 
-        return userResponseModel.build();
+        return UserResponseModel.builder()
+                .user(userBuilder.build())
+                .build();
     }
 
     @Override
@@ -56,11 +58,11 @@ public class UserMapperImpl implements UserMapper {
             return null;
         }
 
-        SubscribedChannel.SubscribedChannelBuilder subscribedChannel = SubscribedChannel.builder();
+        SubscribedChannel.SubscribedChannelBuilder subscribedChannelBuilder = SubscribedChannel.builder();
 
-        subscribedChannel.id(user.getId());
-        subscribedChannel.channelName(user.getChannelName());
+        subscribedChannelBuilder.id(user.getId());
+        subscribedChannelBuilder.channelName(user.getChannelName());
 
-        return subscribedChannel.build();
+        return subscribedChannelBuilder.build();
     }
 }

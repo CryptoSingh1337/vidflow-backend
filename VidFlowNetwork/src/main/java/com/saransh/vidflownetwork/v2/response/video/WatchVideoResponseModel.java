@@ -15,5 +15,5 @@ import lombok.*;
 public class WatchVideoResponseModel implements Response {
     private BaseVideoModel video;
     private Channel channel;
-    private UserProperties userProperties;
+    private UserMetadata userMetadata;
 }
