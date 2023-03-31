@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/CryptoSingh1337/vidflow-client/master/static/v.png" align="right" height="150" width="132" />
+<img src="https://raw.githubusercontent.com/CryptoSingh1337/vidflow-client/master/public/images/logo.svg" align="right" height="150" width="132" />
 
 # VidFlow
 
