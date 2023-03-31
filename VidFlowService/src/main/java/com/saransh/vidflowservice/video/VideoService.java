@@ -23,4 +23,6 @@ public interface VideoService extends CommentService {
     void increaseViews(String videoId);
 
     void deleteVideoById(String username, String id);
+
+    void deleteAllVideosByUsername(String username);
 }

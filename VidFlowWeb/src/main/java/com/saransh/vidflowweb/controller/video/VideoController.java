@@ -83,10 +83,12 @@ public class VideoController {
             throws NoSuchMethodException, MethodArgumentNotValidException {
         videoMetadataValidatorService.validateInput(videoMetadata, this.getClass().getMethod("upload",
                 MultipartFile.class, MultipartFile.class, VideoMetadataRequestModel.class));
-        UploadVideoResponseModel uploadVideoResponseModel = uploadOperationsService.uploadVideoAndThumbnail(video, thumbnail);
+        UploadVideoResponseModel uploadVideoResponseModel = uploadOperationsService
+                .uploadVideoAndThumbnail(video, thumbnail);
         videoMetadata.setVideoUrl(uploadVideoResponseModel.getVideoUrl());
         videoMetadata.setThumbnailUrl(uploadVideoResponseModel.getThumbnailUrl());
-        publisher.publishEvent(new InsertVideoMetadataEvent(uploadVideoResponseModel.getVideoId(), videoMetadata));
+        publisher.publishEvent(
+                new InsertVideoMetadataEvent(this, uploadVideoResponseModel.getVideoId(), videoMetadata));
         return ResponseEntity.ok(uploadVideoResponseModel);
     }
 

@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.util.List;
+
 /**
  * author: CryptoSingh1337
  */
@@ -59,4 +61,9 @@ public interface VideoRepository extends MongoRepository<Video, String> {
             }
             """)
     Page<Video> findAllByUserId(String userId, Pageable pageable);
+
+    @Query(fields = "{ id: 1 }")
+    List<Video> findAllByUsername(String username);
+
+    void deleteAllByUsername(String username);
 }

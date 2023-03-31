@@ -10,8 +10,8 @@ public class InsertVideoMetadataEvent extends ApplicationEvent {
     private final String videoId;
     private final VideoMetadataRequestModel videoMetadataRequestModel;
 
-    public InsertVideoMetadataEvent(String videoId, VideoMetadataRequestModel videoMetadataRequestModel) {
-        super(videoId);
+    public InsertVideoMetadataEvent(Object source, String videoId, VideoMetadataRequestModel videoMetadataRequestModel) {
+        super(source);
         this.videoId = videoId;
         this.videoMetadataRequestModel = videoMetadataRequestModel;
     }

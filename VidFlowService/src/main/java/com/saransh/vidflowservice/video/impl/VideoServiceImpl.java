@@ -20,6 +20,7 @@ import com.saransh.vidflowutilities.exceptions.UnAuthorizeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,6 +31,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -44,6 +46,7 @@ public class VideoServiceImpl implements VideoService {
     private final VideoMapper videoMapper;
     private final CommentMapper commentMapper;
     private final ApplicationEventPublisher publisher;
+    private final ApplicationEventMulticaster applicationEventMulticaster;
     private final int PAGE_OFFSET = 10;
 
     @Override
@@ -156,9 +159,26 @@ public class VideoServiceImpl implements VideoService {
         Video video = getVideoByIdHelper(id);
         if (username.equals(video.getUsername())) {
             videoRepository.deleteById(id);
-            publisher.publishEvent(new DeleteVideoEvent(username, id));
+            publisher.publishEvent(new DeleteVideoEvent(this, username, id));
         } else {
             throw new UnAuthorizeException("User not authorized");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllVideosByUsername(String username) {
+        log.debug("Deleting all videos with username: {}", username);
+        List<String> videoIds = videoRepository.findAllByUsername(username).stream()
+                .map(video -> String.valueOf(video.getId()))
+                .toList();
+        deleteAllVideosById(username, videoIds);
+        videoRepository.deleteAllByUsername(username);
+    }
+
+    private void deleteAllVideosById(String username, List<String> videoIds) {
+        for (String videoId : videoIds) {
+            applicationEventMulticaster.multicastEvent(new DeleteVideoEvent(this, username, videoId));
         }
     }
 

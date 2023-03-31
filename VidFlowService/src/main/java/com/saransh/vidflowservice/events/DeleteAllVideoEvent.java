@@ -4,17 +4,15 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * @author CryptoSingh1337
+ * author: CryptoSingh1337
  */
 @Getter
-public class DeleteVideoEvent extends ApplicationEvent {
+public class DeleteAllVideoEvent extends ApplicationEvent {
 
     private final String username;
-    private final String videoId;
 
-    public DeleteVideoEvent(Object source, String username, String videoId) {
+    public DeleteAllVideoEvent(Object source, String username) {
         super(source);
         this.username = username;
-        this.videoId = videoId;
     }
 }

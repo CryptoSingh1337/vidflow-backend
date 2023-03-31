@@ -9,6 +9,7 @@ import com.saransh.vidflownetwork.v2.response.user.GetChannelDetailsResponseMode
 import com.saransh.vidflownetwork.v2.response.user.SubscribedChannelResponseModel;
 import com.saransh.vidflownetwork.v2.response.user.UserResponseModel;
 import com.saransh.vidflownetwork.v2.response.video.*;
+import com.saransh.vidflowservice.events.DeleteAllVideoEvent;
 import com.saransh.vidflowservice.mapper.UserMapper;
 import com.saransh.vidflowservice.mapper.VideoMapper;
 import com.saransh.vidflowservice.user.UserService;
@@ -16,6 +17,7 @@ import com.saransh.vidflowutilities.exceptions.BadRequestException;
 import com.saransh.vidflowutilities.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -45,6 +47,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final VideoMapper videoMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventMulticaster applicationEventMulticaster;
     private final int PAGE_OFFSET = 10;
 
     @Override
@@ -257,6 +260,7 @@ public class UserServiceImpl implements UserService {
     public void deleteAccount(String username) {
         log.debug("Deleting user with username: {}", username);
         userRepository.deleteByUsername(username);
+        applicationEventMulticaster.multicastEvent(new DeleteAllVideoEvent(this, username));
     }
 
     private User getUserByIdHelper(String userId) {
