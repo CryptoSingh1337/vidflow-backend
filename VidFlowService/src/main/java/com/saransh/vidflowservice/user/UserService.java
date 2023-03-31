@@ -45,5 +45,5 @@ public interface UserService extends UserDetailsService {
 
     void updateChannelName(String username, String channelName);
 
-    void delete(String username);
+    void deleteAccount(String username);
 }

@@ -254,7 +254,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void delete(String username) {
+    public void deleteAccount(String username) {
+        log.debug("Deleting user with username: {}", username);
         userRepository.deleteByUsername(username);
     }
 
