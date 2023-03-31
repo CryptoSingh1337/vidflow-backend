@@ -194,12 +194,8 @@ Create a microsoft storage account and copy the connection string.
 ## Tech Stack
 
 - **Client**:
-
-  - JavaScript
-  - Vue
+  - Typescript
   - Nuxt
-  - Vuex
-  - Vuex Router
   - Vuetify
   - **Deployment**:
     - Vercel
