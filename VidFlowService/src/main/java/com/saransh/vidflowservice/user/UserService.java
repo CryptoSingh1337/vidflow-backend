@@ -29,7 +29,7 @@ public interface UserService extends UserDetailsService {
 
     GetAllVideosResponseModel<SearchVideoResponseModel> getLikedVideos(String userId, Integer page);
 
-    SubscribedChannelResponseModel getSubscribedChannels(String userId);
+    SubscribedChannelResponseModel getSubscribedChannelsList(String userId);
 
     UserResponseModel insert(UserRequestModel userRequestModel);
 

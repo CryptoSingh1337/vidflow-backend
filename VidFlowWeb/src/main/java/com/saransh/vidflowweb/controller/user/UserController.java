@@ -57,9 +57,11 @@ public class UserController {
     }
 
     @GetMapping(value = "/id/{userId}/subscribed", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<SubscribedChannelResponseModel>> getSubscribedChannel(@PathVariable String userId) {
-        return ResponseEntity.ok(createApiSuccessResponse(userService.getSubscribedChannels(userId)));
+    public ResponseEntity<ApiResponse<SubscribedChannelResponseModel>> getSubscribedChannelsList(@PathVariable String userId) {
+        return ResponseEntity.ok(createApiSuccessResponse(userService.getSubscribedChannelsList(userId)));
     }
+
+
 
     @GetMapping(value = "/id/{userId}/liked", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<GetAllVideosResponseModel<SearchVideoResponseModel>>> getLikedVideosByUserId(

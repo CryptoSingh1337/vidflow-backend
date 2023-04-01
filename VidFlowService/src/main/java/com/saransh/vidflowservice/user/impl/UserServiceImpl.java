@@ -146,7 +146,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public SubscribedChannelResponseModel getSubscribedChannels(String userId) {
+    public SubscribedChannelResponseModel getSubscribedChannelsList(String userId) {
         log.debug("Retrieving the subscribed channels for the user ID: {}", userId);
         Set<User> subscribedChannels = getUserByIdHelper(userId).getSubscribedTo();
         SubscribedChannelResponseModel.SubscribedChannelResponseModelBuilder subscribedChannelResponseModelBuilder =
