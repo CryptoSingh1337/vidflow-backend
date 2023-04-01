@@ -21,7 +21,6 @@
         <aws.version>2.20.35</aws.version>
         <azure.version>12.21.1</azure.version>
         <java-jwt.version>4.3.0</java-jwt.version>
-        <maven.version>3.8.1</maven.version>
     </properties>
 
     <modules>
