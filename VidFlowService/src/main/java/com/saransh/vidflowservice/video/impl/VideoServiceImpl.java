@@ -24,6 +24,10 @@ import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.MongoExpression;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +37,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 /**
  * author: CryptoSingh1337
@@ -45,16 +51,18 @@ public class VideoServiceImpl implements VideoService {
     private final UserService userService;
     private final VideoMapper videoMapper;
     private final CommentMapper commentMapper;
+    private final MongoTemplate mongoTemplate;
     private final ApplicationEventPublisher publisher;
     private final ApplicationEventMulticaster applicationEventMulticaster;
-    private final int PAGE_OFFSET = 10;
+    private final int PAGE_LIMIT = 10;
+    private final int SUBSCRIPTION_VIDEOS_TIME_THRESHOLD = 3;
 
     @Override
     public GetAllVideosResponseModel<VideoCardResponseModel> getAllVideos(Integer page, Sort sort) {
         log.debug("Retrieving all videos for index page");
         Pageable pageable;
         if (sort != null) {
-            pageable = PageRequest.of(page, PAGE_OFFSET, sort);
+            pageable = PageRequest.of(page, PAGE_LIMIT, sort);
         } else {
             pageable = getPageable(page);
         }
@@ -89,6 +97,41 @@ public class VideoServiceImpl implements VideoService {
         return GetAllVideosResponseModel.<VideoCardResponseModel>builder()
                 .videos(videoRepository.findAllByUserId(userId, getPageable(page))
                         .map(videoMapper::videoToVideoCard))
+                .build();
+    }
+
+    @Override
+    public GetAllSubscriptionVideosResponseModel getSubscribedChannelVideos(String username, Integer page) {
+        log.debug("Retrieving all the {} days ago uploaded videos for user: {}",
+                SUBSCRIPTION_VIDEOS_TIME_THRESHOLD, username);
+        List<String> usernames = userService.getSubscribedChannelUsernames(username);
+        MatchOperation matchOperationStage1 = match(Criteria.where("username")
+                .in(usernames));
+        MatchOperation matchOperationStage2 = match(AggregationExpression
+                .from(MongoExpression.create("""
+                        $expr: {
+                            $gte: [
+                                "$createdAt",
+                                {
+                                    $dateSubtract: { startDate: "$$NOW", unit: "day", amount: ?0 }
+                                }
+                            ]
+                        }
+                        """, SUBSCRIPTION_VIDEOS_TIME_THRESHOLD)));
+        ProjectionOperation projectionOperation = project("id", "channelName", "userId",
+                "createdAt", "thumbnail", "title", "views");
+        FacetOperation facetOperation = facet(Aggregation.count().as("id"))
+                .as("totalPages")
+                .and(limit(PAGE_LIMIT), skip(page * PAGE_LIMIT))
+                .as("videos");
+        Aggregation aggregation = newAggregation(matchOperationStage1, matchOperationStage2,
+                projectionOperation, sort(Sort.Direction.DESC, "createdAt"),
+                facetOperation);
+        AggregationResults<GetAllSubscriptionVideosResponseModel.GetAllSubscriptionVideos> aggregationResults =
+                mongoTemplate.aggregate(aggregation, "videos",
+                        GetAllSubscriptionVideosResponseModel.GetAllSubscriptionVideos.class);
+        return GetAllSubscriptionVideosResponseModel.builder()
+                .content(aggregationResults.getMappedResults())
                 .build();
     }
 
@@ -233,6 +276,6 @@ public class VideoServiceImpl implements VideoService {
     }
 
     private Pageable getPageable(int page) {
-        return PageRequest.of(page, PAGE_OFFSET);
+        return PageRequest.of(page, PAGE_LIMIT);
     }
 }

@@ -67,6 +67,13 @@ public class VideoController {
         return ResponseEntity.ok(createApiSuccessResponse(videoService.getAllVideosByUserId(userId, page)));
     }
 
+    @GetMapping(value = "/subscribe/channel")
+    public ResponseEntity<?> getSubscribedChannelVideos(@RequestParam Integer page) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        return ResponseEntity.ok(createApiSuccessResponse(videoService
+                .getSubscribedChannelVideos(username, page)));
+    }
+
     @GetMapping(value = "/id/{videoId}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<WatchVideoResponseModel>> getVideoById(
             @PathVariable String videoId, @RequestParam Boolean likeStatus,

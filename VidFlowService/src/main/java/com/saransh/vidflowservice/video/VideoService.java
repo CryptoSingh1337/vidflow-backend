@@ -16,6 +16,8 @@ public interface VideoService extends CommentService {
 
     GetAllVideosResponseModel<VideoCardResponseModel> getAllVideosByUserId(String userId, Integer page);
 
+    GetAllSubscriptionVideosResponseModel getSubscribedChannelVideos(String username, Integer page);
+
     WatchVideoResponseModel getVideoById(String id, Boolean likeStatus, Boolean subscribeStatus, String userId);
 
     void insert(String videoId, VideoMetadataRequestModel videoMetadataRequestModel);

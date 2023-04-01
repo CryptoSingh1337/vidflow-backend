@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService {
     private final VideoMapper videoMapper;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventMulticaster applicationEventMulticaster;
-    private final int PAGE_OFFSET = 10;
+    private final int PAGE_LIMIT = 10;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -116,7 +117,7 @@ public class UserServiceImpl implements UserService {
         User user = getUserByIdHelper(userId);
         GetAllVideosResponseModel<SearchVideoResponseModel> getAllVideosResponseModel =
                 GetAllVideosResponseModel.<SearchVideoResponseModel>builder().build();
-        Pageable pageable = PageRequest.of(page, PAGE_OFFSET);
+        Pageable pageable = PageRequest.of(page, PAGE_LIMIT);
         if (user.getVideoHistory() != null) {
             getAllVideosResponseModel.setVideos(new PageImpl<>(user.getVideoHistory().stream()
                     .toList(), pageable, user.getLikedVideos().size())
@@ -134,7 +135,7 @@ public class UserServiceImpl implements UserService {
         User user = getUserByIdHelper(userId);
         GetAllVideosResponseModel<SearchVideoResponseModel> getAllVideosResponseModel =
                 GetAllVideosResponseModel.<SearchVideoResponseModel>builder().build();
-        Pageable pageable = PageRequest.of(page, PAGE_OFFSET);
+        Pageable pageable = PageRequest.of(page, PAGE_LIMIT);
         if (user.getLikedVideos() != null) {
             getAllVideosResponseModel.setVideos(new PageImpl<>(user.getLikedVideos().stream()
                     .toList(), pageable, user.getLikedVideos().size())
@@ -159,6 +160,17 @@ public class UserServiceImpl implements UserService {
             subscribedChannelResponseModelBuilder.subscribedChannels(new HashSet<>());
         }
         return subscribedChannelResponseModelBuilder.build();
+    }
+
+    @Override
+    public List<String> getSubscribedChannelUsernames(String username) {
+        // TODO: Optimize this using aggregation
+        log.debug("Retrieving all subscribed channels username of user: {}", username);
+        User user = userRepository.getSubscribedChannelIdByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return user.getSubscribedTo().stream()
+                .map(u -> String.valueOf(u.getUsername()))
+                .toList();
     }
 
     @Override
@@ -274,6 +286,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private Pageable getAllVideosPageRequest(int page) {
-        return PageRequest.of(page, PAGE_OFFSET);
+        return PageRequest.of(page, PAGE_LIMIT);
     }
 }

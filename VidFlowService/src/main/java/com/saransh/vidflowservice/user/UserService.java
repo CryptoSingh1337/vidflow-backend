@@ -9,6 +9,8 @@ import com.saransh.vidflownetwork.v2.response.video.GetAllVideosResponseModel;
 import com.saransh.vidflownetwork.v2.response.video.SearchVideoResponseModel;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.List;
+
 /**
  * author: CryptoSingh1337
  */
@@ -30,6 +32,8 @@ public interface UserService extends UserDetailsService {
     GetAllVideosResponseModel<SearchVideoResponseModel> getLikedVideos(String userId, Integer page);
 
     SubscribedChannelResponseModel getSubscribedChannelsList(String userId);
+
+    List<String> getSubscribedChannelUsernames(String username);
 
     UserResponseModel insert(UserRequestModel userRequestModel);
 
