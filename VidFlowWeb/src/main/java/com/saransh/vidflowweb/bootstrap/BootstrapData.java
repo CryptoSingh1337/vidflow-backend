@@ -122,7 +122,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username("test_1")
                 .channelName("CryptoSingh")
                 .body("Praesent vulputate luctus convallis. Etiam ac leo.")
-                .createdAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
                 .build();
 
         Comment comment_2 = Comment.builder()
@@ -130,7 +130,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username("test_2")
                 .channelName("Dave2D")
                 .body("Proin sit amet augue sit amet massa consequat dui.")
-                .createdAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
                 .build();
 
         Comment comment_3 = Comment.builder()
@@ -138,7 +138,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username("test_3")
                 .channelName("Fireship")
                 .body("Sed at aliquam ipsum. Nullam venenatis, orci eget.")
-                .createdAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
                 .build();
 
         Comment comment_4 = Comment.builder()
@@ -146,7 +146,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username("test_4")
                 .channelName("ElectroBOOM")
                 .body("Curabitur scelerisque viverra justo, eget integer.")
-                .createdAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
                 .build();
 
         Comment comment_5 = Comment.builder()
@@ -154,7 +154,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username("test_5")
                 .channelName("Java Brains")
                 .body("Maecenas imperdiet malesuada velit sed tempor nam.")
-                .createdAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
                 .build();
 
         Comment comment_6 = Comment.builder()
@@ -162,7 +162,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username("test_6")
                 .channelName("SomeOrdinaryGamer")
                 .body("Lorem ipsum dolor sit amet, consectetur tincidunt.")
-                .createdAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
                 .build();
 
         return Set.of(
