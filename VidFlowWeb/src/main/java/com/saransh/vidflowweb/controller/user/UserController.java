@@ -126,7 +126,7 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<ResponseEntity<?>> deleteAccount() {
+    public ResponseEntity<?> deleteAccount() {
         String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         userService.deleteAccount(username);
         return ResponseEntity.ok(null);
