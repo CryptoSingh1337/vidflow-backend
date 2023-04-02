@@ -3,7 +3,6 @@ package com.saransh.vidflowweb.bootstrap;
 import com.saransh.vidflowdata.entity.Comment;
 import com.saransh.vidflowdata.entity.User;
 import com.saransh.vidflowdata.entity.Video;
-import com.saransh.vidflowdata.entity.VideoStatus;
 import com.saransh.vidflowdata.repository.UserRepository;
 import com.saransh.vidflowdata.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static com.saransh.vidflowdata.entity.VideoStatus.*;
+import static java.time.ZoneOffset.UTC;
 
 /**
  * author: CryptoSingh1337
@@ -47,7 +45,7 @@ public class BootstrapData implements CommandLineRunner {
         List<User> users = new ArrayList<>();
         if (userRepository.count() == 0) {
             log.debug("Creating sample users...");
-            userRepository.saveAll(createUsers()).forEach(users::add);
+            users.addAll(userRepository.saveAll(createUsers()));
             User user_1 = users.get(0);
             User user_2 = users.get(1);
             User user_3 = users.get(2);
@@ -122,7 +120,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username("test_1")
                 .channelName("CryptoSingh")
                 .body("Praesent vulputate luctus convallis. Etiam ac leo.")
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
+                .createdAt(LocalDateTime.now(UTC))
                 .build();
 
         Comment comment_2 = Comment.builder()
@@ -130,7 +128,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username("test_2")
                 .channelName("Dave2D")
                 .body("Proin sit amet augue sit amet massa consequat dui.")
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
+                .createdAt(LocalDateTime.now(UTC))
                 .build();
 
         Comment comment_3 = Comment.builder()
@@ -138,7 +136,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username("test_3")
                 .channelName("Fireship")
                 .body("Sed at aliquam ipsum. Nullam venenatis, orci eget.")
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
+                .createdAt(LocalDateTime.now(UTC))
                 .build();
 
         Comment comment_4 = Comment.builder()
@@ -146,7 +144,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username("test_4")
                 .channelName("ElectroBOOM")
                 .body("Curabitur scelerisque viverra justo, eget integer.")
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
+                .createdAt(LocalDateTime.now(UTC))
                 .build();
 
         Comment comment_5 = Comment.builder()
@@ -154,7 +152,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username("test_5")
                 .channelName("Java Brains")
                 .body("Maecenas imperdiet malesuada velit sed tempor nam.")
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
+                .createdAt(LocalDateTime.now(UTC))
                 .build();
 
         Comment comment_6 = Comment.builder()
@@ -162,7 +160,7 @@ public class BootstrapData implements CommandLineRunner {
                 .username("test_6")
                 .channelName("SomeOrdinaryGamer")
                 .body("Lorem ipsum dolor sit amet, consectetur tincidunt.")
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
+                .createdAt(LocalDateTime.now(UTC))
                 .build();
 
         return Set.of(
@@ -175,142 +173,89 @@ public class BootstrapData implements CommandLineRunner {
     }
 
     private List<Video> createVideos(List<User> users) {
-        String videoUrl = String.format("%svidflow/sample.mp4", AWS_ENABLE ? CLOUDFRONT_BASE_URL : AZURE_CDN_BASE_URL);
+        Random random = new Random();
+        int maxUnlistedVideos = 10, maxPrivateVideos = 10, totalVideos = 100;
+        String TITLE = """
+                There are many variations of passages of Lorem Ipsum available, but the majority have suffered
+                alteration in some form, by injected humour, or randomised words which don't look even slightly
+                believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't
+                anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet
+                tend to repeat predefined chunks as necessary, making this the first true generator on the Internet.
+                It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures,
+                to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free
+                from repetition, injected humour, or non-characteristic words etc.
+                """;
+        String DESCRIPTION = """
+                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
+                been the industry's standard dummy text ever since the 1500s, when an unknown printer took
+                a galley of type and scrambled it to make a type specimen book. It has survived not only
+                five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+                It was popularised in the 1960s with the release of Letraset sheets.
+                """;
+        String THUMBNAIL = "https://source.unsplash.com/640x360";
+        String VIDEO_URL = String.format("%svidflow/sample.mp4", AWS_ENABLE ? CLOUDFRONT_BASE_URL : AZURE_CDN_BASE_URL);
+        Set<Comment> comments = createCommentsSet();
+        List<List<Integer>> randomPairsWithConstantGaps =
+                generatePairsWithConstantGaps(TITLE.length(), totalVideos, random);
 
-        Video video_1 = Video.builder()
-                .title("Lorem Ipsum is simply dummy text of the printing and typesetting.")
-                .userId(users.get(0).getId())
-                .username(users.get(0).getUsername())
-                .channelName(users.get(0).getChannelName())
-                .thumbnail("https://source.unsplash.com/1280x720/?technology")
-                .videoUrl(videoUrl)
-                .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
-                        "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
-                        "printer took a galley of type and scrambled it to make a type specimen book. It has " +
-                        "survived not only five centuries, but also the leap into electronic typesetting, remaining " +
-                        "essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets.")
-                .videoStatus(VideoStatus.PUBLIC)
-                .likes(new AtomicLong(15_000))
-                .dislikes(new AtomicLong(1_005))
-                .views(new AtomicLong(1_547_856L))
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC).minus(Period.ofYears(3)))
-                .build();
+        List<Video> videos = new ArrayList<>();
+        int currentUnlistedVideos = 0, currentPrivateVideos = 0;
+        for (int i = 0; i < totalVideos; i++) {
+            int randomUser = random.nextInt(users.size());
+            User user = users.get(randomUser);
+            Video video = Video.builder()
+                    .title(TITLE.substring(randomPairsWithConstantGaps.get(i).get(0),
+                            randomPairsWithConstantGaps.get(i).get(1)).trim())
+                    .userId(user.getId())
+                    .username(user.getUsername())
+                    .channelName(user.getChannelName())
+                    .thumbnail(THUMBNAIL)
+                    .videoUrl(VIDEO_URL)
+                    .description(DESCRIPTION)
+                    .likes(new AtomicLong(random.nextLong(10_000_000)))
+                    .dislikes(new AtomicLong(random.nextLong(10_000_000)))
+                    .views(new AtomicLong(random.nextLong(10_000_000)))
+                    .createdAt(generateRandomDate(random))
+                    .comments(comments)
+                    .build();
 
-        video_1.setComments(createCommentsSet());
+            if (currentPrivateVideos < maxPrivateVideos) {
+                video.setVideoStatus(PRIVATE);
+                currentPrivateVideos++;
+            } else if (currentUnlistedVideos < maxUnlistedVideos) {
+                video.setVideoStatus(UNLISTED);
+                currentUnlistedVideos++;
+            } else {
+                video.setVideoStatus(PUBLIC);
+            }
+            videos.add(video);
+        }
 
-        Video video_2 = Video.builder()
-                .title("It is a long established fact that a reader will be distracted.")
-                .userId(users.get(1).getId())
-                .username(users.get(1).getUsername())
-                .channelName(users.get(1).getChannelName())
-                .thumbnail("https://source.unsplash.com/1280x720/?news")
-                .videoUrl(videoUrl)
-                .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
-                        "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
-                        "printer took a galley of type and scrambled it to make a type specimen book. It has " +
-                        "survived not only five centuries, but also the leap into electronic typesetting, remaining " +
-                        "essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets.")
-                .videoStatus(VideoStatus.PUBLIC)
-                .likes(new AtomicLong(80_456))
-                .dislikes(new AtomicLong(15_462))
-                .views(new AtomicLong(14_785_623L))
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC).minus(Period.ofYears(3)))
-                .build();
+        return videos;
+    }
 
-        video_2.setComments(createCommentsSet());
+    private List<List<Integer>> generatePairsWithConstantGaps(int range, int n, Random random) {
+        List<Integer> GAP_THRESHOLD = List.of(50, 63, 65, 66, 100);
+        List<List<Integer>> result = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            int gap = GAP_THRESHOLD.get(random.nextInt(GAP_THRESHOLD.size()));
+            int p = random.nextInt(range);
+            while ((p + gap) > range)
+                p = (p + gap) % range;
+            result.add(List.of(p, p + gap));
+        }
+        return result;
+    }
 
-        Video video_3 = Video.builder()
-                .title("Contrary to popular belief, Lorem Ipsum is not simply random text.")
-                .userId(users.get(2).getId())
-                .username(users.get(2).getUsername())
-                .channelName(users.get(2).getChannelName())
-                .thumbnail("https://source.unsplash.com/1280x720/?gaming")
-                .videoUrl(videoUrl)
-                .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
-                        "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
-                        "printer took a galley of type and scrambled it to make a type specimen book. It has " +
-                        "survived not only five centuries, but also the leap into electronic typesetting, remaining " +
-                        "essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets.")
-                .videoStatus(VideoStatus.PUBLIC)
-                .likes(new AtomicLong(1_258_964))
-                .dislikes(new AtomicLong(7_865))
-                .views(new AtomicLong(14_789_652_325L))
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC).minus(Period.ofWeeks(3)))
-                .build();
-
-        video_3.setComments(createCommentsSet());
-
-        Video video_4 = Video.builder()
-                .title("Contrary to popular belief, Lorem Ipsum is not simply random text.")
-                .userId(users.get(3).getId())
-                .username(users.get(3).getUsername())
-                .channelName(users.get(3).getChannelName())
-                .thumbnail("https://source.unsplash.com/1280x720/?fashion")
-                .videoUrl(videoUrl)
-                .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
-                        "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
-                        "printer took a galley of type and scrambled it to make a type specimen book. It has " +
-                        "survived not only five centuries, but also the leap into electronic typesetting, remaining " +
-                        "essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets.")
-                .videoStatus(VideoStatus.PUBLIC)
-                .likes(new AtomicLong(65_432))
-                .dislikes(new AtomicLong(5_874))
-                .views(new AtomicLong(74_564_654L))
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC).minus(Period.ofDays(45)))
-                .build();
-
-        video_4.setComments(createCommentsSet());
-
-        Video video_5 = Video.builder()
-                .title("There are many variations of passages of Lorem Ipsum available.")
-                .userId(users.get(4).getId())
-                .username(users.get(4).getUsername())
-                .channelName(users.get(4).getChannelName())
-                .thumbnail("https://source.unsplash.com/1280x720/?personal")
-                .videoUrl(videoUrl)
-                .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem " +
-                        "Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown " +
-                        "printer took a galley of type and scrambled it to make a type specimen book. It has " +
-                        "survived not only five centuries, but also the leap into electronic typesetting, remaining " +
-                        "essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets.")
-                .videoStatus(VideoStatus.PUBLIC)
-                .likes(new AtomicLong(75_698))
-                .dislikes(new AtomicLong(4_563))
-                .views(new AtomicLong(16_479_843L))
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC).minus(Period.ofMonths(5)))
-                .build();
-
-        video_5.setComments(createCommentsSet());
-
-        Video video_6 = Video.builder()
-                .title("Vestibulum vitae elit elit. In porttitor diam vitae tortor vulputate, " +
-                        "quis vehicula nisi porta ante.")
-                .userId(users.get(5).getId())
-                .username(users.get(5).getUsername())
-                .channelName(users.get(5).getChannelName())
-                .thumbnail("https://source.unsplash.com/1280x720/?business")
-                .videoUrl(videoUrl)
-                .description("Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut egestas, urna at " +
-                        "ultrices imperdiet, enim tellus porttitor mi, porta rhoncus est dui vitae augue. " +
-                        "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis " +
-                        "egestas. Praesent et ex tortor. Pellentesque auctor lectus tellus, id egestas nunc congue " +
-                        "id. In hac habitasse platea dictumst. In ac nisi augue. Nunc sed dui ultricies, lobortis " +
-                        "lectus vel, egestas velit. Cras sollicitudin tincidunt ante, at volutpat.")
-                .videoStatus(VideoStatus.PUBLIC)
-                .likes(new AtomicLong(56_895))
-                .dislikes(new AtomicLong(785))
-                .views(new AtomicLong(45_786_213L))
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
-                .build();
-
-        video_6.setComments(createCommentsSet());
-
-        return List.of(
-                video_1,
-                video_2,
-                video_3,
-                video_4,
-                video_5,
-                video_6);
+    private LocalDateTime generateRandomDate(Random random) {
+        int p = random.nextInt(5), q = random.nextInt(10);
+        return switch (p) {
+            case 0 -> LocalDateTime.now(UTC).minus(Period.ofYears(q));
+            case 1 -> LocalDateTime.now(UTC).minus(Period.ofMonths(q));
+            case 2 -> LocalDateTime.now(UTC).minus(Period.ofWeeks(q));
+            case 3 -> LocalDateTime.now(UTC).minus(Period.ofDays(q));
+            case 4 -> LocalDateTime.now(UTC);
+            default -> LocalDateTime.now();
+        };
     }
 }
