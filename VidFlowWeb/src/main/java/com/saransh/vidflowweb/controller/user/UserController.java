@@ -4,6 +4,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.saransh.vidflownetwork.global.ApiResponse;
 import com.saransh.vidflownetwork.global.Response;
+import com.saransh.vidflownetwork.v2.request.user.UpdateUserRequestModel;
 import com.saransh.vidflownetwork.v2.request.user.UserRequestModel;
 import com.saransh.vidflownetwork.v2.response.user.GetChannelDetailsResponseModel;
 import com.saransh.vidflownetwork.v2.response.user.RefreshTokenResponseModel;
@@ -60,7 +61,6 @@ public class UserController {
     public ResponseEntity<ApiResponse<SubscribedChannelResponseModel>> getSubscribedChannelsList(@PathVariable String userId) {
         return ResponseEntity.ok(createApiSuccessResponse(userService.getSubscribedChannelsList(userId)));
     }
-
 
 
     @GetMapping(value = "/id/{userId}/liked", produces = APPLICATION_JSON_VALUE)
@@ -123,6 +123,14 @@ public class UserController {
     public ResponseEntity<?> forgotPassword() {
         // TODO: implement forgot password functionality
         return null;
+    }
+
+    @PutMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse<UserResponseModel>> updateUserDetails(
+            @RequestBody @Validated UpdateUserRequestModel updateUserRequestModel) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        return ResponseEntity.ok(createApiSuccessResponse(userService
+                .update(username, updateUserRequestModel)));
     }
 
     @DeleteMapping

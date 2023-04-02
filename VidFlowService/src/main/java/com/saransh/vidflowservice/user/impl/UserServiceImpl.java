@@ -4,6 +4,7 @@ import com.saransh.vidflowdata.entity.User;
 import com.saransh.vidflowdata.entity.Video;
 import com.saransh.vidflowdata.repository.UserRepository;
 import com.saransh.vidflowdata.repository.VideoRepository;
+import com.saransh.vidflownetwork.v2.request.user.UpdateUserRequestModel;
 import com.saransh.vidflownetwork.v2.request.user.UserRequestModel;
 import com.saransh.vidflownetwork.v2.response.user.GetChannelDetailsResponseModel;
 import com.saransh.vidflownetwork.v2.response.user.SubscribedChannelResponseModel;
@@ -185,13 +186,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponseModel update(String username, UserRequestModel userRequestModel) {
+    public UserResponseModel update(String username, UpdateUserRequestModel updateUserRequestModel) {
         User user = findUserByUsername(username);
-        user.setFirstName(userRequestModel.getFirstName());
-        user.setLastName(userRequestModel.getLastName());
-        user.setEmail(userRequestModel.getEmail());
-        user.setUsername(userRequestModel.getUsername());
-        return userMapper.userToUserResponseModel(user);
+        user.setFirstName(updateUserRequestModel.getFirstName());
+        user.setLastName(updateUserRequestModel.getLastName());
+        user.setEmail(updateUserRequestModel.getEmail());
+        return userMapper.userToUserResponseModel(userRepository.save(user));
     }
 
     @Override

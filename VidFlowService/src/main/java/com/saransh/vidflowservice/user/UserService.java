@@ -1,6 +1,7 @@
 package com.saransh.vidflowservice.user;
 
 import com.saransh.vidflowdata.entity.User;
+import com.saransh.vidflownetwork.v2.request.user.UpdateUserRequestModel;
 import com.saransh.vidflownetwork.v2.request.user.UserRequestModel;
 import com.saransh.vidflownetwork.v2.response.user.GetChannelDetailsResponseModel;
 import com.saransh.vidflownetwork.v2.response.user.SubscribedChannelResponseModel;
@@ -37,7 +38,7 @@ public interface UserService extends UserDetailsService {
 
     UserResponseModel insert(UserRequestModel userRequestModel);
 
-    UserResponseModel update(String username, UserRequestModel userRequestModel);
+    UserResponseModel update(String username, UpdateUserRequestModel updateUserRequestModel);
 
     void updateSubscribers(String userId, String subscribeToChannel, boolean increment);
 
