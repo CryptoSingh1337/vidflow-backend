@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(page, PAGE_LIMIT);
         if (user.getVideoHistory() != null) {
             getAllVideosResponseModel.setVideos(new PageImpl<>(user.getVideoHistory().stream()
-                    .toList(), pageable, user.getLikedVideos().size())
+                    .toList(), pageable, user.getVideoHistory().size())
                     .map(videoMapper::videoToSearchVideoCard));
         } else {
             getAllVideosResponseModel.setVideos(new PageImpl<>(new ArrayList<>(), pageable, 0));
