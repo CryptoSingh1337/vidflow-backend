@@ -122,7 +122,7 @@ public class VideoServiceImpl implements VideoService {
                 "createdAt", "thumbnail", "title", "views");
         FacetOperation facetOperation = facet(Aggregation.count().as("id"))
                 .as("totalPages")
-                .and(limit(PAGE_LIMIT), skip(page * PAGE_LIMIT))
+                .and(skip(page * PAGE_LIMIT), limit(PAGE_LIMIT))
                 .as("videos");
         Aggregation aggregation = newAggregation(matchOperationStage1, matchOperationStage2,
                 projectionOperation, sort(Sort.Direction.DESC, "createdAt"),
