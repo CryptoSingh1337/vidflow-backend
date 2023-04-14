@@ -1,5 +1,6 @@
 package com.saransh.vidflownetwork.v2.request.video;
 
+import com.saransh.vidflowdata.entity.Category;
 import com.saransh.vidflowdata.entity.VideoStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +32,8 @@ public class VideoMetadataRequestModel {
     private String username;
     @NotNull
     private VideoStatus videoStatus;
+    @NotNull
+    private Category category;
     private String thumbnailUrl;
     private String videoUrl;
     private List<String> tags;

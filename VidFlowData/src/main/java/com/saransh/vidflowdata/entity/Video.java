@@ -38,6 +38,7 @@ public class Video {
     private String description;
     private VideoStatus videoStatus;
     private List<String> tags;
+    private Category category;
     private Set<Comment> comments;
 
     public void incrementViews() {

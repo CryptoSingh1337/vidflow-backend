@@ -2,12 +2,14 @@ package com.saransh.vidflowweb.controller.video;
 
 import com.saransh.vidflownetwork.global.ApiResponse;
 import com.saransh.vidflownetwork.v2.request.video.CommentRequestModel;
+import com.saransh.vidflownetwork.v2.request.video.GetRecommendedVideosRequestModel;
 import com.saransh.vidflownetwork.v2.request.video.UpdateCommentRequestModel;
 import com.saransh.vidflownetwork.v2.request.video.VideoMetadataRequestModel;
 import com.saransh.vidflownetwork.v2.response.video.*;
 import com.saransh.vidflowservice.events.InsertVideoMetadataEvent;
 import com.saransh.vidflowservice.video.VideoService;
 import com.saransh.vidflowservice.video.WrapperUploadOperationsService;
+import com.saransh.vidflowutilities.response.ApiResponseUtil;
 import com.saransh.vidflowweb.validator.VideoMetadataValidatorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -67,11 +69,21 @@ public class VideoController {
         return ResponseEntity.ok(createApiSuccessResponse(videoService.getAllVideosByUserId(userId, page)));
     }
 
-    @GetMapping(value = "/subscribe/channel")
-    public ResponseEntity<?> getSubscribedChannelVideos(@RequestParam Integer page) {
+    @GetMapping(value = "/subscribe/channel", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse<GetAllSubscriptionVideosResponseModel>> getSubscribedChannelVideos(
+            @RequestParam Integer page) {
         String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         return ResponseEntity.ok(createApiSuccessResponse(videoService
                 .getSubscribedChannelVideos(username, page)));
+    }
+
+    @GetMapping(value = "/recommended", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse<GetAllVideosResponseModel<VideoCardResponseModel>>> getRecommendedVideos(
+            @Validated @RequestBody GetRecommendedVideosRequestModel getRecommendedVideosRequestModel) {
+        return ResponseEntity.ok(ApiResponseUtil
+                .createApiSuccessResponse(videoService
+                        .getRecommendedVideos(getRecommendedVideosRequestModel.getCategory(),
+                                getRecommendedVideosRequestModel.getTags(), getRecommendedVideosRequestModel.getPage())));
     }
 
     @GetMapping(value = "/id/{videoId}", produces = APPLICATION_JSON_VALUE)

@@ -48,4 +48,4 @@ aws:
     secret-key: ${S3_SECRET_KEY}
 
 # Custom
-skipUrls: /api/v2/video,/api/v2/video/trending,/api/v2/video/search,/api/v2/video/user/id/{userId},/api/v2/video/id/{videoId},/api/v2/user/id/{userId}/channel
+skipUrls: /api/v2/video,/api/v2/video/trending,/api/v2/video/search,/api/v2/video/recommended,/api/v2/video/user/id/{userId},/api/v2/video/id/{videoId},/api/v2/user/id/{userId}/channel

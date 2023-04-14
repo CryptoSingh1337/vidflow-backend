@@ -7,10 +7,7 @@ import com.saransh.vidflowservice.mapper.VideoMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author CryptoSingh1337
@@ -34,6 +31,7 @@ public class VideoMapperImpl implements VideoMapper {
                 .userId(video.getUserId())
                 .description(video.getDescription())
                 .videoUrl(video.getVideoUrl())
+                .category(video.getCategory())
                 .views(video.getViews())
                 .likes(video.getLikes())
                 .dislikes(video.getDislikes())
@@ -45,6 +43,12 @@ public class VideoMapperImpl implements VideoMapper {
             baseVideoModel.setComments(new HashSet<>());
         } else {
             baseVideoModel.setComments(new LinkedHashSet<>(video.getComments()));
+        }
+
+        if (CollectionUtils.isEmpty(video.getTags())) {
+            baseVideoModel.setTags(Collections.emptyList());
+        } else {
+            baseVideoModel.setTags(video.getTags());
         }
 
         return watchVideoResponseModelBuilder

@@ -1,8 +1,11 @@
 package com.saransh.vidflowservice.video;
 
+import com.saransh.vidflowdata.entity.Category;
 import com.saransh.vidflownetwork.v2.request.video.VideoMetadataRequestModel;
 import com.saransh.vidflownetwork.v2.response.video.*;
 import org.springframework.data.domain.Sort;
+
+import java.util.List;
 
 /**
  * author: CryptoSingh1337
@@ -17,6 +20,8 @@ public interface VideoService extends CommentService {
     GetAllVideosResponseModel<VideoCardResponseModel> getAllVideosByUserId(String userId, Integer page);
 
     GetAllSubscriptionVideosResponseModel getSubscribedChannelVideos(String username, Integer page);
+
+    GetAllVideosResponseModel<VideoCardResponseModel> getRecommendedVideos(Category category, List<String> tags, Integer page);
 
     WatchVideoResponseModel getVideoById(String id, Boolean likeStatus, Boolean subscribeStatus, String userId);
 

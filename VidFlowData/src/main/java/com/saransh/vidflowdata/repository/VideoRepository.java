@@ -1,5 +1,6 @@
 package com.saransh.vidflowdata.repository;
 
+import com.saransh.vidflowdata.entity.Category;
 import com.saransh.vidflowdata.entity.Video;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,6 +62,19 @@ public interface VideoRepository extends MongoRepository<Video, String> {
             }
             """)
     Page<Video> findAllByUserId(String userId, Pageable pageable);
+
+    @Query(value = "{ videoStatus: 'PUBLIC', category: ?0, tags: { $in: ?1 } }", fields = """
+            {
+                id:  1,
+                title:  1,
+                userId: 1,
+                channelName: 1,
+                views: 1,
+                createdAt: 1,
+                thumbnail: 1
+            }
+            """)
+    Page<Video> findAllByCategoryAndTags(Category category, List<String> tags, Pageable pageable);
 
     @Query(fields = "{ id: 1 }")
     List<Video> findAllByUsername(String username);

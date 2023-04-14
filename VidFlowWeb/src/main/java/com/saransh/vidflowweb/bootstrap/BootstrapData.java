@@ -1,5 +1,6 @@
 package com.saransh.vidflowweb.bootstrap;
 
+import com.saransh.vidflowdata.entity.Category;
 import com.saransh.vidflowdata.entity.Comment;
 import com.saransh.vidflowdata.entity.User;
 import com.saransh.vidflowdata.entity.Video;
@@ -174,7 +175,7 @@ public class BootstrapData implements CommandLineRunner {
 
     private List<Video> createVideos(List<User> users) {
         Random random = new Random();
-        int maxUnlistedVideos = 10, maxPrivateVideos = 10, totalVideos = 100;
+        int maxUnlistedVideos = 10, maxPrivateVideos = 10, maxTaggedVideos = 50, totalVideos = 100;
         String TITLE = """
                 There are many variations of passages of Lorem Ipsum available, but the majority have suffered
                 alteration in some form, by injected humour, or randomised words which don't look even slightly
@@ -192,16 +193,18 @@ public class BootstrapData implements CommandLineRunner {
                 five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
                 It was popularised in the 1960s with the release of Letraset sheets.
                 """;
-        String THUMBNAIL = "https://source.unsplash.com/640x360";
+        String THUMBNAIL = "https://source.unsplash.com/640x360?fashion";
         String VIDEO_URL = String.format("%svidflow/sample.mp4", AWS_ENABLE ? CLOUDFRONT_BASE_URL : AZURE_CDN_BASE_URL);
+        Category[] categories = Category.values();
         Set<Comment> comments = createCommentsSet();
         List<List<Integer>> randomPairsWithConstantGaps =
                 generatePairsWithConstantGaps(TITLE.length(), totalVideos, random);
 
         List<Video> videos = new ArrayList<>();
-        int currentUnlistedVideos = 0, currentPrivateVideos = 0;
+        int currentUnlistedVideos = 0, currentPrivateVideos = 0, currentTaggedVideos = 0;
         for (int i = 0; i < totalVideos; i++) {
             int randomUser = random.nextInt(users.size());
+            int randomCategory = random.nextInt(categories.length);
             User user = users.get(randomUser);
             Video video = Video.builder()
                     .title(TITLE.substring(randomPairsWithConstantGaps.get(i).get(0),
@@ -211,6 +214,7 @@ public class BootstrapData implements CommandLineRunner {
                     .channelName(user.getChannelName())
                     .thumbnail(THUMBNAIL)
                     .videoUrl(VIDEO_URL)
+                    .category(categories[randomCategory])
                     .description(DESCRIPTION)
                     .likes(new AtomicLong(random.nextLong(10_000_000)))
                     .dislikes(new AtomicLong(random.nextLong(10_000_000)))
@@ -226,6 +230,10 @@ public class BootstrapData implements CommandLineRunner {
                 video.setVideoStatus(UNLISTED);
                 currentUnlistedVideos++;
             } else {
+                if (currentTaggedVideos < maxTaggedVideos) {
+                    video.setTags(List.of("music", "video"));
+                    currentTaggedVideos++;
+                }
                 video.setVideoStatus(PUBLIC);
             }
             videos.add(video);

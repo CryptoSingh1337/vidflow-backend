@@ -1,5 +1,6 @@
 package com.saransh.vidflowservice.video.impl;
 
+import com.saransh.vidflowdata.entity.Category;
 import com.saransh.vidflowdata.entity.Comment;
 import com.saransh.vidflowdata.entity.User;
 import com.saransh.vidflowdata.entity.Video;
@@ -28,9 +29,12 @@ import org.springframework.data.mongodb.MongoExpression;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -122,7 +126,7 @@ public class VideoServiceImpl implements VideoService {
                 "createdAt", "thumbnail", "title", "views");
         FacetOperation facetOperation = facet(Aggregation.count().as("id"))
                 .as("totalPages")
-                .and(limit(PAGE_LIMIT), skip(page * PAGE_LIMIT))
+                .and(skip(page * PAGE_LIMIT), limit(PAGE_LIMIT))
                 .as("videos");
         Aggregation aggregation = newAggregation(matchOperationStage1, matchOperationStage2,
                 projectionOperation, sort(Sort.Direction.DESC, "createdAt"),
@@ -132,6 +136,29 @@ public class VideoServiceImpl implements VideoService {
                         GetAllSubscriptionVideosResponseModel.GetAllSubscriptionVideos.class);
         return GetAllSubscriptionVideosResponseModel.builder()
                 .content(aggregationResults.getMappedResults())
+                .build();
+    }
+
+    @Override
+    public GetAllVideosResponseModel<VideoCardResponseModel> getRecommendedVideos(Category category, List<String> tags,
+                                                                                  Integer page) {
+        log.debug("Retrieving all the recommended videos for category: {}", category);
+        Pageable pageable = getPageable(page);
+        Query query = new Query()
+                .with(pageable);
+
+        Criteria criteria = Criteria.where("category").is(category);
+
+        if (!CollectionUtils.isEmpty(tags)) {
+            criteria.and("tags").in(tags);
+        }
+
+        query.addCriteria(criteria);
+        List<VideoCardResponseModel> videos = mongoTemplate.find(query, Video.class).stream()
+                .map(videoMapper::videoToVideoCard).toList();
+        return GetAllVideosResponseModel.<VideoCardResponseModel>builder()
+                .videos(PageableExecutionUtils.getPage(videos, pageable,
+                        () -> mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Video.class)))
                 .build();
     }
 
