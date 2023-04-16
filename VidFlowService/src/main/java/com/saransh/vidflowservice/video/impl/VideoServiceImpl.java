@@ -122,21 +122,23 @@ public class VideoServiceImpl implements VideoService {
                             ]
                         }
                         """, SUBSCRIPTION_VIDEOS_TIME_THRESHOLD)));
-        ProjectionOperation projectionOperation = project("id", "channelName", "userId",
+        ProjectionOperation projectionOperation1 = project("id", "channelName", "userId",
                 "createdAt", "thumbnail", "title", "views");
-        FacetOperation facetOperation = facet(Aggregation.count().as("id"))
-                .as("totalPages")
+        FacetOperation facetOperation = facet(Aggregation.count().as("count"))
+                .as("countFacet")
                 .and(skip(page * PAGE_LIMIT), limit(PAGE_LIMIT))
                 .as("videos");
+        ProjectionOperation projectionOperation2 = project("$videos")
+                .and("$countFacet.count").arrayElementAt(0).as("totalCount");
+        ProjectionOperation projectionOperation3 = project("$videos")
+                .and("$totalCount").divide(PAGE_LIMIT).as("totalPages");
         Aggregation aggregation = newAggregation(matchOperationStage1, matchOperationStage2,
-                projectionOperation, sort(Sort.Direction.DESC, "createdAt"),
-                facetOperation);
-        AggregationResults<GetAllSubscriptionVideosResponseModel.GetAllSubscriptionVideos> aggregationResults =
+                projectionOperation1, sort(Sort.Direction.DESC, "createdAt"),
+                facetOperation, projectionOperation2, projectionOperation3);
+        AggregationResults<GetAllSubscriptionVideosResponseModel> aggregationResults =
                 mongoTemplate.aggregate(aggregation, "videos",
-                        GetAllSubscriptionVideosResponseModel.GetAllSubscriptionVideos.class);
-        return GetAllSubscriptionVideosResponseModel.builder()
-                .content(aggregationResults.getMappedResults())
-                .build();
+                        GetAllSubscriptionVideosResponseModel.class);
+        return aggregationResults.getUniqueMappedResult();
     }
 
     @Override
@@ -158,7 +160,8 @@ public class VideoServiceImpl implements VideoService {
                 .map(videoMapper::videoToVideoCard).toList();
         return GetAllVideosResponseModel.<VideoCardResponseModel>builder()
                 .videos(PageableExecutionUtils.getPage(videos, pageable,
-                        () -> mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Video.class)))
+                        () -> mongoTemplate.count(Query.of(query)
+                                .limit(-1).skip(-1), Video.class)))
                 .build();
     }
 

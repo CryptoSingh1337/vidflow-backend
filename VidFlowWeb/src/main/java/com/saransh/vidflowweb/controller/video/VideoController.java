@@ -73,8 +73,9 @@ public class VideoController {
     public ResponseEntity<ApiResponse<GetAllSubscriptionVideosResponseModel>> getSubscribedChannelVideos(
             @RequestParam Integer page) {
         String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        return ResponseEntity.ok(createApiSuccessResponse(videoService
-                .getSubscribedChannelVideos(username, page)));
+        GetAllSubscriptionVideosResponseModel responseModel = videoService.getSubscribedChannelVideos(username, page);
+        responseModel.setTotalPages(Math.ceil(responseModel.getTotalPages()));
+        return ResponseEntity.ok(createApiSuccessResponse(responseModel));
     }
 
     @GetMapping(value = "/recommended", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
