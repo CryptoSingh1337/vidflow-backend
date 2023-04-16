@@ -113,9 +113,12 @@ public class VideoMapperImpl implements VideoMapper {
         video.videoUrl(videoMetadata.getVideoUrl());
         video.description(videoMetadata.getDescription());
         video.videoStatus(videoMetadata.getVideoStatus());
+        video.category(videoMetadata.getCategory());
         List<String> list = videoMetadata.getTags();
         if (list != null) {
             video.tags(new ArrayList<>(list));
+        } else {
+            video.tags(new ArrayList<>());
         }
 
         return video.build();

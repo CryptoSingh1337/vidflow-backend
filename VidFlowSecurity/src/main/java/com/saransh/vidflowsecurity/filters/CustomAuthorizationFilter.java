@@ -86,6 +86,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         if ("PUT".equals(requestMethod) && pathMatcher.match("/api/v2/video/views/id/{videoId}", requestPath))
             return true;
 
+        if ("POST".equals(requestMethod) && pathMatcher.match("/api/v2/video/recommended", requestPath))
+            return true;
+
         if (!"GET".equals(req.getMethod()))
             return false;
 

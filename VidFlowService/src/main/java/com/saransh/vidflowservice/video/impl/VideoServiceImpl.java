@@ -41,6 +41,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -152,7 +153,10 @@ public class VideoServiceImpl implements VideoService {
         Criteria criteria = Criteria.where("category").is(category);
 
         if (!CollectionUtils.isEmpty(tags)) {
-            criteria.and("tags").in(tags);
+            List<Pattern> caseInSensitiveTags = tags.stream()
+                    .map(t -> Pattern.compile(t, Pattern.CASE_INSENSITIVE))
+                    .toList();
+            criteria.and("tags").in(caseInSensitiveTags);
         }
 
         query.addCriteria(criteria);
@@ -200,14 +204,7 @@ public class VideoServiceImpl implements VideoService {
         User user = userService.findUserByUsername(username);
         video.setId(videoId);
         video.setUserId(user.getId());
-        video.setTitle(videoMetadata.getTitle());
-        video.setDescription(videoMetadata.getDescription());
         video.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
-        video.setThumbnail(videoMetadata.getThumbnailUrl());
-        video.setTags(videoMetadata.getTags());
-        video.setChannelName(videoMetadata.getChannelName());
-        video.setUsername(videoMetadata.getUsername());
-        video.setVideoStatus(videoMetadata.getVideoStatus());
         Video savedVideo = videoRepository.save(video);
         log.debug("Saved video with videoId: {}", savedVideo.getId());
     }

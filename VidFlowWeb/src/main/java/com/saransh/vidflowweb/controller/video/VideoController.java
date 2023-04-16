@@ -78,7 +78,8 @@ public class VideoController {
         return ResponseEntity.ok(createApiSuccessResponse(responseModel));
     }
 
-    @GetMapping(value = "/recommended", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    // Had to make POST because in ofetch, we cannot pass body in GET request
+    @PostMapping(value = "/recommended", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<GetAllVideosResponseModel<VideoCardResponseModel>>> getRecommendedVideos(
             @Validated @RequestBody GetRecommendedVideosRequestModel getRecommendedVideosRequestModel) {
         return ResponseEntity.ok(ApiResponseUtil
