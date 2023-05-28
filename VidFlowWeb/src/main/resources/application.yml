@@ -47,5 +47,9 @@ aws:
     access-key: ${S3_ACCESS_KEY}
     secret-key: ${S3_SECRET_KEY}
 
+spam:
+  engine:
+    url: ${SPAM_ENGINE_URL}
+
 # Custom
 skipUrls: /api/v2/video,/api/v2/video/trending,/api/v2/video/search,/api/v2/video/recommended,/api/v2/video/user/id/{userId},/api/v2/video/id/{videoId},/api/v2/user/id/{userId}/channel

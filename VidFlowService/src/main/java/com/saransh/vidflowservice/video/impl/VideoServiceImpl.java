@@ -14,12 +14,10 @@ import com.saransh.vidflowservice.mapper.CommentMapper;
 import com.saransh.vidflowservice.mapper.VideoMapper;
 import com.saransh.vidflowservice.user.UserService;
 import com.saransh.vidflowservice.video.VideoService;
-import com.saransh.vidflowutilities.exceptions.BadRequestException;
-import com.saransh.vidflowutilities.exceptions.MongoWriteException;
-import com.saransh.vidflowutilities.exceptions.ResourceNotFoundException;
-import com.saransh.vidflowutilities.exceptions.UnAuthorizeException;
+import com.saransh.vidflowutilities.exceptions.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.data.domain.PageRequest;
@@ -31,15 +29,18 @@ import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -55,12 +56,15 @@ public class VideoServiceImpl implements VideoService {
     private final VideoRepository videoRepository;
     private final UserService userService;
     private final VideoMapper videoMapper;
+    private final RestTemplate restTemplate;
     private final CommentMapper commentMapper;
     private final MongoTemplate mongoTemplate;
     private final ApplicationEventPublisher publisher;
     private final ApplicationEventMulticaster applicationEventMulticaster;
     private final int PAGE_LIMIT = 10;
     private final int SUBSCRIPTION_VIDEOS_TIME_THRESHOLD = 3;
+    @Value("${spam.engine.url}")
+    private String SPAM_ENGINE_URL;
 
     @Override
     public GetAllVideosResponseModel<VideoCardResponseModel> getAllVideos(Integer page, Sort sort) {
@@ -256,6 +260,9 @@ public class VideoServiceImpl implements VideoService {
     @Transactional
     public CommentResponseModel addCommentToVideo(String videoId, CommentRequestModel commentRequestModel) {
         log.debug("Adding comment to the video with ID: {}", videoId);
+        if (isSpamComment(commentRequestModel.getBody()))
+            throw new BadRequestException("Invalid comment body");
+
         Video video = getVideoByIdHelper(videoId);
         Comment comment = commentMapper.commentRequestModelToComment(commentRequestModel);
         comment.setId(UUID.randomUUID().toString());
@@ -275,6 +282,9 @@ public class VideoServiceImpl implements VideoService {
     public CommentResponseModel updateComment(String videoId, String commentId,
                                               UpdateCommentRequestModel updateComment) {
         log.debug("Updating comment with ID: {} with video ID: {}", commentId, videoId);
+        if (isSpamComment(updateComment.getBody()))
+            throw new BadRequestException("Invalid comment body");
+
         Video video = getVideoByIdHelper(videoId);
         Comment comment = video.getComments().stream().filter(c -> c.getId().equals(commentId))
                 .findFirst().orElseThrow();
@@ -300,6 +310,17 @@ public class VideoServiceImpl implements VideoService {
     private Video getVideoByIdHelper(String videoId) {
         return videoRepository.findById(videoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
+    }
+
+    private boolean isSpamComment(String body) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(Map.of("body", body), httpHeaders);
+        ResponseEntity<Integer> response = restTemplate.postForEntity(SPAM_ENGINE_URL, request, Integer.class);
+        if (HttpStatus.OK.equals(response.getStatusCode()) && response.getBody() != null) {
+            return response.getBody() == 1;
+        }
+        throw new InternalServerException();
     }
 
     private Pageable getPageable(int page) {

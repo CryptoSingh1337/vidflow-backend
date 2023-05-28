@@ -14,8 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.*;
 
 /**
  * author: CryptoSingh1337
@@ -89,7 +88,7 @@ public class MvcExceptionHandler {
 
     @ExceptionHandler(com.saransh.vidflowutilities.exceptions.MongoWriteException.class)
     public ResponseEntity<?> handleMongoWriteException(com.saransh.vidflowutilities.exceptions.MongoWriteException e) {
-        return ResponseEntity.status(BAD_REQUEST)
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR)
                 .body(ApiResponseUtil.createApiErrorResponse(AppErrorCode.APP_INT_500));
     }
 
@@ -97,5 +96,11 @@ public class MvcExceptionHandler {
     public ResponseEntity<?> handleBadRequestException(BadRequestException e) {
         return ResponseEntity.status(BAD_REQUEST)
                 .body(ApiResponseUtil.createApiErrorResponse(AppErrorCode.APP_CLT_400_2));
+    }
+
+    @ExceptionHandler(InternalServerException.class)
+    public ResponseEntity<?> handleInternalServerException(InternalServerException e) {
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+                .body(ApiResponseUtil.createApiErrorResponse(AppErrorCode.APP_INT_500));
     }
 }
