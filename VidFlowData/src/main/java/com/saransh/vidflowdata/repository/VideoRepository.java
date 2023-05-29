@@ -50,6 +50,19 @@ public interface VideoRepository extends MongoRepository<Video, String> {
 
     Page<Video> findAllByUserId(Pageable pageable, String userId);
 
+    @Query(value = "{ id: { $in: ?0 } }", fields = """
+            {
+                id:  1,
+                title:  1,
+                userId: 1,
+                channelName: 1,
+                views: 1,
+                createdAt: 1,
+                thumbnail: 1
+            }
+            """)
+    Page<Video> findAllById(List<String> ids, Pageable pageable);
+
     @Query(value = "{ videoStatus: 'PUBLIC', userId: ?0 }", fields = """
             {
                 id:  1,

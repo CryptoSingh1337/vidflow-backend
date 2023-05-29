@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.ApplicationEventMulticaster;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -45,6 +46,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+import static org.springframework.http.HttpMethod.GET;
 
 /**
  * author: CryptoSingh1337
@@ -65,6 +67,8 @@ public class VideoServiceImpl implements VideoService {
     private final int SUBSCRIPTION_VIDEOS_TIME_THRESHOLD = 3;
     @Value("${spam.engine.url}")
     private String SPAM_ENGINE_URL;
+    @Value("${recommendation.engine.url}")
+    private String RECOMMENDATION_ENGINE_URL;
 
     @Override
     public GetAllVideosResponseModel<VideoCardResponseModel> getAllVideos(Integer page, Sort sort) {
@@ -170,6 +174,16 @@ public class VideoServiceImpl implements VideoService {
                 .videos(PageableExecutionUtils.getPage(videos, pageable,
                         () -> mongoTemplate.count(Query.of(query)
                                 .limit(-1).skip(-1), Video.class)))
+                .build();
+    }
+
+    @Override
+    public GetAllVideosResponseModel<VideoCardResponseModel> getRecommendedVideos(String videoId, Integer page) {
+        log.debug("Retrieving all the recommended videos for id: {}", videoId);
+        List<String> videoIds = getRecommendedVideosId(videoId);
+        return GetAllVideosResponseModel.<VideoCardResponseModel>builder()
+                .videos(videoRepository.findAllById(videoIds, getPageable(page))
+                        .map(videoMapper::videoToVideoCard))
                 .build();
     }
 
@@ -310,6 +324,16 @@ public class VideoServiceImpl implements VideoService {
     private Video getVideoByIdHelper(String videoId) {
         return videoRepository.findById(videoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Video not found"));
+    }
+
+    private List<String> getRecommendedVideosId(String videoId) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(httpHeaders);
+        ResponseEntity<List<String>> response = restTemplate.exchange(RECOMMENDATION_ENGINE_URL,
+                GET, null,
+                new ParameterizedTypeReference<>() {
+                });
+        return response.getBody();
     }
 
     private boolean isSpamComment(String body) {

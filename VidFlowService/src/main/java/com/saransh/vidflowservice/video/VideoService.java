@@ -23,6 +23,8 @@ public interface VideoService extends CommentService {
 
     GetAllVideosResponseModel<VideoCardResponseModel> getRecommendedVideos(Category category, List<String> tags, Integer page);
 
+    GetAllVideosResponseModel<VideoCardResponseModel> getRecommendedVideos(String videoId, Integer page);
+
     WatchVideoResponseModel getVideoById(String id, Boolean likeStatus, Boolean subscribeStatus, String userId);
 
     void insert(String videoId, VideoMetadataRequestModel videoMetadataRequestModel);
