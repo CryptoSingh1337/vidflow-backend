@@ -56,4 +56,4 @@ recommendation:
     url: ${RECOMMENDATION_ENGINE_URL}
 
 # Custom
-skipUrls: /api/v2/video,/api/v2/video/trending,/api/v2/video/search,/api/v2/video/recommended,/api/v2/video/user/id/{userId},/api/v2/video/id/{videoId},/api/v2/user/id/{userId}/channel
+skipUrls: /api/v2/video,/api/v2/video/trending,/api/v2/video/search,/api/v2/video/recommended,/api/v2/video/id/{videoId}/recommend,/api/v2/video/user/id/{userId},/api/v2/video/id/{videoId},/api/v2/user/id/{userId}/channel

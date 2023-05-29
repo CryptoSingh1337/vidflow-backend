@@ -40,6 +40,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -327,13 +328,14 @@ public class VideoServiceImpl implements VideoService {
     }
 
     private List<String> getRecommendedVideosId(String videoId) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(httpHeaders);
-        ResponseEntity<List<String>> response = restTemplate.exchange(RECOMMENDATION_ENGINE_URL,
+        ResponseEntity<Map<String, List<String>>> response = restTemplate.exchange(String
+                        .format("%s/%s", RECOMMENDATION_ENGINE_URL, videoId),
                 GET, null,
                 new ParameterizedTypeReference<>() {
                 });
-        return response.getBody();
+        if (response.getBody() != null && response.getBody().containsKey("recommended_video_ids"))
+            return response.getBody().get("recommended_video_ids");
+        return new ArrayList<>();
     }
 
     private boolean isSpamComment(String body) {

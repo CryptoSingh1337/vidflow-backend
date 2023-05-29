@@ -88,7 +88,7 @@ public class VideoController {
                                 getRecommendedVideosRequestModel.getTags(), getRecommendedVideosRequestModel.getPage())));
     }
 
-    @GetMapping(value = "/{videoId}/recommend", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/id/{videoId}/recommend", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<GetAllVideosResponseModel<VideoCardResponseModel>>> getRecommendedVideos(
             @PathVariable String videoId, @RequestParam Integer page) {
         return ResponseEntity.ok(ApiResponseUtil
